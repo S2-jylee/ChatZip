@@ -1,0 +1,42 @@
+/* ---------- 관심 매물 비교 모달 ---------- */
+.cmp-modal { width: min(960px, 100%); }
+.cmp-modal .modal-title small { font-size: 14px; font-weight: 600; margin-left: 4px; }
+.cmp-scroll { overflow-x: auto; padding: 8px 24px 0; }
+.cmp-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; min-width: 560px; }
+.cmp-table th, .cmp-table td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.cmp-label-col { width: 96px; }
+.cmp-table tbody th { color: var(--muted); font-weight: 600; font-size: 13px; white-space: nowrap; }
+.cmp-table thead th { position: sticky; top: 0; background: var(--paper, #fff); border-bottom: 2px solid var(--ink); }
+.cmp-name { display: block; font-size: 16px; letter-spacing: -0.02em; color: var(--ink); }
+.cmp-link { font-size: 12px; font-weight: 700; color: var(--primary); text-decoration: none; }
+.cmp-link:hover { text-decoration: underline; }
+.cmp-table td { color: var(--ink); font-weight: 600; }
+.cmp-small { font-size: 12px; font-weight: 500 !important; color: var(--ink-2) !important; }
+.cmp-price { color: var(--navy); font-size: 15px; }
+.cmp-verdict { display: inline-block; margin: 0; font-size: 12px; padding: 3px 8px; }
+
+/* 항목별 가장 유리한 값 */
+.cmp-table td.is-best { background: var(--primary-soft, #fef0e4); }
+.cmp-badge {
+  display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; vertical-align: 1px;
+  background: var(--primary); color: #fff; font-size: 11px; font-weight: 800;
+}
+.cmp-foot { padding: 4px 24px 20px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- 관심 매물 목록: 체크박스 + 아래 비교 바 ---------- */
+.apt-item-leading { display: flex; align-items: center; padding-left: 14px; }
+.cmp-check { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+.cmp-check:disabled { cursor: not-allowed; opacity: 0.4; }
+.compare-bar {
+  position: sticky; bottom: 16px; z-index: 50; margin-top: 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px 12px 18px; border-radius: 14px; background: var(--navy, #1b2a41); color: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+}
+.compare-bar-info { font-size: 14px; font-weight: 600; }
+.compare-bar-info b { color: #f9b17a; }
+.compare-bar-info small { display: block; font-size: 12px; opacity: 0.7; font-weight: 500; }
+.compare-bar-actions { display: flex; gap: 8px; }
+.compare-bar .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.3); background: transparent; }
+.fav-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; color: var(--muted); }

@@ -1,0 +1,4 @@
+/* 지도 배경(타일)만 연하게 — 가격 마커는 그대로 선명하게 유지 */
+.map-tiles-soft {
+  filter: saturate(0.35) brightness(1.08) contrast(0.88);
+}

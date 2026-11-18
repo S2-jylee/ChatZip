@@ -1,0 +1,191 @@
+/* ---------- 가격 마커: 위 평수 · 아래 가격 + 아래 꼬리 ---------- */
+.map-pin.tier-low { --pin: var(--tier-low); }
+.map-pin.tier-mid { --pin: var(--tier-mid); }
+.map-pin.tier-high { --pin: var(--tier-high); }
+.map-pin.tier-top { --pin: var(--tier-top); }
+.map-pin.viewed { --pin: #8a94a6; } /* 본 매물: 회색 */
+.map-pin:hover, .map-pin.active { --pin: var(--accent); }
+.map-pin, .map-pin.tier-low, .map-pin.tier-mid, .map-pin.tier-high, .map-pin.tier-top,
+.map-pin:hover, .map-pin.active {
+  display: flex; flex-direction: column; align-items: center; min-width: 42px;
+  padding: 2px 7px 4px; border-radius: 6px; line-height: 1.15;
+  background: var(--pin); border: 0; box-shadow: 0 2px 6px rgba(27, 42, 65, 0.35);
+}
+.map-pin::after, .map-pin.tier-low::after, .map-pin.tier-mid::after, .map-pin.tier-high::after, .map-pin.tier-top::after,
+.map-pin:hover::after, .map-pin.active::after { /* 꼬리 */
+  bottom: -6px; border: 5px solid transparent; border-bottom: 0; border-top: 6px solid var(--pin);
+}
+.pin-py { font-size: 10px; font-weight: 700; opacity: 0.88; }
+.pin-price { font-size: 13px; font-weight: 900; letter-spacing: -0.02em; }
+/* 카카오: 꼬리 높이만큼 아래 여백 → 꼬리 끝이 좌표 */
+.pin-k { padding-bottom: 6px; }
+
+.apt-item.viewed .apt-name { color: var(--muted); }
+.viewed-badge {
+  font-size: 11px; font-weight: 700; color: #5b6577; background: #eef0f4;
+  padding: 2px 7px; border-radius: 99px; white-space: nowrap;
+}
+
+/* ---------- 주변 시설 아이콘 ---------- */
+/* 매물 가격 마커와 같은 형식: 색 박스(아이콘 + 이름) + 아래 꼬리. 꼬리 끝이 실제 위치
+   (.place-anchor 아래 여백 = 꼬리 높이 → 카카오 yAnchor 1 · 벡터 anchor bottom 으로 맞춤) */
+.place-anchor { position: relative; padding-bottom: 6px; }
+.leaflet-marker-icon.place-anchor { padding: 0; }
+.leaflet-marker-icon.place-anchor .place-pin { transform: translate(-50%, calc(-100% - 6px)); }
+.place-pin {
+  position: relative; display: inline-flex; align-items: center; gap: 3px;
+  height: 20px; padding: 0 6px; border-radius: 3px; box-sizing: border-box;
+  background: var(--pc, #475569); color: #fff; white-space: nowrap; cursor: default;
+  font-size: 11px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
+  box-shadow: 0 2px 6px rgba(27, 42, 65, 0.35);
+}
+.place-pin::after { /* 꼬리 */
+  content: ''; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);
+  border: 5px solid transparent; border-bottom: 0; border-top: 6px solid var(--pc, #475569);
+}
+.place-ico { display: inline-grid; place-items: center; }
+.place-ico svg { width: 12px; height: 12px; }
+.place-ico b { font-size: 11px; font-weight: 900; }
+.place-label { font-weight: 700; }
+.place-pin em { /* 아이콘만 있는 시설: 마우스 올리면 이름 (흰 말풍선) */
+  display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-style: normal; font-size: 12px; font-weight: 700; color: var(--ink);
+  background: #fff; border: 1px solid #d9dde5; padding: 4px 8px; border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+/* 겹친 마커: 마우스를 올린 것이 맨 앞으로 (벡터 지도. 카카오는 JS 로 zIndex 변경) */
+.maplibregl-marker:hover { z-index: 30 !important; }
+.place-pin:hover { z-index: 5; }
+.place-pin:hover em { display: block; }
+
+/* ---------- 지도 위 컨트롤 ---------- */
+/* 오른쪽 세로 버튼 (네이버 지도 스타일 — 버튼마다 따로) */
+.map-rail {
+  position: absolute; top: 12px; right: 12px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.rail-wrap { position: relative; }
+/* 확대/축소 버튼: map-rail 과 같은 오른쪽 선(right 12px · 너비 38px)에 맞춤 */
+.map-zoom {
+  position: absolute; bottom: 12px; right: 12px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.map-zoom .rail-btn { height: 34px; font-size: 18px; font-weight: 600; line-height: 1; }
+/* Leaflet 확대 버튼도 같은 선에 */
+.leaflet-bottom.leaflet-right .leaflet-control-zoom { margin: 0 12px 12px 0; }
+.rail-btn {
+  position: relative; width: 38px; height: 30px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
+  font: inherit; font-size: 11px; font-weight: 700; letter-spacing: -0.04em; color: var(--ink-2); cursor: pointer;
+}
+.rail-btn:hover { background: var(--bg); }
+.rail-btn.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.rail-count {
+  position: absolute; top: -5px; left: -5px; min-width: 14px; height: 14px; padding: 0 3px;
+  border-radius: 99px; background: var(--accent); color: #fff; font-size: 9px; line-height: 14px;
+}
+/* 편의시설 패널: 버튼 왼쪽에 펼침 */
+.rail-wrap .mc-panel {
+  position: absolute; top: 0; right: calc(100% + 8px); width: 300px;
+}
+.mc-close {
+  width: 28px; height: 28px; border: 0; background: none; border-radius: 8px;
+  font-size: 20px; line-height: 1; color: var(--muted); cursor: pointer;
+}
+.mc-close:hover { background: var(--bg); }
+.mc-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid transparent; background: transparent; padding: 6px 10px; border-radius: 8px;
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--ink-2); cursor: pointer; white-space: nowrap;
+}
+.mc-chip:hover { background: var(--bg); }
+.mc-chip.on { background: var(--primary-soft, #e8f0ff); color: var(--primary); border-color: var(--primary); }
+.mc-panel {
+  background: #fff; border-radius: 12px; padding: 12px; max-width: 460px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.18);
+}
+.mc-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
+.mc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mc-chips .mc-chip { border-color: var(--line); }
+.mc-chips .mc-chip.on { border-color: var(--primary); }
+.mc-link { margin-top: 10px; padding: 0; border: 0; background: none; color: var(--primary); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.mc-status {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000;
+  background: rgba(17, 24, 39, 0.82); color: #fff; font-size: 12px; font-weight: 600;
+  padding: 7px 12px; border-radius: 99px; white-space: nowrap; pointer-events: none;
+}
+
+/* 안내 문구: 아래 가운데 (오른쪽 아래는 확대/축소 버튼) */
+.map-main .map-hint { top: auto; bottom: 16px; left: 50%; right: auto; transform: translateX(-50%); }
+.map-hint .hint-touch { display: none; }
+@media (hover: none) {
+  .map-hint .hint-mouse { display: none; }
+  .map-hint .hint-touch { display: inline; }
+}
+/* 좁은 화면(지도가 낮음)
+   - 확대/축소는 세로(+ 위, − 아래) 그대로. 겹치지 않게 지도 최소 높이를 index.css 에서 310px 로
+   - 안내 문구: 위쪽 왼쪽 ~ 세로 버튼 앞까지 (아래 왼쪽의 카카오 로고·축척을 가리지 않게), 넘치면 줄바꿈 */
+@media (max-width: 1000px) {
+  .map-main .map-hint {
+    top: 12px; bottom: auto; left: 12px; right: 62px; transform: none; width: auto;
+    white-space: normal; text-align: center; line-height: 1.4; border-radius: 14px;
+  }
+}
+
+/* 확대/축소 버튼을 오른쪽 아래로 (오른쪽 위는 세로 버튼) */
+.map-main .maplibregl-ctrl-bottom-right { margin-bottom: 8px; }
+
+/* 좁아진 지도 사이드바(320px)에 맞게 필터 칩을 작게 */
+.map-side .filter { padding: 14px; gap: 12px; }
+.map-side .chips { gap: 4px; }
+.map-side .chip { padding: 5px 9px; font-size: 12px; }
+
+/* ---------- 사이드바 필터 접기 ---------- */
+.filter-fold { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.22s ease; flex-shrink: 0; }
+.filter-fold.closed { grid-template-rows: 0fr; }
+.filter-fold-body { min-height: 0; overflow: hidden; }
+.filter-fold-bar {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line);
+  background: var(--paper); font: inherit; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer;
+}
+.filter-fold-bar:hover { color: var(--primary); background: var(--bg); }
+.filter-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-weight: 600; }
+.filter-summary b { color: var(--primary); margin-right: 4px; }
+.filter-fold-arrow { font-size: 10px; }
+
+/* 많이 축소했을 때: 시설 아이콘을 작게, 역 이름 숨김 (마우스 올리면 이름) */
+.zoom-far .place-pin { transform: scale(0.8); transform-origin: 50% 130%; }
+.leaflet-marker-icon.place-anchor .place-pin { transform-origin: 50% 100%; }
+.zoom-far .place-label { display: none; } /* 많이 축소하면 이름 숨김 (마우스 올리면 표시) */
+.zoom-far .leaflet-marker-icon.place-anchor .place-pin { transform: translate(-50%, calc(-100% - 6px)) scale(0.8); }
+
+/* 편의시설 선택 창의 작은 엠블럼 (지도 표시와 같은 모양) */
+.mc-emblem {
+  display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 4px;
+  background: var(--pc); color: #fff; line-height: 1; flex-shrink: 0;
+}
+.mc-emblem svg { width: 11px; height: 11px; }
+.mc-emblem b { font-size: 9px; font-weight: 900; letter-spacing: -0.06em; }
+/* 많이 축소했을 때 학교는 이름이 곧 표시라 숨기지 않음 */
+.zoom-far .place-school .place-label { display: inline; }
+
+/* ---------- 왼쪽 사이드바 접기 ---------- */
+.map-page { transition: grid-template-columns 0.2s ease; }
+.map-page.side-closed { grid-template-columns: 0 1fr; }
+.map-page.side-closed .map-side { overflow: hidden; border-right: 0; }
+.side-toggle {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 1001;
+  width: 22px; height: 56px; padding: 0; border: 1px solid var(--line); border-left: 0;
+  border-radius: 0 8px 8px 0; background: #fff; box-shadow: 2px 0 6px rgba(15, 23, 42, 0.12);
+  font-size: 20px; line-height: 1; color: var(--ink-2); cursor: pointer;
+}
+.side-toggle:hover { color: var(--primary); }
+
+/* 웨일 브라우저 대응: 지도 타일(img)을 끌면 웨일의 '슈퍼 드래그'(이미지 끌어서 열기)·텍스트 선택이
+   먼저 동작해 지도 드래그가 막힘 → 지도 안에서는 기본 드래그/선택을 끔 */
+.map, .map * { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
+.map { touch-action: none; }
+.map img { -webkit-user-drag: none; }
