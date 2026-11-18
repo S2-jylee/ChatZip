@@ -124,12 +124,16 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
   const [boundary, setBoundary] = useState(null);
   const detailId = searchParams.get('detail');
 
-  // 모바일 상세 = 아래쪽 시트: 위로 스와이프 → 전체 화면, 맨 위에서 빠르게 아래로 → 원래대로(지도 보임)
+  // 모바일 목록·상세 = 아래쪽 시트: 위로 스와이프 → 전체 화면, 맨 위에서 빠르게 아래로 → 원래대로(지도 보임)
   const [sheetFull, setSheetFull] = useState(false);
   const sideRef = useRef(null);
   const swipe = useRef(null);
   useEffect(() => { setSheetFull(false); }, [detailId]);
-  const sheetOn = () => detailId && window.matchMedia('(max-width: 1000px)').matches;
+  // 시트를 펼치면 지도 높이가 0 → 그때 바뀐 지도 영역은 무시 (목록이 '영역 안 0건'이 되지 않게)
+  const sheetFullRef = useRef(false);
+  sheetFullRef.current = sheetFull;
+  const onBounds = (b) => { if (!sheetFullRef.current) setBounds(b); };
+  const sheetOn = () => window.matchMedia('(max-width: 1000px)').matches;
   const scrollerTop = () => (sideRef.current?.querySelector('.listing-side') ?? sideRef.current)?.scrollTop ?? 0;
   const onSheetTouchStart = (e) => {
     if (!sheetOn() || e.touches.length !== 1) { swipe.current = null; return; }
@@ -224,19 +228,17 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
   const viewedCount = apartments.filter((a) => viewedIds.has(a.aptId)).length;
 
   return (
-    <div className={`map-page${sideOpen ? '' : ' side-closed'}${detailId ? ' has-detail' : ''}${detailId && sheetFull ? ' sheet-full' : ''}`}>
+    <div className={`map-page${sideOpen ? '' : ' side-closed'}${detailId ? ' has-detail' : ''}${sheetFull ? ' sheet-full' : ''}`}>
       <aside className="map-side" ref={sideRef} onTouchStart={onSheetTouchStart} onTouchEnd={onSheetTouchEnd}>
-        {/* 모바일 상세 시트 손잡이: 눌러도 펼치기/접기 */}
-        {detailId && (
-          <button
-            type="button"
-            className="sheet-handle"
-            onClick={() => setSheetFull((v) => !v)}
-            aria-label={sheetFull ? '상세 접고 지도 보기' : '상세 전체 화면으로 보기'}
-          >
-            <span aria-hidden="true" />
-          </button>
-        )}
+        {/* 모바일 목록·상세 시트 손잡이: 눌러도 펼치기/접기 */}
+        <button
+          type="button"
+          className="sheet-handle"
+          onClick={() => setSheetFull((v) => !v)}
+          aria-label={sheetFull ? '접고 지도 보기' : '전체 화면으로 보기'}
+        >
+          <span aria-hidden="true" />
+        </button>
         {/* 상세 보기 중엔 필터·목록을 숨기고(스크롤 위치 유지) 그 자리에 상세 표시 */}
         {detailId && <ListingModal key={detailId} id={detailId} variant="side" onClose={() => setDetail(null)} />}
         <div style={{ display: detailId ? 'none' : 'contents' }}>
@@ -308,7 +310,7 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
           boundary={boundary}
           onSelect={handleSelect}
           onHover={handleHover}
-          onBoundsChange={setBounds}
+          onBoundsChange={onBounds}
           mapType={mapType}
           places={places}
           viewedIds={viewedIds}
