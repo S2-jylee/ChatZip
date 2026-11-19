@@ -6,7 +6,11 @@ import '../components/CompareModal.css';
 import { Empty, ErrorBox, Loading } from '../components/Status';
 import { getFavorites, removeFavorite } from '../api/favorites';
 import { errorMessage, statusOf } from '../api/client';
-import { formatDate } from '../utils/format';
+import { predictPrice } from '../api/predict';
+import { formatDate, verdictOf } from '../utils/format';
+
+// AI 예상가는 매매가 기준 → 전세·월세 매물은 판정하지 않음
+const isSale = (apt) => !apt.dealType || apt.dealType === 'sale';
 
 export default function FavoritesPage() {
   const navigate = useNavigate();
@@ -43,6 +47,22 @@ export default function FavoritesPage() {
   }, [navigate]);
 
   useEffect(() => load(), [load]);
+
+  // 매물마다 AI 예상가를 받아 적정가 · 저평가 · 고평가 배지 (실패한 매물은 배지 없음)
+  const [aiKinds, setAiKinds] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    items.forEach(({ apartment: a }) => {
+      if (!isSale(a) || aiKinds[a.aptId]) return;
+      predictPrice(a)
+        .then((predicted) => {
+          const kind = verdictOf(a.price, predicted)?.kind;
+          if (!cancelled && kind) setAiKinds((m) => ({ ...m, [a.aptId]: kind }));
+        })
+        .catch(() => {});
+    });
+    return () => { cancelled = true; };
+  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (aptId, name) => {
     if (!window.confirm(`'${name}'을(를) 관심 매물에서 삭제할까요?`)) return;
@@ -82,6 +102,8 @@ export default function FavoritesPage() {
           <AptListItem
             key={favoriteId}
             apt={apartment}
+            variant="card"
+            aiKind={aiKinds[apartment.aptId]}
             active={on}
             leading={(
               <input

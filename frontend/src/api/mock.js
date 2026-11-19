@@ -92,6 +92,12 @@ const GU_STATIONS = {
   동작구: ['노량진역', '사당역', '상도역'], 광진구: ['건대입구역', '구의역', '군자역'], 노원구: ['노원역', '상계역', '공릉역'],
   은평구: ['연신내역', '불광역', '응암역'], 관악구: ['서울대입구역', '봉천역', '신림역'],
 };
+// 아파트·오피스텔·상가도 가까운 역 표시 — rand() 를 쓰면 기존 가짜 매물 값이 전부 바뀌므로 id 로 정함
+const stationById = (gu, aptId) => {
+  const st = GU_STATIONS[gu] ?? ['서울역'];
+  return { name: st[aptId % st.length], distanceM: 150 + ((aptId * 397) % 1350) };
+};
+APARTMENTS.forEach((a) => { a.nearestStation = stationById(a.gu, a.aptId); });
 const pick = (ranges, n) => { const [lo, hi] = ranges[n % ranges.length]; return lo + rand() * (hi - lo); };
 const RENT_TYPES = new Set(['villa', 'oneroom']);
 
@@ -133,7 +139,7 @@ for (const [type, t] of Object.entries(OTHER_TYPES)) {
         if (RENT_TYPES.has(type)) {
           const st = GU_STATIONS[gu] ?? ['서울역'];
           apt.nearestStation = { name: st[Math.floor(rand() * st.length)], distanceM: Math.round(150 + rand() * 1350) };
-        }
+        } else apt.nearestStation = stationById(gu, id);
         if (type === 'villa') {
           apt.landAreaM2 = +(area * (0.3 + rand() * 0.3)).toFixed(2); // 대지권 면적
           const v = rand();
@@ -352,4 +358,14 @@ export async function predict({ gu, area_m2, floor, built_year }) {
   const floorBonus = 1 + Math.min(floor, 20) * 0.004;
   // 같은 입력 → 같은 결과 (기획서 12.1 QA)
   return { predicted_price: Math.round((area_m2 * perM2 * (1.15 - age * 0.008) * floorBonus) / 10) * 10 };
+}
+
+// 실시간 인기 매물 (목업): 아파트 중 id 로 정한 가짜 조회 수 순
+export async function getPopular(limit = 5) {
+  await delay(200);
+  return APARTMENTS
+    .filter((a) => a.type === 'apt')
+    .map((a) => ({ ...a, viewCount: (a.aptId * 7919) % 1000 }))
+    .sort((x, y) => y.viewCount - x.viewCount)
+    .slice(0, limit);
 }

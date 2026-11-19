@@ -1,114 +1,159 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
-import QuickLinks from '../components/QuickLinks';
+import FavoriteButton from '../components/FavoriteButton';
 import { Loading } from '../components/Status';
-import { searchApartments } from '../api/apartments';
+import { getPopular, searchApartments } from '../api/apartments';
 import { DATA_SOURCE } from '../constants/regions';
-import { formatArea, formatDate, formatPrice, perPyeong, statsByGu, tierOf } from '../utils/format';
+import { formatDate, formatPrice, statsByGu } from '../utils/format';
+import { useDetailHref } from '../utils/detailLink';
+
+// 매물 사진: 서버가 imageUrl 을 주면 그것을, 없으면 예시 사진(public/images/apt, Unsplash 무료 라이선스)을 순위 순서대로 씀 (카드끼리 겹치지 않게)
+const SAMPLE_PHOTOS = 6;
+const photoOf = (apt, n) => apt.imageUrl || `${import.meta.env.BASE_URL}images/apt/apt${(n % SAMPLE_PHOTOS) + 1}.jpg`;
 
 export default function HomePage() {
+  const detailHref = useDetailHref();
   const [apartments, setApartments] = useState(null);
+  const [popular, setPopular] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     searchApartments({})
       .then((data) => { if (!cancelled) setApartments(data); })
       .catch(() => { if (!cancelled) setApartments([]); });
+    getPopular(5)
+      .then((data) => { if (!cancelled) setPopular(data); })
+      .catch(() => { if (!cancelled) setPopular([]); });
     return () => { cancelled = true; };
   }, []);
 
   const guStats = useMemo(() => statsByGu(apartments ?? []), [apartments]);
   const recent = useMemo(
-    () => [...(apartments ?? [])].sort((a, b) => String(b.dealDate).localeCompare(String(a.dealDate))).slice(0, 6),
+    () => [...(apartments ?? [])].sort((a, b) => String(b.dealDate).localeCompare(String(a.dealDate))).slice(0, 5),
     [apartments],
   );
   const maxAvg = guStats[0]?.avgPerPyeong ?? 1;
 
   return (
     <>
-      {/* ---------- 히어로: 가로로 넓은 검색 ---------- */}
+      {/* ---------- 히어로: 통합 검색 ---------- */}
       <section className="hero">
         <div className="container hero-wide">
           <div className="hero-copy">
             <span className="hero-badge">AI 부동산 매물 추천</span>
             <h1 className="hero-title">
-              첫 집 찾기, <span className="text-gradient">데이터로 확인하고</span> 고르세요
+              찾고, 비교하고, 한눈에 보는 <span className="text-gradient">Chat Zip</span>
             </h1>
-            <p className="hero-sub">실거래가 지도 검색 · 조건 맞춤 추천 · AI 적정가 비교를 ChatZip 한 곳에서</p>
+            <p className="hero-sub">실거래가, 시세, 조건 맞춤 추천까지 — 부동산 탐색을 더 쉽고 똑똑하게</p>
             <SearchBar />
-            <div className="hero-stats">
-              <div><strong>{apartments ? apartments.length.toLocaleString() : '—'}</strong><span>실거래 매물</span></div>
-              <div><strong>{guStats.length || '—'}</strong><span>서울 자치구</span></div>
-              <div><strong>±5%</strong><span>AI 적정가 판정</span></div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* ---------- 이용 방법 ---------- */}
-      <section className="container section">
-        <div className="section-head">
-          <span className="eyebrow">HOW IT WORKS</span>
-          <h2>찾고, 판단하고, 모으기</h2>
-        </div>
-        <QuickLinks />
-      </section>
-
-      {/* ---------- 구별 평균 시세 ---------- */}
-      <section className="section section-tinted">
-        <div className="container">
-          <div className="section-head">
-            <span className="eyebrow">MARKET</span>
-            <h2>구별 평균 평당가</h2>
-            <p className="muted">구를 누르면 해당 지역 매물을 지도에서 볼 수 있어요.</p>
-          </div>
-          {!apartments ? <Loading /> : (
-            <div className="gu-grid">
-              {guStats.map((s, i) => (
-                <Link key={s.gu} to={`/apartment?gu=${encodeURIComponent(s.gu)}`} className="gu-card">
-                  <div className="gu-card-top">
-                    <span className="gu-rank">{i + 1}</span>
-                    <strong>{s.gu}</strong>
-                    <span className="muted small">{s.count}건</span>
-                  </div>
-                  <p className="gu-price">평당 {formatPrice(s.avgPerPyeong)}</p>
-                  <div className="gu-bar"><div style={{ width: `${(s.avgPerPyeong / maxAvg) * 100}%` }} /></div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ---------- 최근 실거래 ---------- */}
+      {/* ---------- 실시간 인기 매물 TOP 5 ---------- */}
       <section className="container section">
         <div className="section-head row">
           <div>
-            <span className="eyebrow">RECENT DEALS</span>
-            <h2>최근 실거래</h2>
+            <span className="eyebrow">REAL-TIME PICKS</span>
+            <h2>실시간 인기 매물 TOP 5</h2>
+            <p className="muted">지금 가장 많이 보고 있는 매물을 확인해보세요.</p>
           </div>
-          <Link to="/apartment" className="btn btn-ghost btn-sm">전체 보기 →</Link>
+          <Link to="/apartment" className="btn btn-ghost btn-sm">전체 매물 보기 →</Link>
         </div>
-        {!apartments ? <Loading /> : (
-          <div className="card-grid">
-            {recent.map((apt) => (
-              <Link key={apt.aptId} to={`/apartments/${apt.aptId}`} className="apt-card">
-                <div className="apt-card-top">
-                  <span className={`tier-tag tier-${tierOf(apt.price)}`}>{apt.gu}</span>
-                  <span className="muted small">{formatDate(apt.dealDate)}</span>
-                </div>
-                <strong className="apt-card-name">{apt.name}</strong>
-                <span className="muted small">{formatArea(apt.areaM2)} · {apt.floor}층 · {apt.builtYear}년</span>
-                <div className="apt-card-bottom">
-                  <span className="apt-price">{formatPrice(apt.price)}</span>
-                  <span className="muted small">평당 {formatPrice(perPyeong(apt.price, apt.areaM2))}</span>
-                </div>
-              </Link>
+        {!popular ? <Loading /> : (
+          <ol className="pop-grid">
+            {popular.map((apt, i) => (
+              <li key={apt.aptId} className="pop-card">
+                <Link to={detailHref(apt.aptId)} className="pop-link">
+                  <div className="pop-thumb">
+                    <img src={photoOf(apt, i)} alt="" className="pop-art" loading="lazy" />
+                    <span className={`pop-rank${i === 0 ? ' first' : ''}`}>{i + 1}</span>
+                  </div>
+                  <div className="pop-body">
+                    <strong className="pop-name">{apt.name}</strong>
+                    <span className="muted small">서울 {apt.gu} {apt.dong} · 아파트</span>
+                    <span className="muted small">전용 {Math.round(apt.areaM2)}㎡ · {apt.floor}층</span>
+                    <div className="pop-bottom">
+                      <span className="pop-price">{formatPrice(apt.price)}</span>
+                      <span className="deal-chip">매매</span>
+                    </div>
+                  </div>
+                </Link>
+                <div className="pop-fav"><FavoriteButton aptId={apt.aptId} icon /></div>
+              </li>
             ))}
-          </div>
+          </ol>
         )}
-        <p className="muted small source">데이터 출처: {DATA_SOURCE}</p>
+      </section>
+
+      {/* ---------- 최근 실거래 TOP 5 | 구별 평균 평당가 (PC 좌우, 휴대폰 위아래) ---------- */}
+      <section className="section section-tinted">
+        <div className="container market-row">
+          <div className="market-col">
+            <div className="section-head row">
+              <div>
+                <span className="eyebrow">RECENT DEALS</span>
+                <h2>최근 실거래 TOP 5</h2>
+                <p className="muted">가장 최근에 거래된 주요 매물 시세를 확인하세요.</p>
+              </div>
+              <Link to="/apartment" className="btn btn-ghost btn-sm">전체 보기 →</Link>
+            </div>
+            {!apartments ? <Loading /> : (
+              <ol className="recent-list">
+                {recent.map((apt, i) => (
+                  <li key={apt.aptId}>
+                    <Link to={detailHref(apt.aptId)} className="recent-row">
+                      <span className="recent-rank">{i + 1}</span>
+                      <span className="recent-info">
+                        <strong>{apt.name}</strong>
+                        <span className="muted small">서울 {apt.gu} {apt.dong} · 전용 {Math.round(apt.areaM2)}㎡</span>
+                      </span>
+                      <span className="recent-date muted small">{formatDate(apt.dealDate)}</span>
+                      <span className="recent-price">{formatPrice(apt.price)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          <div className="market-col">
+            <div className="section-head">
+              <span className="eyebrow">MARKET</span>
+              <h2>구별 평균 평당가</h2>
+              <p className="muted">구를 누르면 해당 지역 매물을 지도에서 볼 수 있어요.</p>
+            </div>
+            {!apartments ? <Loading /> : (
+              <div className="gu-grid compact">
+                {guStats.map((s, i) => (
+                  <Link key={s.gu} to={`/apartment?gu=${encodeURIComponent(s.gu)}`} className="gu-card">
+                    <div className="gu-card-top">
+                      <span className="gu-rank">{i + 1}</span>
+                      <strong>{s.gu}</strong>
+                      <span className="muted small">{s.count}건</span>
+                    </div>
+                    <p className="gu-price">평당 {formatPrice(s.avgPerPyeong)}</p>
+                    <div className="gu-bar"><div style={{ width: `${(s.avgPerPyeong / maxAvg) * 100}%` }} /></div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <p className="container muted small source">데이터 출처: {DATA_SOURCE}</p>
+      </section>
+
+      {/* ---------- 아파트 비교 ---------- */}
+      <section className="container section">
+        <div className="compare-cta">
+          <span className="compare-cta-icon" aria-hidden="true">⚖️</span>
+          <div className="compare-cta-text">
+            <strong>아파트 비교하기</strong>
+            <span className="muted small">관심 매물 중 2~3개를 골라 실거래가, 평당가, 준공연도 등을 한눈에 비교해보세요.</span>
+          </div>
+          <Link to="/favorites" className="btn btn-primary btn-sm">비교하러 가기 →</Link>
+        </div>
       </section>
     </>
   );

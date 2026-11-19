@@ -253,8 +253,8 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
   position: relative; overflow: hidden; padding: 56px 0 64px;
   background:
     radial-gradient(900px 400px at 85% -10%, rgba(244, 123, 32, 0.18), transparent 60%),
-    radial-gradient(600px 300px at 0% 110%, rgba(27, 42, 65, 0.10), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    linear-gradient(180deg, #ffffff 0%, #faf8f4 100%);
+  border-bottom: 1px solid var(--line); /* 가로 전체에 고르게 경계 (한쪽만 진해지지 않게) */
 }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
 /* 홈: 지도 없이 가운데 정렬 + 가로로 넓은 검색창 */
@@ -327,6 +327,67 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .gu-bar div { height: 100%; background: linear-gradient(90deg, var(--tier-low), var(--primary)); border-radius: 99px; }
 
 /* ---------- 매물 카드 그리드 ---------- */
+/* 메인: 실시간 인기 매물 TOP 5 */
+.pop-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.pop-card { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: border-color 0.15s, transform 0.15s; }
+.pop-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.pop-link { display: block; text-decoration: none; color: inherit; }
+.pop-thumb { position: relative; }
+.pop-art { display: block; width: 100%; aspect-ratio: 16 / 10; }
+.pop-rank {
+  position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 8px;
+  display: grid; place-items: center; background: var(--paper); color: var(--navy); font-weight: 900; font-size: 13px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
+}
+.pop-rank.first { background: var(--accent); color: #fff; }
+.pop-fav { position: absolute; top: 6px; right: 6px; }
+.pop-body { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 14px; }
+.pop-name { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px; }
+.pop-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 8px; }
+.pop-price { font-size: 16px; font-weight: 900; color: var(--accent); white-space: nowrap; }
+.deal-chip { font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: var(--bg); color: var(--ink-2); }
+
+/* 메인: 최근 실거래 TOP 5 | 구별 평균 평당가 */
+.market-row { display: grid; grid-template-columns: 1fr 1.25fr; gap: 28px; align-items: start; }
+.market-col { min-width: 0; }
+.recent-list { list-style: none; margin: 0; padding: 6px 0; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+.recent-list li + li { border-top: 1px solid var(--line); }
+.recent-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; }
+.recent-row:hover { background: var(--bg); }
+.recent-rank {
+  flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+  background: var(--bg); color: var(--navy); font-weight: 900; font-size: 12px;
+}
+.recent-info { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.recent-info strong { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-date { white-space: nowrap; }
+.recent-price { font-weight: 900; color: var(--accent); white-space: nowrap; min-width: 96px; text-align: right; }
+.gu-grid.compact { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 8px; }
+.gu-grid.compact .gu-card { padding: 10px 12px; }
+.gu-grid.compact .gu-price { font-size: 13px; margin: 6px 0; }
+.gu-grid.compact .gu-card-top { font-size: 14px; }
+
+/* 메인: 아파트 비교 배너 */
+.compare-cta {
+  display: flex; align-items: center; gap: 16px; padding: 20px 24px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+}
+.compare-cta-icon { font-size: 28px; }
+.compare-cta-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.compare-cta-text strong { font-size: 17px; }
+
+@media (max-width: 1100px) {
+  .pop-grid { grid-template-columns: repeat(3, 1fr); }
+  .market-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .pop-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+  .pop-card { flex: 0 0 62%; scroll-snap-align: start; }
+  .recent-date { display: none; }
+  .compare-cta { flex-wrap: wrap; }
+  .compare-cta .btn { width: 100%; }
+}
+
 .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .apt-card {
   display: flex; flex-direction: column; gap: 6px; text-decoration: none;
@@ -363,6 +424,33 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .apt-price { font-size: 17px; font-weight: 900; color: var(--navy); letter-spacing: -0.01em; }
 .apt-date { font-size: 12px; color: var(--muted); }
 .apt-item-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding: 0 16px; }
+
+/* 관심매물 카드 (variant="card") */
+.apt-fav { border-radius: 12px; }
+.apt-fav .apt-item-link { padding: 18px 20px; }
+.apt-fav .apt-item-body { gap: 4px; }
+.apt-fav .apt-item-top { justify-content: flex-start; }
+.apt-fav .apt-name { font-size: 17px; font-weight: 800; }
+.apt-fav .apt-meta { font-size: 14px; }
+.apt-fav .apt-station { font-size: 13px; }
+.apt-fav .apt-item-bottom { justify-content: flex-start; gap: 10px; margin-top: 6px; }
+.apt-fav .apt-price { font-size: 19px; }
+.apt-fav .apt-date { font-size: 13px; }
+.apt-fav .apt-item-leading { padding-left: 18px; }
+.apt-fav .apt-price, .apt-fav .apt-date { white-space: nowrap; }
+@media (max-width: 600px) {
+  .apt-fav { position: relative; }
+  .apt-fav .apt-item-leading { padding-left: 14px; }
+  .apt-fav .apt-item-link { padding: 16px 14px 16px 12px; }
+  .apt-fav .apt-item-bottom { flex-wrap: wrap; row-gap: 0; }
+  .apt-fav .apt-meta { font-size: 13px; word-break: keep-all; }
+  .apt-fav .apt-item-actions { padding: 0 12px 0 0; }
+  .apt-fav .apt-item-actions .muted { display: none; } /* 저장일은 좁은 화면에서 생략 */
+}
+.ai-badge { font-size: 12px; font-weight: 800; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.ai-fair { background: #e7f8ee; color: var(--good); }
+.ai-low { background: #eceef2; color: var(--ink-2); }
+.ai-high { background: #fdecea; color: var(--danger); }
 
 /* ---------- 지도 공통 ---------- */
 .map-wrap { position: relative; background: #ece9e3; }
@@ -619,3 +707,16 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .apt-station { font-size: 12px; color: var(--ink-2); }
 .apt-station::before { content: '🚇 '; }
 .deal-tag { font-size: 11px; font-weight: 800; color: var(--accent); margin-right: 6px; }
+.hero-title .text-gradient { white-space: nowrap; }
+.hero-title { word-break: keep-all; }
+.pop-art { object-fit: cover; }
+
+/* 메인: 최근 실거래 · 구별 평균 평당가를 각각 패널로 구분 */
+.market-row { gap: 24px; align-items: stretch; }
+.market-col { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
+.market-col .section-head { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.market-col .recent-list { border: 0; padding: 0; border-radius: 0; }
+.market-col .recent-row { padding: 12px 4px; }
+.market-col .gu-card { background: var(--bg); border-color: transparent; }
+.market-col .gu-card:hover { border-color: var(--primary); }
+@media (max-width: 600px) { .market-col { padding: 18px 16px; } }

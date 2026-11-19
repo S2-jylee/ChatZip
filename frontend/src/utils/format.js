@@ -30,6 +30,19 @@ export function priceGapPercent(actual, predicted) {
   return ((actual - predicted) / predicted) * 100;
 }
 
+/** 카드용 짧은 가격: 135000 → "13억 5,000", 90000 → "9억", 8500 → "8,500만" (단위 만원) */
+export function formatPriceCompact(manwon) {
+  if (manwon === null || manwon === undefined || Number.isNaN(Number(manwon))) return '—';
+  const value = Math.round(Number(manwon));
+  const eok = Math.floor(value / 10000);
+  const rest = value % 10000;
+  if (eok === 0) return `${rest.toLocaleString('ko-KR')}만`;
+  return rest === 0 ? `${eok}억` : `${eok}억 ${rest.toLocaleString('ko-KR')}`;
+}
+
+/** 목록 배지용 AI 판정: 적정가(±5%) · 저평가 · 고평가 */
+export const AI_BADGE = { fair: 'AI 적정가', low: 'AI 저평가', high: 'AI 고평가' };
+
 /** 예상가 대비 판정: ±5% 이내 적정 */
 export function verdictOf(actual, predicted) {
   const gap = priceGapPercent(actual, predicted);

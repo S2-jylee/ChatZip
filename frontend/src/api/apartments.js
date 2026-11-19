@@ -69,3 +69,14 @@ export async function getRecommendations(conditions = {}) {
   const { data } = await api.get('/api/recommend', { params: cleanParams(conditions) });
   return data;
 }
+
+/**
+ * GET /api/apartments/popular?limit=5  — 실시간 인기 매물 (메인 TOP 5)
+ * 인기 기준: 최근 7일 상세 조회 수 (조회 로그) — 팀 확정 필요
+ * 응답: Apartment[] + viewCount (많은 순)
+ */
+export async function getPopular(limit = 5) {
+  if (USE_MOCK) return mock.getPopular(limit);
+  const { data } = await api.get('/api/apartments/popular', { params: { limit } });
+  return data;
+}
