@@ -7,10 +7,8 @@ import { getPopular, searchApartments } from '../api/apartments';
 import { DATA_SOURCE } from '../constants/regions';
 import { formatDate, formatPrice, statsByGu } from '../utils/format';
 import { useDetailHref } from '../utils/detailLink';
+import { photoOf } from '../utils/photo';
 
-// 매물 사진: 서버가 imageUrl 을 주면 그것을, 없으면 예시 사진(public/images/apt, Unsplash 무료 라이선스)을 순위 순서대로 씀 (카드끼리 겹치지 않게)
-const SAMPLE_PHOTOS = 6;
-const photoOf = (apt, n) => apt.imageUrl || `${import.meta.env.BASE_URL}images/apt/apt${(n % SAMPLE_PHOTOS) + 1}.jpg`;
 
 export default function HomePage() {
   const detailHref = useDetailHref();
@@ -55,11 +53,10 @@ export default function HomePage() {
       <section className="container section">
         <div className="section-head row">
           <div>
-            <span className="eyebrow">REAL-TIME PICKS</span>
             <h2>실시간 인기 매물 TOP 5</h2>
             <p className="muted">지금 가장 많이 보고 있는 매물을 확인해보세요.</p>
           </div>
-          <Link to="/apartment" className="btn btn-ghost btn-sm">전체 매물 보기 →</Link>
+          <Link to="/search" className="btn btn-ghost btn-sm">전체 매물 보기 →</Link>
         </div>
         {!popular ? <Loading /> : (
           <ol className="pop-grid">
@@ -93,11 +90,10 @@ export default function HomePage() {
           <div className="market-col">
             <div className="section-head row">
               <div>
-                <span className="eyebrow">RECENT DEALS</span>
                 <h2>최근 실거래 TOP 5</h2>
                 <p className="muted">가장 최근에 거래된 주요 매물 시세를 확인하세요.</p>
               </div>
-              <Link to="/apartment" className="btn btn-ghost btn-sm">전체 보기 →</Link>
+              <Link to="/search" className="btn btn-ghost btn-sm">전체 보기 →</Link>
             </div>
             {!apartments ? <Loading /> : (
               <ol className="recent-list">
@@ -120,14 +116,13 @@ export default function HomePage() {
 
           <div className="market-col">
             <div className="section-head">
-              <span className="eyebrow">MARKET</span>
               <h2>구별 평균 평당가</h2>
-              <p className="muted">구를 누르면 해당 지역 매물을 지도에서 볼 수 있어요.</p>
+              <p className="muted">구를 누르면 지역별분석에서 자세한 시세를 볼 수 있어요.</p>
             </div>
             {!apartments ? <Loading /> : (
               <div className="gu-grid compact">
                 {guStats.map((s, i) => (
-                  <Link key={s.gu} to={`/apartment?gu=${encodeURIComponent(s.gu)}`} className="gu-card">
+                  <Link key={s.gu} to={`/analysis?gu=${encodeURIComponent(s.gu)}`} className="gu-card">
                     <div className="gu-card-top">
                       <span className="gu-rank">{i + 1}</span>
                       <strong>{s.gu}</strong>

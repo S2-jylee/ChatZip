@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { addFavorite, getFavorites, removeFavorite } from '../api/favorites';
 import { errorMessage, statusOf } from '../api/client';
 
 /** 관심 매물 저장/해제 토글. 비로그인이면 로그인 페이지로 보냄. compact = 지도 미리보기용 작은 버튼 */
 export default function FavoriteButton({ aptId, compact = false, icon = false }) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { user, openAuth } = useAuth();
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -22,7 +19,10 @@ export default function FavoriteButton({ aptId, compact = false, icon = false })
     return () => { cancelled = true; };
   }, [user, aptId]);
 
-  const goLogin = () => navigate('/login', { state: { from: location.pathname + location.search } });
+  // 비로그인 → 로그인 모달, 로그인되면 바로 저장까지 이어서
+  const goLogin = () => openAuth('login', {
+    onSuccess: () => addFavorite(aptId).then(() => setSaved(true)).catch((err) => { if (statusOf(err) === 409) setSaved(true); }),
+  });
 
   const toggle = async () => {
     if (!user) { goLogin(); return; }

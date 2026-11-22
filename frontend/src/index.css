@@ -97,7 +97,8 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 /* ---------- 헤더 ---------- */
 .header {
   position: sticky; top: 0; z-index: 1500;
-  background: var(--navy); border-bottom: 1px solid var(--navy-deep);
+  /* 아래 선은 border 대신 그림자로 — border 1px 이 헤더 높이에 더해져 지도 화면(100vh - 헤더)에 1px 스크롤이 생겼음 */
+  background: var(--navy); box-shadow: 0 1px 0 var(--navy-deep);
 }
 .header-inner {
   max-width: 1200px; margin: 0 auto; padding: 0 24px; height: var(--header-h);
@@ -113,6 +114,8 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 }
 .logo-accent { color: var(--accent); }
 /* 직방 스타일 메뉴: 굵은 글자, 선택된 메뉴는 색만 바뀜 */
+.nav-wrap { flex: 1; min-width: 0; display: flex; }
+.nav-arrow { display: none; }
 .nav { display: flex; gap: 4px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav-link {
@@ -122,6 +125,11 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .nav-link:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
 .nav-link.active { color: var(--accent); }
 .header-auth { display: flex; align-items: center; gap: 8px; }
+.login-icon {
+  width: 40px; height: 40px; display: grid; place-items: center; padding: 0;
+  border: 0; border-radius: 10px; background: transparent; color: #fff; cursor: pointer;
+}
+.login-icon:hover { background: rgba(255, 255, 255, 0.1); }
 .header-user { font-size: 14px; margin-right: 4px; color: rgba(255, 255, 255, 0.8); }
 .header-user b { color: #fff; }
 .header .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
@@ -157,6 +165,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 }
 .menu-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
 .menu-link.active { color: var(--accent); }
+.menu-link small { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.5); }
 .menu-logout { margin-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.6); font-size: 14px; }
 
 /* ---------- 버튼 ---------- */
@@ -509,11 +518,14 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 /* ---------- 지도 페이지 ---------- */
 .sheet-handle { display: none; } /* 모바일 상세 시트 손잡이 — 1000px 이하에서만 보임 */
 /* 100dvh = 실제로 보이는 화면 높이 (태블릿·휴대폰은 100vh 가 주소창·툴바 뒤까지 포함해 지도 아래쪽 확대 버튼이 가려짐) */
+/* 지도 화면: 앱 전체를 화면 높이에 고정하고 남은 높이를 지도가 채움 (calc(100vh - 헤더) 는 헤더 선 · 브라우저 확대 배율에 따라 1px 넘쳐 스크롤이 생김) */
+.app:has(.map-page) { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+.main:has(.map-page) { min-height: 0; }
 .map-page {
   display: grid; grid-template-columns: 370px 1fr;
-  height: calc(100vh - var(--header-h)); height: calc(100dvh - var(--header-h)); min-height: 480px;
+  flex: 1; min-height: 0;
 }
-.map-side { display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--bg); min-height: 0; }
+.map-side { display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--paper); min-height: 0; }
 .filter { display: flex; flex-direction: column; gap: 14px; padding: 18px; background: var(--paper); border-bottom: 1px solid var(--line); }
 .filter-group { display: flex; flex-direction: column; gap: 8px; }
 .filter-label { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 0.04em; }
@@ -528,7 +540,11 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .range input { padding: 7px 10px; font-size: 13px; }
 .range span { color: var(--muted); }
 .filter-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.map-side-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 6px; }
+.map-side-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px 6px; }
+.msh-info { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.msh-unit { margin-left: 3px; font-size: 14px; font-weight: 700; color: var(--ink-2); }
+.msh-meta { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.map-side-head .select { flex: none; }
 .count { font-size: 22px; font-weight: 900; color: var(--primary); }
 .toggle { display: flex; align-items: center; gap: 8px; padding: 0 18px 10px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
 .toggle input { accent-color: var(--primary); width: 16px; height: 16px; }
@@ -636,12 +652,9 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
   .card-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-title { font-size: 38px; }
   .hero-map { height: 320px; }
-  /* 모바일 지도 페이지: 화면 높이에 맞춰 지도는 위에 고정, 아래 목록 영역만 스크롤 */
-  .app:has(.map-page) { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
-  .main:has(.map-page) { min-height: 0; }
+  /* 모바일 지도 페이지: 지도는 위에 고정, 아래 목록 영역만 스크롤 */
   .map-page {
-    flex: 1; height: auto; min-height: 0;
-    grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(310px, 42vh) minmax(0, 1fr); /* 310px: 세로 버튼 6개(212) + 확대/축소 세로(84) 가 겹치지 않는 최소 높이 */
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(350px, 44vh) minmax(0, 1fr); /* 350px: 세로 버튼 최대 7개(원룸, 260) + 확대/축소(84) 가 겹치지 않는 최소 높이 */
   }
   .map-page.side-closed { grid-template-columns: 1fr; }
   .map-main { order: -1; border-bottom: 1px solid var(--line); }
@@ -666,23 +679,32 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
   .legend { display: none; }
 }
 @media (max-width: 640px) {
-  .container { padding: 0 16px; }
+  .container { padding-left: 16px; padding-right: 16px; } /* 좌우만 — padding 단축형은 .section 위아래 여백까지 0 으로 지움 */
+  .section { padding-top: 28px; padding-bottom: 44px; }
   /* 모바일 헤더: 1줄 = 로고 + ☰(맞춤추천·관심매물·로그인)
                   2줄 = 매물 종류 알약 탭 (칸마다 테두리 → 경계가 분명, 넘치면 가로로 밀어서 봄) */
   .header-inner { flex-wrap: wrap; height: auto; padding: 0 12px; gap: 0; }
   .logo { height: 52px; font-size: 19px; }
   .logo-mark { width: 28px; height: 28px; }
-  .header-auth, .nav-link-extra { display: none; }
-  .menu-btn { display: grid; margin-left: auto; }
+  .header-auth { margin-left: auto; }
+  .header-auth .user-pill { display: none; } /* 로그인 후엔 ☰ 메뉴에 이름 · 마이페이지 */
+  .menu-btn { display: grid; }
+  /* 메뉴 줄: 좌우 스와이프 + 양 끝 ‹ › 버튼 (더 볼 메뉴가 있는 쪽만 보임) */
+  .nav-wrap { order: 3; flex: 1 0 100%; position: relative; margin: 0 -12px; min-width: 0; }
   .nav {
-    order: 3; flex: 1 0 100%; gap: 6px; margin: 0 -12px; padding: 0 36px 10px 12px; /* 오른쪽 여백: 흐린 끝에 마지막 탭이 안 가려지게 */
-    scroll-padding: 0 12px;
+    gap: 6px; padding: 0 12px 10px;
+    scroll-padding: 0 40px;
     overflow-x: auto; touch-action: pan-x; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain;
     cursor: grab; user-select: none; -webkit-user-select: none;
-    /* 오른쪽 끝을 흐리게 → 더 있다는 표시 */
-    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
-    mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
   }
+  .nav-arrow {
+    position: absolute; top: 0; bottom: 10px; z-index: 1; width: 40px; display: grid; place-items: center;
+    border: 0; padding: 0; color: #fff; cursor: pointer;
+  }
+  .nav-arrow[hidden] { display: none; }
+  .nav-arrow.left { left: 0; background: linear-gradient(90deg, var(--navy) 60%, transparent); justify-items: start; padding-left: 8px; }
+  .nav-arrow.right { right: 0; background: linear-gradient(270deg, var(--navy) 60%, transparent); justify-items: end; padding-right: 8px; }
+  .nav-arrow:active { opacity: 0.7; }
   .nav-link {
     flex: none; padding: 6px 14px; font-size: 14px; border-radius: 99px;
     border: 1px solid rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.86);
@@ -696,11 +718,30 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 }
 
 /* ---- 빌라·원룸: 거래 종류 탭 · 역세권 · 신축/역 표시 ---- */
-.map-side .deal-tabs { margin: 10px 18px 0; flex: none; }
-.deal-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; background: var(--primary-soft); border-radius: var(--radius-sm); }
-.deal-tab { border: 0; background: transparent; padding: 8px 0; border-radius: 8px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; }
+/* 거래 종류(매매 · 전세 · 월세): 지역별분석 순위 기준과 같은 세그먼트 — 회색 틀 안에서 선택된 칸만 흰색 */
+.map-side .deal-tabs { margin: 0 14px 12px; flex: none; } /* 위(검색창) · 아래(필터 첫 제목) 간격 둘 다 12px */
+.deal-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; /* 탭 개수(2~3개)만큼 똑같이 나눔 */ gap: 4px; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
+.deal-tab {
+  padding: 8px 0; border: 0; border-radius: 6px; background: none;
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer;
+}
 .deal-tab:hover { color: var(--ink); }
-.deal-tab.on { background: var(--paper); color: var(--navy); box-shadow: var(--shadow-sm); }
+.deal-tab.on { background: var(--paper); color: var(--navy); font-weight: 800; box-shadow: var(--shadow-sm); }
+
+/* 지도 검색창 (종류 탭 아래 흰 띠 안) */
+.map-top { flex: none; background: var(--paper); padding: 12px 14px; }
+.map-search {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  padding: 0 12px 0 14px; height: 46px;
+  background: #f1f2f4; border: 1px solid transparent; border-radius: 12px; color: var(--muted);
+}
+.map-search:focus-within { background: var(--paper); border-color: var(--navy); color: var(--navy); }
+.map-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); outline: none; }
+.map-search input::-webkit-search-cancel-button { display: none; }
+.map-search-clear {
+  width: 22px; height: 22px; display: grid; place-items: center; flex: none; padding: 0;
+  border: 0; border-radius: 50%; background: var(--line-strong); color: #fff; font-size: 15px; line-height: 1; cursor: pointer;
+}
 .filter-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
 .filter-check input { accent-color: var(--primary); width: 16px; height: 16px; }
 .new-badge { font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 99px; background: #e7f8ee; color: var(--good); white-space: nowrap; }
@@ -720,3 +761,120 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .market-col .gu-card { background: var(--bg); border-color: transparent; }
 .market-col .gu-card:hover { border-color: var(--primary); }
 @media (max-width: 600px) { .market-col { padding: 18px 16px; } }
+
+/* 헤더: 로그인 시 이름 알약 → 마이페이지 */
+.user-pill {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 14px 4px 4px;
+  border: 1.5px solid var(--accent); border-radius: 99px; text-decoration: none;
+  color: rgba(255, 255, 255, 0.86); font-size: 15px;
+}
+.user-pill b { color: #fff; }
+.user-pill:hover, .user-pill.active { background: rgba(244, 123, 32, 0.12); }
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: #fff; font-weight: 900; font-size: 14px;
+}
+
+/* ---------- 매물찾기 탭 · 정렬 · 페이지 ---------- */
+.page-tabs { display: flex; gap: 6px; margin: -8px 0 20px; border-bottom: 1px solid var(--line); }
+.page-tab { border: 0; background: none; padding: 10px 14px; font: inherit; font-size: 15px; font-weight: 800; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.page-tab:hover { color: var(--ink); }
+.page-tab.on { color: var(--navy); border-bottom-color: var(--accent); }
+.search-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.search-head .list-title b { color: var(--accent); }
+.search-head .select { width: auto; padding: 8px 12px; font-size: 14px; }
+.pager { display: flex; justify-content: center; gap: 4px; margin-top: 20px; flex-wrap: wrap; }
+.pager button { min-width: 36px; height: 36px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; font: inherit; font-weight: 700; cursor: pointer; }
+.pager button:hover:not(:disabled) { border-color: var(--navy); }
+.pager button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.pager button:disabled { opacity: 0.4; cursor: default; }
+
+
+/* ---------- 지도: 매물 종류 탭 · 샘플 안내 ----------
+   필터 칩(알약)과 구분되게 "아이콘 + 글자" 5칸 고정 탭바. 선택 = 네이비 글자 + 아래 주황 막대 */
+.type-tabs {
+  /* 칸 너비를 똑같이 나누면 긴 글자(상가·사무실)만 양 끝에 붙어 보임 → 글자 사이 간격을 똑같이(양 끝 포함) */
+  display: flex; justify-content: space-evenly; flex: none; padding: 0 6px;
+  background: var(--paper); border-bottom: 1px solid var(--line);
+}
+.type-tab {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  flex: none; min-width: 0; padding: 12px 6px 10px; border: 0; border-radius: 8px 8px 0 0; background: none; cursor: pointer;
+  font: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted); letter-spacing: -0.03em; white-space: nowrap;
+}
+.type-tab span { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.type-tab:hover { color: var(--ink); background: var(--bg); }
+.type-tab.on { color: var(--navy); font-weight: 900; }
+.type-tab.on svg { color: var(--accent); }
+.type-tab.on::after {
+  content: ""; position: absolute; left: 4px; right: 4px; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--accent);
+}
+
+/* 지도 화면 PC: 지도가 화면 끝까지 차므로 헤더도 가운데 1200px 대신 전체 폭
+   → 로고는 왼쪽 목록 내용(14px)에, 사람 아이콘은 지도 오른쪽 버튼 줄(위성 · 지하철…) 가운데에 맞춤 */
+@media (min-width: 641px) {
+  .app:has(.map-page) .header-inner { max-width: none; padding: 0 13px 0 14px; /* 13px = 사람 아이콘(40px) 가운데가 지도 버튼(42px, 오른쪽 12px) 가운데와 같은 선 */ }
+}
+
+/* ---------- 지도 필터 바: 한 줄 버튼 + 펼침 창 ---------- */
+.fbar { position: relative; flex: none; padding: 0 14px 12px; border-bottom: 1px solid var(--line); background: var(--paper); z-index: 5; }
+/* 한 줄 고정 · 숨김 없음: 버튼이 줄 너비를 나눠 가짐 (값이 길면 말줄임 …) → 버튼 수와 상관없이 목록 시작 위치가 같음 */
+.fbar-row { display: flex; gap: 6px; }
+.fbar-reset { flex: none; }
+.fbar-btn {
+  flex: 1 1 auto; min-width: 0; justify-content: center;
+  display: inline-flex; align-items: center; gap: 2px; height: 34px; padding: 0 6px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--paper);
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--ink-2); cursor: pointer; white-space: nowrap;
+}
+.fbar-btn:hover { border-color: var(--navy); }
+.fbar-btn svg { color: var(--muted); transition: transform 0.15s; }
+.fbar-btn.on { border-color: var(--navy); color: var(--navy); background: var(--primary-soft); }
+.fbar-btn.on svg { color: var(--navy); }
+.fbar-btn.open { border-color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); }
+.fbar-btn span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.fbar-btn svg { flex: none; }
+.fbar-reset {
+  width: 34px; height: 34px; display: grid; place-items: center; padding: 0; margin-left: auto;
+  border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer;
+}
+.fbar-reset:hover { background: var(--bg); color: var(--ink); }
+/* 펼침 창: 목록 위에 겹쳐 뜸 */
+.fpop {
+  /* 필터 줄 아래 구분선(top: 100% = 선 위치)에 창 윗변을 딱 붙임 → 선이 창 테두리로 이어짐 */
+  position: absolute; top: 100%; left: 14px; right: 14px; z-index: 30;
+  display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 16px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 0 0 12px 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+.fpop-head { display: flex; align-items: center; justify-content: space-between; }
+.fpop-head strong { font-size: 15px; }
+.fpop-close { width: 28px; height: 28px; border: 0; border-radius: 8px; background: none; font-size: 20px; line-height: 1; color: var(--muted); cursor: pointer; }
+.fpop-close:hover { background: var(--bg); color: var(--ink); }
+.fpop-gu { max-height: 240px; overflow-y: auto; }
+.fpop-range { display: flex; align-items: center; gap: 6px; }
+.fpop-range input {
+  flex: 1; min-width: 0; padding: 8px 10px; font: inherit; font-size: 13px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--paper);
+}
+.fpop-range input:focus { outline: none; border-color: var(--navy); }
+.fpop-range span { color: var(--muted); }
+.fpop-range .btn { flex: none; }
+.fpop .form-error { margin: 0; }
+
+/* 상세 조건 버튼 · 창 */
+.fbar-detail { flex: 0 0 auto; }
+.fbar-badge {
+  min-width: 16px; height: 16px; padding: 0 4px; margin-left: 2px; border-radius: 99px;
+  background: var(--accent); color: #fff; font-size: 10px; line-height: 16px; text-align: center;
+}
+.fpop-detail { max-height: min(520px, calc(100vh - 300px)); }
+.fpop-groups { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; min-height: 0; margin: 0 -4px; padding: 0 4px; }
+.fpop-group { display: flex; flex-direction: column; gap: 8px; }
+.fpop-label { font-size: 13px; font-weight: 800; color: var(--ink); }
+.fpop-label small { margin-left: 4px; font-size: 11px; font-weight: 500; color: var(--muted); }
+.fpop-actions { display: flex; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.fpop-actions .btn-primary { flex: 1; }
+/* 목록 카드: 상세 정보 태그 */
+.apt-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.apt-tags span { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--bg); color: var(--ink-2); }

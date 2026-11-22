@@ -7,6 +7,7 @@ import { dataSourceOf, typeInfo } from '../constants/propertyTypes';
 import { formatArea, formatDate, formatPrice, perPyeong, verdictOf } from '../utils/format';
 import './detail/ListingModal.css';
 import './CompareModal.css';
+import { lockScroll } from '../utils/scrollLock';
 
 const THIS_YEAR = new Date().getFullYear();
 
@@ -22,10 +23,9 @@ export default function CompareModal({ apartments, onClose }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockScroll();
     ref.current?.focus();
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+    return () => { document.removeEventListener('keydown', onKey); unlock(); };
   }, [onClose]);
 
   // 각 매물의 AI 예상가

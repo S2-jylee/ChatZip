@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import AptListItem from '../components/AptListItem';
 import CompareModal from '../components/CompareModal';
 import '../components/CompareModal.css';
 import { Empty, ErrorBox, Loading } from '../components/Status';
 import { getFavorites, removeFavorite } from '../api/favorites';
 import { errorMessage, statusOf } from '../api/client';
-import { predictPrice } from '../api/predict';
-import { formatDate, verdictOf } from '../utils/format';
-
-// AI 예상가는 매매가 기준 → 전세·월세 매물은 판정하지 않음
-const isSale = (apt) => !apt.dealType || apt.dealType === 'sale';
+import { formatDate } from '../utils/format';
+import { useAiKinds } from '../utils/useAiKinds';
 
 export default function FavoritesPage() {
-  const navigate = useNavigate();
+  const { openAuth } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -39,30 +37,18 @@ export default function FavoritesPage() {
       .then((data) => { if (!cancelled) setItems(data); })
       .catch((err) => {
         if (cancelled) return;
-        if (statusOf(err) === 401) navigate('/login', { replace: true, state: { from: '/favorites' } });
+        if (statusOf(err) === 401) openAuth('login', { onSuccess: () => load() });
         else setError(errorMessage(err, '관심 매물을 불러오지 못했습니다.'));
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [navigate]);
+  }, [openAuth]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => load(), [load]);
 
-  // 매물마다 AI 예상가를 받아 적정가 · 저평가 · 고평가 배지 (실패한 매물은 배지 없음)
-  const [aiKinds, setAiKinds] = useState({});
-  useEffect(() => {
-    let cancelled = false;
-    items.forEach(({ apartment: a }) => {
-      if (!isSale(a) || aiKinds[a.aptId]) return;
-      predictPrice(a)
-        .then((predicted) => {
-          const kind = verdictOf(a.price, predicted)?.kind;
-          if (!cancelled && kind) setAiKinds((m) => ({ ...m, [a.aptId]: kind }));
-        })
-        .catch(() => {});
-    });
-    return () => { cancelled = true; };
-  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 매물마다 AI 적정가 · 저평가 · 고평가 배지
+  const aiApts = useMemo(() => items.map((f) => f.apartment), [items]);
+  const aiKinds = useAiKinds(aiApts);
 
   const handleDelete = async (aptId, name) => {
     if (!window.confirm(`'${name}'을(를) 관심 매물에서 삭제할까요?`)) return;
@@ -84,7 +70,7 @@ export default function FavoritesPage() {
   else if (!items.length) {
     content = (
       <Empty title="저장한 관심 매물이 없습니다">
-        <Link to="/apartment">지도에서 매물을 찾아보세요 →</Link>
+        <Link to="/search">매물찾기에서 찾아보세요 →</Link>
       </Empty>
     );
   } else {
@@ -154,7 +140,6 @@ export default function FavoritesPage() {
   return (
     <div className="container section narrow">
       <header className="page-head">
-        <span className="eyebrow">모으기</span>
         <h1>관심 매물 {!loading && !error && <small>{items.length}건</small>}</h1>
       </header>
       {content}

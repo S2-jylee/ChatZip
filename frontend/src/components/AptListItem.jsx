@@ -4,6 +4,21 @@ import {
 } from '../utils/format';
 import { useDetailHref } from '../utils/detailLink';
 import { useViewed } from '../utils/viewed';
+import { OPTION_LABEL } from '../constants/propertyTypes';
+
+// 층 표시: 0 = 반지하, 음수 = 지하
+const floorText = (f) => (f === 0 ? '반지하' : f < 0 ? `지하 ${-f}층` : `${f}층`);
+
+/** 상세 정보 태그 (등록 매물 정보): 구조 · 업종 · 관리비 · 권리금 · 옵션 — 최대 4개 */
+function detailTags(apt) {
+  const tags = [];
+  if (apt.subType) tags.push(apt.subType === 'office' ? '사무실' : '상가');
+  if (apt.structure) tags.push(OPTION_LABEL[`struct:${apt.structure}`]);
+  if (apt.type === 'store') tags.push(apt.rightsFee ? `권리금 ${apt.rightsFee.toLocaleString('ko-KR')}만` : '무권리');
+  if (apt.mgmtFee) tags.push(`관리비 ${apt.mgmtFee}만`);
+  (apt.options ?? []).filter((o) => o !== 'norights').forEach((o) => tags.push(OPTION_LABEL[`opts:${o}`]));
+  return tags.filter(Boolean).slice(0, 4);
+}
 
 /**
  * 매물 한 줄 — 지도 목록 · 추천 결과 · 관심 목록에서 공통 사용. 누르면 상세 모달
@@ -33,9 +48,12 @@ export default function AptListItem({ apt, rank, active, onHover, actions, leadi
             {apt.score !== undefined && <span className="badge">적합도 {apt.score}</span>}
           </div>
           <span className="apt-meta">
-            {apt.gu} {apt.dong} · {area} · {apt.floor}층 · {apt.builtYear}년
+            {apt.gu} {apt.dong} · {area} · {floorText(apt.floor)} · {apt.builtYear}년
           </span>
           {apt.nearestStation && <span className="apt-station">{stationText(apt.nearestStation)}</span>}
+          {!card && detailTags(apt).length > 0 && (
+            <span className="apt-tags">{detailTags(apt).map((t) => <span key={t}>{t}</span>)}</span>
+          )}
           <div className="apt-item-bottom">
             <span className="apt-price">
               {apt.dealType && <small className="deal-tag">{dealLabel(apt.dealType)}</small>}

@@ -152,6 +152,98 @@ for (const [type, t] of Object.entries(OTHER_TYPES)) {
   }
 }
 
+// 아파트 전세 · 월세 (국토부 아파트 전월세 실거래 형태) — 기존 가짜 매물 값이 바뀌지 않게 맨 뒤에 추가
+for (const dealType of ['jeonse', 'monthly']) {
+  for (const [gu, [lat, lng, perM2]] of Object.entries(GU_CENTERS)) {
+    for (let i = 0; i < 3; i += 1) {
+      const area = AREAS[Math.floor(rand() * AREAS.length)];
+      const builtYear = 1990 + Math.floor(rand() * 34);
+      const sale = area * perM2 * (1.15 - (2026 - builtYear) * 0.008);
+      const dong = `${gu.replace('구', '')}${i + 1}동`;
+      const apt = {
+        aptId: id, type: 'apt', dealType,
+        name: `${dong.replace(/\d동$/, '')} ${NAMES[Math.floor(rand() * NAMES.length)]}${i ? ` ${i + 1}차` : ''}`,
+        address: `서울특별시 ${gu} ${dong} ${100 + Math.floor(rand() * 900)}`,
+        gu, dong, areaM2: area, floor: 1 + Math.floor(rand() * 25), builtYear,
+        // 전세 = 매매가의 50~65% · 월세 = 보증금 + 월세 (만원)
+        price: dealType === 'jeonse'
+          ? Math.round((sale * (0.5 + rand() * 0.15)) / 100) * 100
+          : Math.round((3000 + rand() * 12000) / 100) * 100,
+        dealDate: `2026-${String(1 + Math.floor(rand() * 10)).padStart(2, '0')}-${String(1 + Math.floor(rand() * 27)).padStart(2, '0')}`,
+        lat: +(lat + (rand() - 0.5) * 0.03).toFixed(6),
+        lng: +(lng + (rand() - 0.5) * 0.03).toFixed(6),
+      };
+      if (dealType === 'monthly') apt.rent = Math.round(60 + rand() * 260);
+      apt.nearestStation = stationById(gu, id);
+      APARTMENTS.push(apt);
+      id += 1;
+    }
+  }
+}
+// 오피스텔 전세 · 월세, 상가 · 사무실 월세(보증금 + 월 임대료) — 기존 값이 바뀌지 않게 맨 뒤에 추가
+const RENT_MORE = {
+  officetel: { jeonse: [12000, 32000], deposit: [500, 5000], rent: [45, 140] },
+  store: { deposit: [1000, 20000], rent: [80, 900] },
+};
+for (const [type, r] of Object.entries(RENT_MORE)) {
+  const t = OTHER_TYPES[type];
+  for (const dealType of r.jeonse ? ['jeonse', 'monthly'] : ['monthly']) {
+    for (const [gu, [lat, lng]] of Object.entries(GU_CENTERS)) {
+      for (let i = 0; i < 3; i += 1) {
+        const span = (lo, hi) => lo + rand() * (hi - lo);
+        const area = t.areas[Math.floor(rand() * t.areas.length)];
+        const dong = `${gu.replace('구', '')}${i + 1}동`;
+        const apt = {
+          aptId: id, type, dealType,
+          name: `${dong.replace(/\d동$/, '')} ${t.names[Math.floor(rand() * t.names.length)]}${i ? ` ${i + 1}` : ''}`,
+          address: `서울특별시 ${gu} ${dong} ${100 + Math.floor(rand() * 900)}`,
+          gu, dong, areaM2: area, floor: 1 + Math.floor(rand() * t.maxFloor),
+          builtYear: t.from + Math.floor(rand() * (2025 - t.from)),
+          price: Math.round((dealType === 'jeonse' ? span(...r.jeonse) : span(...r.deposit)) / 100) * 100,
+          dealDate: `2026-${String(1 + Math.floor(rand() * 10)).padStart(2, '0')}-${String(1 + Math.floor(rand() * 27)).padStart(2, '0')}`,
+          lat: +(lat + (rand() - 0.5) * 0.03).toFixed(6),
+          lng: +(lng + (rand() - 0.5) * 0.03).toFixed(6),
+        };
+        if (dealType === 'monthly') apt.rent = Math.round(span(...r.rent));
+        apt.nearestStation = stationById(gu, id);
+        APARTMENTS.push(apt);
+        id += 1;
+      }
+    }
+  }
+}
+
+// 상세 필터용 정보 (구조 · 관리비 · 옵션 · 업종 · 권리금) — 실거래 자료엔 없고 중개사 등록 매물에 있는 값
+// rand() 를 쓰면 위 매물 값이 바뀌므로 id 로 정함
+const pickBy = (n, list) => list[n % list.length];
+APARTMENTS.forEach((a) => {
+  const h = (a.aptId * 2654435761) % 4294967296;
+  const bit = (k) => ((h >> k) & 1) === 1;
+  const opts = [];
+  if (bit(3)) opts.push('parking');
+  if (bit(5) || a.floor > 5) opts.push('elevator');
+  if (bit(7)) opts.push('pet');
+  if (a.dealType === 'jeonse' && !bit(9)) opts.push('loan');
+  if ((a.type === 'oneroom' || a.type === 'officetel') && bit(11)) opts.push('full');
+  if (a.type === 'oneroom') a.structure = pickBy(h, ['open', 'split', 'open', 'duplex']);
+  if (a.type === 'officetel') a.structure = pickBy(h, ['open', 'split', 'two', 'open', 'duplex']);
+  if (a.type === 'villa' && h % 9 === 0) a.floor = 0; // 반지하
+  if (a.type !== 'apt') a.mgmtFee = 3 + (h % 23); // 관리비 (만원/월)
+  if (a.type === 'store') {
+    a.subType = bit(2) ? 'office' : 'store';
+    if (h % 7 === 0) a.floor = -1; // 지하
+    a.bizTypes = a.subType === 'office' ? ['office'] : [pickBy(h, ['food', 'cafe', 'retail', 'academy', 'medical']), pickBy(h >> 4, ['cafe', 'retail', 'food'])];
+    a.rightsFee = a.subType === 'office' || bit(4) ? 0 : 1000 + (h % 40) * 250; // 권리금 (만원)
+    if (bit(6)) opts.push('corner');
+    if (bit(8)) opts.push('vacant');
+    if (!a.rightsFee) opts.push('norights');
+  }
+  a.options = opts;
+});
+
+// 매매 실거래만 쓰는 곳(인기 · 추천 · 통계 · 매물찾기)용
+const isAptSale = (a) => a.type === 'apt' && (a.dealType ?? 'sale') === 'sale';
+
 const delay = (ms = 250) => new Promise((r) => setTimeout(r, ms));
 const httpError = (status, message) => {
   const err = new Error(message);
@@ -166,11 +258,14 @@ const load = (key, fallback) => {
 const save = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* 무시 */ }
 };
-const users = load('mock.users', [{ userId: 1, loginId: 'test', password: 'test1234', name: '테스트', role: 'USER' }]);
+const users = load('mock.users', [{ userId: 1, loginId: 'test', password: 'test1234', name: '테스트', role: 'USER', email: 'test@chatzip.kr', createdAt: '2026-03-02' }]);
 let session = load('mock.session', null);
 let favorites = load('mock.favorites', []); // { favoriteId, userId, aptId, createdAt }
 
-const publicUser = (u) => ({ userId: u.userId, loginId: u.loginId, name: u.name, role: u.role });
+const publicUser = (u) => ({
+  userId: u.userId, loginId: u.loginId, name: u.name, role: u.role,
+  email: u.email ?? null, createdAt: u.createdAt ?? '2026-03-02', provider: u.provider ?? 'local',
+});
 const requireLogin = () => {
   if (!session) throw httpError(401, '로그인이 필요합니다.');
   return session;
@@ -180,7 +275,12 @@ const requireLogin = () => {
 export async function searchApartments(f) {
   await delay();
   const type = f.type || 'apt';
-  const deal = f.deal || (type === 'oneroom' ? 'monthly' : 'sale');
+  const deal = f.deal || (['oneroom', 'officetel', 'store'].includes(type) ? 'monthly' : 'sale');
+  const list = (v) => (v ? String(v).split(',') : []);
+  const floorOk = (a) => list(f.floor).length === 0 || list(f.floor).some((k) => ({
+    low: a.floor <= 5, mid: a.floor >= 6 && a.floor <= 15, high: a.floor >= 16,
+    semi: a.floor !== 0, ground: a.floor === 1, upper: a.floor >= 2, b1: a.floor < 0, 1: a.floor === 1, 2: a.floor >= 2,
+  }[k]));
   const walk = (a) => Math.ceil((a.nearestStation?.distanceM ?? Infinity) * 1.3 / 80);
   return APARTMENTS.filter((a) =>
     a.type === type
@@ -189,10 +289,19 @@ export async function searchApartments(f) {
     && (!f.maxRent || (a.rent ?? 0) <= Number(f.maxRent))
     && (!f.maxWalk || walk(a) <= Number(f.maxWalk))
     && (!f.gu || a.gu === f.gu)
+    && (!f.q || [a.name, a.address, a.gu, a.dong].some((x) => x?.includes(String(f.q).trim())))
     && (!f.minPrice || a.price >= Number(f.minPrice))
     && (!f.maxPrice || a.price <= Number(f.maxPrice))
     && (!f.minArea || a.areaM2 >= Number(f.minArea))
-    && (!f.maxArea || a.areaM2 <= Number(f.maxArea)));
+    && (!f.maxArea || a.areaM2 <= Number(f.maxArea))
+    // 상세 필터
+    && (!f.sub || a.subType === f.sub)
+    && (!f.struct || list(f.struct).includes(a.structure))
+    && floorOk(a)
+    && (!f.maxAge || 2026 - a.builtYear <= Number(f.maxAge))
+    && (!f.maxFee || (a.mgmtFee ?? 0) <= Number(f.maxFee))
+    && (!f.biz || list(f.biz).some((b) => a.bizTypes?.includes(b)))
+    && list(f.opts).every((o) => a.options?.includes(o)));
 }
 
 export async function getApartment(aptId) {
@@ -273,7 +382,7 @@ export async function getRecommendations(c) {
   await delay(400);
   const budget = Number(c.maxPrice) || Infinity;
   return APARTMENTS
-    .filter((a) => a.type === 'apt'
+    .filter((a) => isAptSale(a)
       && (!c.gu || a.gu === c.gu)
       && a.price <= budget
       && (!c.minArea || a.areaM2 >= Number(c.minArea))
@@ -306,10 +415,23 @@ export async function login(loginId, password) {
 export async function signup({ loginId, password, name }) {
   await delay();
   if (users.some((x) => x.loginId === loginId)) throw httpError(409, '이미 사용 중인 아이디입니다.');
-  const u = { userId: users.length + 1, loginId, password, name, role: 'USER' };
+  const u = { userId: users.length + 1, loginId, password, name, role: 'USER', createdAt: new Date().toISOString().slice(0, 10) };
   users.push(u);
   save('mock.users', users);
   return publicUser(u);
+}
+
+export async function kakaoLogin() {
+  await delay();
+  let u = users.find((x) => x.provider === 'kakao');
+  if (!u) {
+    u = { userId: users.length + 1, loginId: 'kakao_1', password: null, name: '카카오', role: 'USER', provider: 'kakao', email: 'kakao@example.com', createdAt: new Date().toISOString().slice(0, 10) };
+    users.push(u);
+    save('mock.users', users);
+  }
+  session = publicUser(u);
+  save('mock.session', session);
+  return session;
 }
 
 export async function logout() {
@@ -364,8 +486,92 @@ export async function predict({ gu, area_m2, floor, built_year }) {
 export async function getPopular(limit = 5) {
   await delay(200);
   return APARTMENTS
-    .filter((a) => a.type === 'apt')
+    .filter(isAptSale)
     .map((a) => ({ ...a, viewCount: (a.aptId * 7919) % 1000 }))
     .sort((x, y) => y.viewCount - x.viewCount)
     .slice(0, limit);
+}
+
+// ---- 마이페이지 (선호 조건 · 내 등록매물) ----
+const DEFAULT_PREFS = { type: 'apt', deal: 'sale', gus: ['마포구', '서대문구'], minPrice: 90000, maxPrice: 120000, minArea: 60, maxArea: 85, maxWalk: 10 };
+export async function getPreferences() {
+  await delay(150);
+  const { userId } = requireLogin();
+  return load(`mock.prefs.${userId}`, DEFAULT_PREFS);
+}
+export async function savePreferences(prefs) {
+  await delay(200);
+  const { userId } = requireLogin();
+  save(`mock.prefs.${userId}`, prefs);
+  return prefs;
+}
+export async function getMyListings() {
+  await delay(200);
+  requireLogin();
+  return [
+    { listingId: 101, name: '마포 래미안푸르지오', address: '서울 마포구 아현동 777', type: 'apt', areaM2: 84.9, floor: 12, dealType: 'sale', price: 164000, status: 'PUBLISHED', createdAt: '2026-11-02' },
+    { listingId: 102, name: '신촌 e편한세상', address: '서울 서대문구 북아현동 1001', type: 'apt', areaM2: 84.8, floor: 9, dealType: 'sale', price: 198000, status: 'PENDING', createdAt: '2026-11-15' },
+    { listingId: 103, name: 'DMC 파크뷰자이', address: '서울 서대문구 남가좌동 385', type: 'apt', areaM2: 59.8, floor: 11, dealType: 'sale', price: 142000, status: 'REJECTED', createdAt: '2026-11-10' },
+  ];
+}
+
+// ---- 지역별분석 (구별 통계) ----
+const PY = 3.3058;
+const ppy = (a) => a.price / (a.areaM2 / PY);
+const avg = (xs) => (xs.length ? Math.round(xs.reduce((s, x) => s + x, 0) / xs.length) : 0);
+const aptsOnly = () => APARTMENTS.filter(isAptSale);
+function guSummary(gu, list) {
+  const prices = list.map((a) => a.price);
+  return {
+    gu, count: list.length, avgPrice: avg(prices), avgPerPyeong: avg(list.map(ppy)),
+    minPrice: Math.min(...prices), maxPrice: Math.max(...prices),
+  };
+}
+export async function getGuStats() {
+  await delay(200);
+  const by = new Map();
+  aptsOnly().forEach((a) => by.set(a.gu, [...(by.get(a.gu) ?? []), a]));
+  return [...by].map(([gu, list]) => guSummary(gu, list)).sort((x, y) => y.avgPerPyeong - x.avgPerPyeong);
+}
+const AREA_BANDS = [['60㎡ 이하', 0, 60], ['60~85㎡', 60, 85], ['85~102㎡', 85, 102], ['102㎡ 초과', 102, Infinity]];
+const AGE_BANDS = [['5년 이내', 0, 5], ['6~10년', 6, 10], ['11~20년', 11, 20], ['20년 초과', 21, Infinity]];
+export async function getGuDetail(gu) {
+  await delay(250);
+  const all = aptsOnly();
+  const list = all.filter((a) => a.gu === gu);
+  if (!list.length) throw httpError(404, '해당 구의 거래가 없습니다.');
+  const ranking = (await getGuStats()).map((s) => s.gu);
+  const band = (rows, pick) => rows.map(([label, lo, hi]) => {
+    const xs = list.filter((a) => pick(a) >= lo && pick(a) <= hi);
+    return { label, count: xs.length, avgPrice: avg(xs.map((a) => a.price)), avgPerPyeong: avg(xs.map(ppy)) };
+  });
+  return {
+    ...guSummary(gu, list),
+    rank: ranking.indexOf(gu) + 1,
+    totalGu: ranking.length,
+    avgBuiltYear: avg(list.map((a) => a.builtYear)),
+    seoulAvgPerPyeong: avg(all.map(ppy)),
+    byArea: band(AREA_BANDS, (a) => a.areaM2),
+    byAge: band(AGE_BANDS, (a) => 2026 - a.builtYear),
+    recent: [...list].sort((x, y) => String(y.dealDate).localeCompare(String(x.dealDate))).slice(0, 5),
+  };
+}
+
+// ---- 매물찾기 (조건 검색 + 정렬 + 페이지) ----
+const SORTS = {
+  recent: (a, b) => String(b.dealDate).localeCompare(String(a.dealDate)),
+  priceAsc: (a, b) => a.price - b.price,
+  priceDesc: (a, b) => b.price - a.price,
+  ppyAsc: (a, b) => ppy(a) - ppy(b),
+  areaDesc: (a, b) => b.areaM2 - a.areaM2,
+};
+export async function searchPaged(f) {
+  const list = (await searchApartments({ ...f, type: 'apt', deal: 'sale' }))
+    .filter((a) => (!f.minBuiltYear || a.builtYear >= Number(f.minBuiltYear))
+      && (!f.q || a.name.includes(f.q) || a.dong.includes(f.q)))
+    .sort(SORTS[f.sort] ?? SORTS.recent);
+  const size = Number(f.size) || 10;
+  const totalPages = Math.max(1, Math.ceil(list.length / size));
+  const page = Math.min(Number(f.page) || 0, totalPages - 1);
+  return { content: list.slice(page * size, page * size + size), totalElements: list.length, totalPages, page, size };
 }

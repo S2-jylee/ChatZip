@@ -75,7 +75,7 @@ export default function DetailPage() {
     return (
       <div className="container section">
         <Empty title="존재하지 않는 매물입니다">
-          <Link to="/apartment">지도 검색으로 돌아가기</Link>
+          <Link to="/map">지도 검색으로 돌아가기</Link>
         </Empty>
       </div>
     );

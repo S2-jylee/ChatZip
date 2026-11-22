@@ -3,9 +3,10 @@ import { cleanParams } from '../utils/format';
 import * as mock from './mock';
 
 /**
- * GET /api/apartments?type=&deal=&gu=&minPrice=&maxPrice=&minRent=&maxRent=&minArea=&maxArea=&maxWalk=
+ * GET /api/apartments?type=&deal=&q=&gu=&minPrice=&maxPrice=&minRent=&maxRent=&minArea=&maxArea=&maxWalk=
  *  - deal: sale(매매) | jeonse(전세) | monthly(월세). 빌라·원룸만 사용, 없으면 빌라 sale · 원룸 monthly
  *  - minPrice/maxPrice: 매매가 또는 보증금 (만원) · minRent/maxRent: 월세 (만원)
+ *  - q: 검색어 — 단지명 · 주소(구 · 동) 부분 일치 (지도 상단 검색창)
  *  - maxWalk: 가까운 지하철역까지 도보 N분 이내 (직선거리 × 1.3 ÷ 분당 80m)
  * 응답: Apartment[]  (필드: README "API 계약" 참고)
  *  빌라·원룸 추가 필드:
@@ -78,5 +79,18 @@ export async function getRecommendations(conditions = {}) {
 export async function getPopular(limit = 5) {
   if (USE_MOCK) return mock.getPopular(limit);
   const { data } = await api.get('/api/apartments/popular', { params: { limit } });
+  return data;
+}
+
+/**
+ * GET /api/apartments/search  — 매물찾기 (조건 검색 + 정렬 + 페이지)
+ * 쿼리: gu, minPrice, maxPrice, minArea, maxArea, minBuiltYear, maxWalk, q(단지명), sort, page(0부터), size
+ *  sort: recent(최신 거래순) | priceAsc | priceDesc | ppyAsc(평당가 낮은순) | areaDesc
+ * 응답 (Spring Page 형태): { content: Apartment[], totalElements, totalPages, page, size }
+ * 백엔드: JPA Specification(또는 QueryDSL) 동적 조건 + Pageable
+ */
+export async function searchPaged(params = {}) {
+  if (USE_MOCK) return mock.searchPaged(cleanParams(params));
+  const { data } = await api.get('/api/apartments/search', { params: cleanParams(params) });
   return data;
 }

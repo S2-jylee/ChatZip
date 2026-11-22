@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SEOUL_GU } from '../constants/regions';
 
-/** 홈 검색창 — 지역·최대 가격을 받아 /apartment 으로 이동 (클릭 1) */
+/** 홈 검색창 — 지역·최대 가격을 받아 매물찾기(/search)로 이동 (클릭 1) */
 export default function SearchBar() {
   const navigate = useNavigate();
   const [gu, setGu] = useState('');
@@ -13,7 +13,7 @@ export default function SearchBar() {
     const params = new URLSearchParams();
     if (gu) params.set('gu', gu);
     if (maxPrice) params.set('maxPrice', maxPrice);
-    navigate(`/apartment?${params.toString()}`);
+    navigate(`/search?${params.toString()}`);
   };
 
   return (

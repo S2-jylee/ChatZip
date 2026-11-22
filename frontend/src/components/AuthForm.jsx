@@ -54,7 +54,10 @@ export default function AuthForm({ mode, onSubmit, serverError, loading }) {
         </>
       )}
       {shownError && <p className="form-error" role="alert">{shownError}</p>}
-      <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
+      <button type="submit" className="btn btn-primary btn-block btn-lg auth-btn" disabled={loading}>
+        <svg className="auth-btn-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /><path d="M10 20v-5h4v5" />
+        </svg>
         {loading ? '처리 중…' : isSignup ? '회원가입' : '로그인'}
       </button>
     </form>

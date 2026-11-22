@@ -27,3 +27,16 @@ export async function logout() {
   if (USE_MOCK) return mock.logout();
   await api.post('/api/auth/logout');
 }
+
+/**
+ * 카카오 로그인 · 가입 (같은 흐름: 처음 들어온 카카오 계정이면 서버가 회원을 새로 만듦)
+ * 실제: 백엔드 Spring Security OAuth2 → GET {API}/oauth2/authorization/kakao 로 이동,
+ *       카카오 동의 후 백엔드가 세션을 만들고 redirect 로 프론트에 돌려보냄 (카카오 로그인 API ✅ 무료)
+ * 목업: 카카오 사용자로 바로 로그인
+ */
+export async function kakaoLogin() {
+  if (USE_MOCK) return mock.kakaoLogin();
+  const back = encodeURIComponent(window.location.href);
+  window.location.href = `${api.defaults.baseURL}/oauth2/authorization/kakao?redirect=${back}`;
+  return new Promise(() => {}); // 페이지가 이동하므로 끝나지 않음
+}

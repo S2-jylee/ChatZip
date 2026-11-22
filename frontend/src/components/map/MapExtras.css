@@ -62,7 +62,7 @@
 /* 오른쪽 세로 버튼 (네이버 지도 스타일 — 버튼마다 따로) */
 .map-rail {
   position: absolute; top: 12px; right: 12px; z-index: 1000;
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex-direction: column; gap: 6px;
 }
 .rail-wrap { position: relative; }
 /* 확대/축소 버튼: map-rail 과 같은 오른쪽 선(right 12px · 너비 38px)에 맞춤 */
@@ -70,17 +70,18 @@
   position: absolute; bottom: 12px; right: 12px; z-index: 1000;
   display: flex; flex-direction: column; gap: 4px;
 }
-.map-zoom .rail-btn { height: 34px; font-size: 18px; font-weight: 600; line-height: 1; }
+.map-zoom .rail-btn { height: 42px; font-size: 22px; font-weight: 500; line-height: 1; color: #111; }
 /* Leaflet 확대 버튼도 같은 선에 */
 .leaflet-bottom.leaflet-right .leaflet-control-zoom { margin: 0 12px 12px 0; }
+/* 시인성: 버튼을 키우고(42px) 글자는 진한 검정 · 굵게, 테두리 대신 또렷한 그림자 한 겹 */
 .rail-btn {
-  position: relative; width: 38px; height: 30px; padding: 0;
+  position: relative; width: 42px; height: 42px; padding: 0;
   display: flex; align-items: center; justify-content: center;
-  background: #fff; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
-  font: inherit; font-size: 11px; font-weight: 700; letter-spacing: -0.04em; color: var(--ink-2); cursor: pointer;
+  background: #fff; border: 0; border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.16);
+  font: inherit; font-size: 13px; font-weight: 800; letter-spacing: -0.05em; color: #111; cursor: pointer;
 }
-.rail-btn:hover { background: var(--bg); }
+.rail-btn:hover { background: #f5f6f8; }
 .rail-btn.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .rail-count {
   position: absolute; top: -5px; left: -5px; min-width: 14px; height: 14px; padding: 0 3px;
@@ -189,3 +190,10 @@
 .map, .map * { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
 .map { touch-action: none; }
 .map img { -webkit-user-drag: none; }
+
+/* 모바일: 지도 높이가 낮아 버튼을 조금 작게 (세로 버튼 6개 + 확대/축소가 겹치지 않게) */
+@media (max-width: 1000px) {
+  .map-rail { gap: 4px; }
+  .rail-btn { width: 40px; height: 32px; font-size: 12px; }
+  .map-zoom .rail-btn { height: 34px; font-size: 20px; }
+}

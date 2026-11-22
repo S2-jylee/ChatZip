@@ -39,7 +39,6 @@ export default function PredictPage() {
   return (
     <div className="container section">
       <header className="page-head">
-        <span className="eyebrow">판단하기</span>
         <h1>AI 가격 예측</h1>
         <p className="muted">조건을 직접 입력하면 실거래 데이터로 학습한 모델이 예상가를 알려드려요.</p>
       </header>

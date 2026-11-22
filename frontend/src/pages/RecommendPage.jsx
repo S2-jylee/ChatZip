@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConditionForm from '../components/ConditionForm';
 import AptListItem from '../components/AptListItem';
@@ -9,7 +9,9 @@ import { errorMessage } from '../api/client';
 import { useDetailHref } from '../utils/detailLink';
 import { useViewed } from '../utils/viewed';
 
-export default function RecommendPage() {
+/** 맞춤 추천 — 매물찾기 화면의 "맞춤 추천" 탭 (embedded) */
+export default function RecommendPage({ embedded = false }) {
+  const initial = null;
   const [results, setResults] = useState(null); // null = 아직 검색 전
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -57,20 +59,23 @@ export default function RecommendPage() {
     );
   }
 
-  return (
-    <div className="container section">
-      <header className="page-head">
-        <span className="eyebrow">모으기</span>
-        <h1>맞춤 추천</h1>
-        <p className="muted">조건 입력 한 번으로 내게 맞는 매물 10건을 추천받으세요.</p>
-      </header>
+  const body = (
       <div className="two-col">
-        <ConditionForm onSubmit={run} loading={loading} />
+        <ConditionForm key={initial ? JSON.stringify(initial) : 'empty'} initial={initial ?? undefined} onSubmit={run} loading={loading} />
         <section>
           {results && !loading && !error && <h2 className="list-title">추천 결과 {results.length}건</h2>}
           {content}
         </section>
       </div>
+  );
+  if (embedded) return body;
+  return (
+    <div className="container section">
+      <header className="page-head">
+        <h1>맞춤 추천</h1>
+        <p className="muted">조건 입력 한 번으로 내게 맞는 매물 10건을 추천받으세요.</p>
+      </header>
+      {body}
     </div>
   );
 }

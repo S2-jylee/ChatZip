@@ -4,8 +4,9 @@ import { SEOUL_GU } from '../constants/regions';
 const CURRENT_YEAR = new Date().getFullYear();
 
 /** 맞춤 추천 조건 입력 */
-export default function ConditionForm({ onSubmit, loading }) {
-  const [form, setForm] = useState({ gu: '', maxPrice: '', minArea: '', minBuiltYear: '' });
+export default function ConditionForm({ onSubmit, loading, initial }) {
+  // initial: 마이페이지 선호 조건으로 미리 채움 (로그인 시)
+  const [form, setForm] = useState({ gu: '', maxPrice: '', minArea: '', minBuiltYear: '', ...initial });
   const [error, setError] = useState('');
 
   const change = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));

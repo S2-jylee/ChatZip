@@ -15,6 +15,7 @@ import { dataSourceOf, dealInfo, typeInfo } from '../../constants/propertyTypes'
 import { formatArea, formatDate, formatDealPrice, stationText } from '../../utils/format';
 import { markViewed } from '../../utils/viewed';
 import './ListingModal.css';
+import { lockScroll } from '../../utils/scrollLock';
 
 /**
  * 매물 상세 — ?detail={id} 로 열림.
@@ -32,10 +33,9 @@ export default function ListingModal({ id, onClose, variant = 'modal' }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    if (variant === 'modal') document.body.style.overflow = 'hidden'; // 패널일 땐 스크롤 그대로
+    const unlock = variant === 'modal' ? lockScroll() : () => {}; // 패널일 땐 스크롤 그대로
     dialogRef.current?.focus({ preventScroll: true });
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+    return () => { document.removeEventListener('keydown', onKey); unlock(); };
   }, [onClose, variant]);
 
   const load = useCallback(() => {

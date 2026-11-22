@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import FilterPanel from '../components/FilterPanel';
+import FilterBar from '../components/FilterBar';
 import MapView from '../components/map/MapView';
 import ListingModal from '../components/detail/ListingModal';
 import MapControls from '../components/map/MapControls';
@@ -13,10 +13,19 @@ import { searchPlaces } from '../api/places';
 import { errorMessage } from '../api/client';
 import { cleanParams } from '../utils/format';
 import { useViewed } from '../utils/viewed';
-import { DEFAULT_TYPE, FILTER_KEYS, dealTabsOf, defaultDealOf } from '../constants/propertyTypes';
+import { DEFAULT_TYPE, FILTER_KEYS, PROPERTY_TYPES, dealTabsOf, defaultDealOf } from '../constants/propertyTypes';
 import { EXTRA_KINDS_BY_TYPE, placeKind } from '../constants/placeKinds';
 
 const KEYS = FILTER_KEYS;
+
+// 매물 종류 탭 아이콘 (선 아이콘, currentColor)
+const TYPE_ICONS = {
+  apt: <><path d="M4 21V5l7-2v18" /><path d="M11 21V8l9 3v10" /><path d="M7 8h1M7 12h1M7 16h1M14 13h2M14 17h2" /><path d="M2 21h20" /></>,
+  villa: <><path d="M3 21V10l9-6 9 6v11" /><path d="M9 21v-6h6v6" /><path d="M2 21h20" /></>,
+  oneroom: <><rect x="4" y="3" width="16" height="18" rx="1" /><path d="M9 21v-4h6v4" /><path d="M8 8h3v3H8zM13 8h3v3h-3z" /></>,
+  officetel: <><rect x="5" y="2" width="14" height="19" rx="1" /><path d="M9 6h2M13 6h2M9 10h2M13 10h2M9 14h2M13 14h2" /><path d="M10 21v-3h4v3" /></>,
+  store: <><path d="M3 9l1.5-5h15L21 9" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 12v9h14v-9" /><path d="M10 21v-5h4v5" /></>,
+};
 
 const SORTS = {
   recent: { label: '최신 거래순', fn: (a, b) => String(b.dealDate).localeCompare(String(a.dealDate)) },
@@ -27,23 +36,6 @@ const SORTS = {
   newest: { label: '신축순', fn: (a, b) => b.builtYear - a.builtYear },
 };
 
-
-// 접힌 필터에 보여줄 한 줄 요약: "관악구 · ~500 · 월 40~60 · 20~26㎡ · 역세권" (거래 종류는 목록 위 탭에 항상 보임)
-const eok = (v) => (Number(v) >= 10000 ? `${Number(v) / 10000}억` : `${Number(v).toLocaleString('ko-KR')}만`);
-function filterSummary(f) {
-  const range = (min, max, fmt) => {
-    if (!min && !max) return null;
-    return `${min ? fmt(min) : ''}~${max ? fmt(max) : ''}`;
-  };
-  const parts = [
-    f.gu || '서울 전체',
-    range(f.minPrice, f.maxPrice, eok),
-    range(f.minRent, f.maxRent, (v) => v) && `월 ${range(f.minRent, f.maxRent, (v) => v)}`,
-    range(f.minArea, f.maxArea, (v) => `${v}㎡`),
-    f.maxWalk && '역세권',
-  ].filter(Boolean);
-  return parts.join(' · ');
-}
 
 const inBounds =(a, b) => a.lat >= b.south && a.lat <= b.north && a.lng >= b.west && a.lng <= b.east;
 
@@ -59,7 +51,6 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
   const [onlyInView, setOnlyInView] = useState(true);
   const [sort, setSort] = useState('recent');
 
-  const [filterOpen, setFilterOpen] = useState(() => !window.matchMedia('(max-width: 1000px)').matches); // 필터 접으면 목록이 길어짐 (모바일은 접힌 채 시작)
   const [sideOpen, setSideOpen] = useState(true); // 왼쪽 사이드바 접기 → 지도 넓게
   const [mapType, setMapType] = useState('road'); // road | satellite
   const [placeKinds, setPlaceKinds] = useState([]); // 켜 둔 주변 시설 종류
@@ -87,7 +78,18 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filterString],
   );
-  const query = useMemo(() => ({ ...filters, type }), [filters, type]);
+  // 검색어(?q=): 단지명 · 동 · 구 · 주소 — 필터와 따로 두어 필터를 바꿔도 유지
+  const q = searchParams.get('q') ?? '';
+  const [qInput, setQInput] = useState(q);
+  useEffect(() => { setQInput(q); }, [q]);
+  const setQuery = (text) => setSearchParams((prev) => {
+    const p = new URLSearchParams(prev);
+    const v = text.trim();
+    if (v) p.set('q', v); else p.delete('q');
+    p.delete('detail');
+    return p;
+  });
+  const query = useMemo(() => ({ ...filters, type, q }), [filters, type, q]);
 
   useEffect(() => {
     let cancelled = false;
@@ -194,12 +196,17 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
     return list.sort(SORTS[sort].fn);
   }, [apartments, bounds, onlyInView, sort]);
 
+  // 필터를 바꿔도 매물 종류(?type)는 유지
   const updateFilters = (next) => {
     const p = cleanParams(next);
+    if (type !== DEFAULT_TYPE) p.type = type;
+    if (q) p.q = q;
     setSearchParams(p);
   };
+  // 종류를 바꾸면 가격대 · 거래 종류가 달라 필터는 비움 (지역만 유지)
+  const pickType = (t) => setSearchParams(cleanParams({ type: t === DEFAULT_TYPE ? '' : t, gu: filters.gu, q }));
 
-  // 거래 종류 탭 (빌라·원룸) — 목록 영역 맨 위라 필터를 접어도 바로 바꿀 수 있음
+  // 거래 종류 탭 (빌라·원룸) — 필터 맨 위라 필터를 접어도 바로 바꿀 수 있음
   const dealTabs = dealTabsOf(type);
   const deal = filters.deal || defaultDealOf(type);
   // 거래 종류를 바꾸면 가격 조건은 단위가 달라 비움
@@ -242,22 +249,42 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
         {/* 상세 보기 중엔 필터·목록을 숨기고(스크롤 위치 유지) 그 자리에 상세 표시 */}
         {detailId && <ListingModal key={detailId} id={detailId} variant="side" onClose={() => setDetail(null)} />}
         <div style={{ display: detailId ? 'none' : 'contents' }}>
-        <div className={`filter-fold${filterOpen ? '' : ' closed'}`}>
-          <div className="filter-fold-body">
-            <FilterPanel value={filters} onSubmit={updateFilters} type={type} />
-          </div>
+        {/* 매물 종류 탭 */}
+        <div className="type-tabs" role="tablist" aria-label="매물 종류">
+          {PROPERTY_TYPES.map((t) => (
+            <button
+              key={t.type}
+              type="button"
+              role="tab"
+              aria-selected={type === t.type}
+              className={`type-tab${type === t.type ? ' on' : ''}`}
+              onClick={() => pickType(t.type)}
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {TYPE_ICONS[t.type]}
+              </svg>
+              <span>{t.label.replace(', ', '·')}</span>
+            </button>
+          ))}
         </div>
-        <button
-          type="button"
-          className="filter-fold-bar"
-          aria-expanded={filterOpen}
-          onClick={() => setFilterOpen((v) => !v)}
-        >
-          {filterOpen
-            ? <span>필터 접기</span>
-            : <span className="filter-summary"><b>필터</b> {filterSummary(filters)}</span>}
-          <span className="filter-fold-arrow" aria-hidden="true">{filterOpen ? '▲' : '▼'}</span>
-        </button>
+        {/* 검색창 — 종류 탭 아래 (단지명 · 동 · 구) */}
+        <div className="map-top">
+        <form className="map-search" role="search" onSubmit={(e) => { e.preventDefault(); setQuery(qInput); }}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+          <input
+            type="search"
+            value={qInput}
+            onChange={(e) => setQInput(e.target.value)}
+            placeholder="단지명, 지역(구 · 동)으로 검색"
+            aria-label="매물 검색"
+            enterKeyHint="search"
+          />
+          {qInput && (
+            <button type="button" className="map-search-clear" onClick={() => { setQInput(''); setQuery(''); }} aria-label="검색어 지우기">×</button>
+          )}
+        </form>
+        </div>
+        {/* 거래 종류 탭 (빌라·원룸) — 필터 맨 위: 접어도 항상 보임 */}
         {dealTabs.length > 0 && (
           <div className="deal-tabs" role="tablist" aria-label="거래 종류">
             {dealTabs.map((d) => (
@@ -274,11 +301,15 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
             ))}
           </div>
         )}
+        {/* 필터: 한 줄 버튼 → 누르면 그 항목만 펼침 (목록을 밀어내지 않음) */}
+        <FilterBar value={filters} onSubmit={updateFilters} type={type} />
         <div className="map-side-head">
-          <div>
-            <strong className="count">{loading ? '…' : visible.length.toLocaleString()}</strong>
-            <span className="muted small"> 건 {onlyInView ? '지도 영역 안' : ''} · 전체 {apartments.length}건</span>
-            {viewedCount > 0 && <span className="muted small"> · 본 매물 {viewedCount}</span>}
+          {/* 건수는 윗줄, 부가 정보는 아랫줄 고정 → 정보 길이와 상관없이 정렬 상자 위치가 같음 */}
+          <div className="msh-info">
+            <div><strong className="count">{loading ? '…' : visible.length.toLocaleString()}</strong><span className="msh-unit">건</span></div>
+            <small className="msh-meta">
+              {onlyInView ? '지도 영역 안 · ' : ''}전체 {apartments.length}건{viewedCount > 0 ? ` · 본 매물 ${viewedCount}` : ''}
+            </small>
           </div>
           <select className="select select-sm" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="정렬">
             {Object.entries(SORTS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}

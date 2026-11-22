@@ -1,16 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
-import { PROPERTY_TYPES } from '../constants/propertyTypes';
+import { MAIN_MENUS, MAP_PATH } from '../constants/menus';
 
+const FIND_LINKS = MAIN_MENUS.filter((m) => ['/search', '/analysis', MAP_PATH].includes(m.to));
 const SERVICE_LINKS = [
-  { to: '/recommend', label: '맞춤추천' },
-  { to: '/predict', label: 'AI 예상가' },
-  { to: '/favorites', label: '관심매물' },
+  { to: '/search?tab=recommend', label: '맞춤 추천' },
+  ...MAIN_MENUS.filter((m) => ['/predict', '/favorites'].includes(m.to)),
 ];
 
 /** 사이트 하단 — 지도 화면은 지도가 화면 전체를 쓰므로 표시하지 않음 */
 export default function Footer() {
   const { pathname } = useLocation();
-  if (PROPERTY_TYPES.some((t) => t.path === pathname)) return null;
+  if (pathname === MAP_PATH) return null;
 
   return (
     <footer className="footer">
@@ -19,13 +19,13 @@ export default function Footer() {
           <Link to="/" className="footer-logo" aria-label="ChatZip 홈">
             Chat<span className="logo-accent">Zip</span>
           </Link>
-          <p>서울 실거래가 기반 매물 지도와 AI 예상가 서비스</p>
+          <p>서울 아파트 실거래가 기반 매물 검색 · 지역 분석 · AI 예상가 서비스</p>
         </div>
 
         <nav className="footer-links" aria-label="하단 메뉴">
           <div>
-            <strong>매물 지도</strong>
-            {PROPERTY_TYPES.map((t) => <Link key={t.type} to={t.path}>{t.label}</Link>)}
+            <strong>찾기 · 분석</strong>
+            {FIND_LINKS.map((l) => <Link key={l.to} to={l.to}>{l.label}</Link>)}
           </div>
           <div>
             <strong>서비스</strong>

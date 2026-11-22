@@ -1,23 +1,38 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { PROPERTY_TYPES } from '../constants/propertyTypes';
+import { MAIN_MENUS } from '../constants/menus';
 
-// 직방 스타일 메뉴: 매물 종류별 지도 + 맞춤추천 · 관심매물
-const TYPE_MENUS = PROPERTY_TYPES.map((t) => ({ to: t.path, label: t.label }));
-const EXTRA_MENUS = [
-  { to: '/recommend', label: '맞춤추천' },
-  { to: '/favorites', label: '관심매물' },
-];
+// 메뉴 = 기능 단위 (홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물) — constants/menus.js
 
 const navClass = (base) => ({ isActive }) => `${base}${isActive ? ' active' : ''}`;
 
 export default function Header() {
-  const { user, checking, logout } = useAuth();
+  const { user, checking, logout, openAuth } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false); // 모바일 전체 메뉴(오른쪽 패널)
   const navRef = useRef(null);
+  // 모바일 메뉴 줄: 양 끝에 더 볼 메뉴가 있으면 ‹ › 버튼 표시
+  const [edge, setEdge] = useState({ left: false, right: false });
+  const updateEdge = () => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const max = nav.scrollWidth - nav.clientWidth;
+    setEdge({ left: nav.scrollLeft > 4, right: nav.scrollLeft < max - 4 });
+  };
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return undefined;
+    updateEdge();
+    nav.addEventListener('scroll', updateEdge, { passive: true });
+    window.addEventListener('resize', updateEdge);
+    return () => { nav.removeEventListener('scroll', updateEdge); window.removeEventListener('resize', updateEdge); };
+  }, []);
+  const scrollNav = (dir) => {
+    const nav = navRef.current;
+    nav?.scrollBy({ left: dir * nav.clientWidth * 0.6, behavior: 'smooth' });
+  };
 
   const handleLogout = async () => {
     setMenuOpen(false);
@@ -25,7 +40,7 @@ export default function Header() {
     navigate('/');
   };
 
-  // 페이지 이동하면 메뉴 닫고, 모바일 매물 종류 줄에서 선택된 탭이 보이게 가운데로 스크롤
+  // 페이지 이동하면 메뉴 닫고, 모바일 메뉴 줄에서 선택된 탭이 보이게 가운데로 스크롤
   useEffect(() => {
     setMenuOpen(false);
     const nav = navRef.current;
@@ -81,16 +96,22 @@ export default function Header() {
   if (!checking && user) {
     authArea = (
       <>
-        <span className="header-user"><b>{user.name}</b>님</span>
+        {/* 로그인하면 이름 알약 + 로그아웃 */}
+        <span className="user-pill">
+          <span className="user-avatar" aria-hidden="true">{user.name?.[0] ?? '?'}</span>
+          <span className="user-pill-name"><b>{user.name}</b>님</span>
+        </span>
         <button type="button" className="btn btn-ghost btn-sm" onClick={handleLogout}>로그아웃</button>
       </>
     );
   } else if (!checking) {
+    // 로그인 전: 사람 아이콘 하나 → 로그인 모달 (회원가입은 모달 안에서 전환)
     authArea = (
-      <>
-        <Link to="/login" className="btn btn-ghost btn-sm">로그인</Link>
-        <Link to="/signup" className="btn btn-primary btn-sm">회원가입</Link>
-      </>
+      <button type="button" className="login-icon" onClick={() => openAuth('login')} aria-label="로그인 · 회원가입" title="로그인 · 회원가입">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+        </svg>
+      </button>
     );
   }
 
@@ -107,15 +128,20 @@ export default function Header() {
           </span>
           Chat<span className="logo-accent">Zip</span>
         </Link>
-        {/* PC: 메뉴 전부 한 줄 · 모바일: 매물 종류만 알약 모양 탭으로 (가로 스크롤) */}
-        <nav className="nav" ref={navRef} aria-label="매물 종류">
-          {TYPE_MENUS.map((m) => (
-            <NavLink key={m.to} to={m.to} className={navClass('nav-link')}>{m.label}</NavLink>
-          ))}
-          {EXTRA_MENUS.map((m) => (
-            <NavLink key={m.to} to={m.to} className={navClass('nav-link nav-link-extra')}>{m.label}</NavLink>
-          ))}
-        </nav>
+        {/* PC: 메뉴 한 줄 · 모바일: 둘째 줄 알약 모양 탭 (가로 스크롤) */}
+        <div className={`nav-wrap${edge.left ? ' can-left' : ''}${edge.right ? ' can-right' : ''}`}>
+          <button type="button" className="nav-arrow left" onClick={() => scrollNav(-1)} aria-label="이전 메뉴" tabIndex={-1} hidden={!edge.left}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+          </button>
+          <nav className="nav" ref={navRef} aria-label="주 메뉴">
+            {MAIN_MENUS.map((m) => (
+              <NavLink key={m.to} to={m.to} end={m.end} className={navClass('nav-link')}>{m.label}</NavLink>
+            ))}
+          </nav>
+          <button type="button" className="nav-arrow right" onClick={() => scrollNav(1)} aria-label="다음 메뉴" tabIndex={-1} hidden={!edge.right}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+        </div>
         <div className="header-auth">{authArea}</div>
         <button
           type="button"
@@ -130,7 +156,7 @@ export default function Header() {
         </button>
       </div>
 
-      {/* 모바일 전체 메뉴: 맞춤추천 · 관심매물 · 로그인 */}
+      {/* 모바일 전체 메뉴: 주 메뉴 + 설명 · 로그인 · 마이페이지 */}
       {menuOpen && (
         <div className="menu-overlay" onClick={() => setMenuOpen(false)}>
           <div className="menu-panel" role="dialog" aria-label="전체 메뉴" onClick={(e) => e.stopPropagation()}>
@@ -140,18 +166,17 @@ export default function Header() {
             </div>
             {!checking && !user && (
               <div className="menu-auth">
-                <Link to="/login" className="btn btn-ghost">로그인</Link>
-                <Link to="/signup" className="btn btn-primary">회원가입</Link>
+                <button type="button" className="btn btn-ghost" onClick={() => { setMenuOpen(false); openAuth('login'); }}>로그인</button>
+                <button type="button" className="btn btn-primary" onClick={() => { setMenuOpen(false); openAuth('signup'); }}>회원가입</button>
               </div>
             )}
-            <div className="menu-section">매물 보기</div>
-            {TYPE_MENUS.map((m) => (
-              <NavLink key={m.to} to={m.to} className={navClass('menu-link')}>{m.label}</NavLink>
+            <div className="menu-section">메뉴</div>
+            {MAIN_MENUS.map((m) => (
+              <NavLink key={m.to} to={m.to} end={m.end} className={navClass('menu-link')}>
+                {m.label}{m.desc && <small>{m.desc}</small>}
+              </NavLink>
             ))}
-            <div className="menu-section">내 서비스</div>
-            {EXTRA_MENUS.map((m) => (
-              <NavLink key={m.to} to={m.to} className={navClass('menu-link')}>{m.label}</NavLink>
-            ))}
+            {user && <div className="menu-section">내 계정</div>}
             {user && <button type="button" className="menu-link menu-logout" onClick={handleLogout}>로그아웃</button>}
           </div>
         </div>
