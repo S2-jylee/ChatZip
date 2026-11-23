@@ -11,6 +11,7 @@ import DetailPage from './pages/DetailPage';
 import PredictPage from './pages/PredictPage';
 import FavoritesPage from './pages/FavoritesPage';
 import LoginPage from './pages/LoginPage';
+import MyPage from './pages/MyPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { USE_MOCK } from './api/client';
 import SearchPage from './pages/SearchPage';
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<LoginPage mode="signup" />} />
+          <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { getPreferences } from '../api/users';
 import { useNavigate } from 'react-router-dom';
 import ConditionForm from '../components/ConditionForm';
 import AptListItem from '../components/AptListItem';
@@ -11,7 +13,17 @@ import { useViewed } from '../utils/viewed';
 
 /** 맞춤 추천 — 매물찾기 화면의 "맞춤 추천" 탭 (embedded) */
 export default function RecommendPage({ embedded = false }) {
-  const initial = null;
+  const { user } = useAuth();
+  // 로그인했으면 마이페이지 선호 조건으로 조건 칸을 미리 채움
+  const [initial, setInitial] = useState(null);
+  useEffect(() => {
+    if (!user) { setInitial(null); return; }
+    getPreferences()
+      .then((p) => setInitial({
+        gu: p.gus?.[0] ?? '', maxPrice: p.maxPrice ? String(p.maxPrice) : '', minArea: p.minArea ? String(p.minArea) : '',
+      }))
+      .catch(() => {});
+  }, [user]);
   const [results, setResults] = useState(null); // null = 아직 검색 전
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

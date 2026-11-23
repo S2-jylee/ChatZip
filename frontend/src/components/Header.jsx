@@ -96,12 +96,11 @@ export default function Header() {
   if (!checking && user) {
     authArea = (
       <>
-        {/* 로그인하면 이름 알약 + 로그아웃 */}
-        <span className="user-pill">
+        {/* 로그인하면 이름 알약 → 마이페이지 (로그아웃은 마이페이지 · 모바일 메뉴에) */}
+        <NavLink to="/mypage" className={navClass('user-pill')} title="마이페이지">
           <span className="user-avatar" aria-hidden="true">{user.name?.[0] ?? '?'}</span>
           <span className="user-pill-name"><b>{user.name}</b>님</span>
-        </span>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={handleLogout}>로그아웃</button>
+        </NavLink>
       </>
     );
   } else if (!checking) {
@@ -177,6 +176,7 @@ export default function Header() {
               </NavLink>
             ))}
             {user && <div className="menu-section">내 계정</div>}
+            {user && <NavLink to="/mypage" className={navClass('menu-link')}>마이페이지</NavLink>}
             {user && <button type="button" className="menu-link menu-logout" onClick={handleLogout}>로그아웃</button>}
           </div>
         </div>
