@@ -8,7 +8,7 @@ import MapTooltip from '../components/map/MapTooltip';
 import PriceLegend from '../components/map/PriceLegend';
 import AptListItem from '../components/AptListItem';
 import { Empty, ErrorBox, Loading } from '../components/Status';
-import { getBoundary, searchApartments } from '../api/apartments';
+import { getBoundary, getBoundaryIds, searchApartments } from '../api/apartments';
 import { searchPlaces } from '../api/places';
 import { errorMessage } from '../api/client';
 import { cleanParams } from '../utils/format';
@@ -56,6 +56,8 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
   const [placeKinds, setPlaceKinds] = useState([]); // 켜 둔 주변 시설 종류
   const [places, setPlaces] = useState([]);
   const viewedIds = useViewed();
+  const [boundaryIds, setBoundaryIds] = useState(null); // 테두리가 있는 매물 → 분홍 마커
+  useEffect(() => { getBoundaryIds().then(setBoundaryIds); }, []);
 
   // 지도 사용법 안내: 처음 몇 초만 잠깐 보이고 사라짐. 마커를 한 번이라도 눌러 봤으면 다시 안 보임
   const [hintOn, setHintOn] = useState(() => {
@@ -260,9 +262,11 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
               className={`type-tab${type === t.type ? ' on' : ''}`}
               onClick={() => pickType(t.type)}
             >
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                {TYPE_ICONS[t.type]}
-              </svg>
+              <span className="type-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  {TYPE_ICONS[t.type]}
+                </svg>
+              </span>
               <span>{t.label.replace(', ', '·')}</span>
             </button>
           ))}
@@ -286,7 +290,14 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
         </div>
         {/* 거래 종류 탭 (빌라·원룸) — 필터 맨 위: 접어도 항상 보임 */}
         {dealTabs.length > 0 && (
-          <div className="deal-tabs" role="tablist" aria-label="거래 종류">
+          <div
+            className="deal-tabs"
+            role="tablist"
+            aria-label="거래 종류"
+            style={{ '--n': dealTabs.length, '--i': Math.max(0, dealTabs.findIndex((d) => d.key === deal)) }}
+          >
+            {/* 선택 표시(흰 배경)가 탭 사이를 옆으로 미끄러지듯 이동 */}
+            <span className="deal-thumb" aria-hidden="true" />
             {dealTabs.map((d) => (
               <button
                 key={d.key}
@@ -345,6 +356,7 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
           mapType={mapType}
           places={places}
           viewedIds={viewedIds}
+          boundaryIds={boundaryIds}
           popup={hovered && (
             <MapTooltip
               apt={hovered}

@@ -5,12 +5,13 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './VectorMap.css';
 import { tierOf } from '../../utils/format';
 import { pinClass, pinHtml, placeEl } from './markerEls';
+import { SERVICE_CENTER } from '../../constants/regions';
 
 // 카카오 키가 없을 때 쓰는 단순화된 지도 (OpenFreeMap 벡터 타일, 키 불필요)
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 // 위성 사진 (Esri World Imagery, 키 불필요) — 도로·지명 라벨은 위에 그대로 표시
 const SAT_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-const SEOUL = [126.978, 37.5665]; // [경도, 위도] 순서 주의
+const CENTER = [SERVICE_CENTER.lng, SERVICE_CENTER.lat]; // [경도, 위도] 순서 주의
 
 // 지도를 단순하게: 숨길 레이어 (가게 아이콘 · 3D 건물 · 도로 번호 · 일방통행 화살표 등)
 const HIDE = /^(poi_|building-3d|natural_earth|highway-shield|road_shield|road_one_way|.*hatching|road_area_pattern)/;
@@ -51,7 +52,7 @@ function simplifyStyle(map) {
 /** LeafletMap · KakaoMap 과 같은 props. WebGL 미지원 등으로 실패하면 onFail 호출 */
 export default function VectorMap({
   apartments, activeId, selectedId, onSelect, onBoundsChange, interactive = true, maxZoom = 15, onFail, popup, onPinHover,
-  mapType = 'road', places = [], viewedIds, boundary, boundaryPadding,
+  mapType = 'road', places = [], viewedIds, boundaryIds, boundary, boundaryPadding,
 }) {
   const elRef = useRef(null);
   const mapRef = useRef(null);
@@ -70,7 +71,7 @@ export default function VectorMap({
       map = new maplibregl.Map({
         container: elRef.current,
         style: STYLE_URL,
-        center: SEOUL,
+        center: CENTER,
         zoom: 10.5,
         interactive,
         attributionControl: { compact: true },
@@ -160,9 +161,10 @@ export default function VectorMap({
       const on = id === activeId || id === selectedId;
       pin.classList.toggle('active', on);
       pin.classList.toggle('viewed', Boolean(viewedIds?.has(id)));
+      pin.classList.toggle('has-boundary', Boolean(boundaryIds?.has(String(id))));
       wrap.style.zIndex = on ? '10' : '1';
     });
-  }, [activeId, selectedId, apartments, ready, viewedIds]);
+  }, [activeId, selectedId, apartments, ready, viewedIds, boundaryIds]);
 
   // 단지 영역 테두리 (클릭한 매물) + 그 영역으로 확대
   useEffect(() => {

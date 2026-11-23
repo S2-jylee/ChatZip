@@ -47,8 +47,8 @@ export default function AuthModal() {
   };
 
   const handleSubmit = (form) => (isSignup
-    ? run(() => signup(form), { 409: '이미 사용 중인 아이디입니다.', default: '회원가입에 실패했습니다.' })
-    : run(() => login(form.loginId, form.password), { 401: '아이디 또는 비밀번호가 올바르지 않습니다.', default: '로그인에 실패했습니다.' }));
+    ? run(() => signup(form), { 409: '이미 가입된 이메일입니다.', default: '회원가입에 실패했습니다.' })
+    : run(() => login(form.loginId, form.password), { 401: '이메일 또는 비밀번호가 올바르지 않습니다.', default: '로그인에 실패했습니다.' }));
   const handleKakao = () => run(kakaoLogin, { default: '카카오 로그인에 실패했습니다.' });
 
   const kakaoBtn = (
@@ -68,7 +68,7 @@ export default function AuthModal() {
           <>
             {kakaoBtn}
             <p className="auth-kakao-note">카카오 계정으로 바로 가입돼요. 따로 비밀번호를 만들 필요가 없어요.</p>
-            <div className="auth-divider"><span>또는 아이디로 가입</span></div>
+            <div className="auth-divider"><span>또는 이메일로 가입</span></div>
           </>
         )}
 

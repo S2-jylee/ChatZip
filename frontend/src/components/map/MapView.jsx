@@ -23,6 +23,7 @@ import './MapExtras.css';
  *  mapType         'road' | 'satellite'
  *  places          주변 시설 [{ id, kind, name, lat, lng }]
  *  viewedIds       이미 본 매물 id Set → 회색 마커
+ *  boundaryIds     단지 테두리가 있는 매물 id Set(문자열) → 분홍 마커
  *  interactive    false 면 드래그·확대 불가 (미리보기용)
  *  maxZoom         자동 맞춤 시 최대 확대
  *  className       바깥 div 클래스 (높이 지정용)

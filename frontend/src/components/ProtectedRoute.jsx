@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
   if (checking) return <Loading />;
   if (!user) {
     return (
-      <div className="container section narrow">
+      <div className="container section">
         <Empty title="로그인이 필요한 화면입니다">
           <button type="button" className="btn btn-primary btn-sm" onClick={() => openAuth('login')}>로그인</button>
         </Empty>

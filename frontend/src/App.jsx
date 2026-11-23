@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import ListingModal from './components/detail/ListingModal';
 import Footer from './components/Footer';
@@ -45,12 +45,18 @@ function Redirect({ to, extra }) {
   return <Navigate to={`${to}${qs ? `?${qs}` : ''}`} replace />;
 }
 
-// 지도: ?type= 으로 매물 종류 (없으면 아파트). 종류가 바뀌면 화면 상태를 새로 시작
+// 지도: ?type= 으로 매물 종류 (없으면 아파트). 종류가 바뀌거나 상단 메뉴의 [지도]를 다시 누르면 화면 상태를 새로 시작
 function MapRoute() {
   const [params] = useSearchParams();
+  const location = useLocation();
   const t = params.get('type');
   const type = isTypeKey(t) ? t : DEFAULT_TYPE;
-  return <MapPage key={type} type={type} />;
+  // 메뉴 클릭(state.menu)마다 한 번씩만 올림 → 이후 화면 안 이동(?detail= 등)에선 그대로 유지
+  const reset = useRef({ count: 0, seen: null });
+  if (location.state?.menu && reset.current.seen !== location.key) {
+    reset.current = { count: reset.current.count + 1, seen: location.key };
+  }
+  return <MapPage key={`${type}-${reset.current.count}`} type={type} />;
 }
 const LEGACY_TYPE_PATHS = { '/apartment': 'apt', '/villa': 'villa', '/oneroom': 'oneroom', '/officetel': 'officetel', '/store': 'store' };
 
@@ -60,7 +66,7 @@ export default function App() {
     <div className="app">
       <Header />
       {USE_MOCK && (
-        <div className="mock-banner">MOCK · 가짜 데이터 (테스트 test / test1234)</div>
+        <div className="mock-banner">MOCK · 가짜 데이터 (테스트 test@chatzip.kr / test1234)</div>
       )}
       <main className="main">
         <Routes>

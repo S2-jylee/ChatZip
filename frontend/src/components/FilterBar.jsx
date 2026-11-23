@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SEOUL_GU } from '../constants/regions';
+import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 import {
   DEFAULT_TYPE, FILTER_KEYS, areaPresetsOf, detailFiltersOf, dealTabsOf, defaultDealOf, pricePresetsOf, priceStepOf, rentPresetsOf,
 } from '../constants/propertyTypes';
@@ -28,6 +28,7 @@ export default function FilterBar({ value, onSubmit, type = DEFAULT_TYPE }) {
   const [open, setOpen] = useState(null); // 'gu' | 'price' | 'rent' | 'area'
   const [error, setError] = useState('');
   const ref = useRef(null);
+  const popRef = useRef(null);
 
   useEffect(() => { setForm({ ...EMPTY, ...value }); }, [value]);
   useEffect(() => { setError(''); }, [open]);
@@ -40,6 +41,38 @@ export default function FilterBar({ value, onSubmit, type = DEFAULT_TYPE }) {
     document.addEventListener('pointerdown', onDown);
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+
+  // 창이 열려 있는 동안 뒤 목록 스크롤 막기 — 창 안의 스크롤 영역(지역 칩 · 상세 조건)이 더 움직일 수 있을 때만 허용
+  useEffect(() => {
+    if (!open) return undefined;
+    const canScroll = (target, dy) => {
+      for (let el = target; el && popRef.current?.contains(el); el = el.parentElement) {
+        const { overflowY } = getComputedStyle(el);
+        if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+          return dy < 0 ? el.scrollTop > 0 : el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        }
+      }
+      return false;
+    };
+    let lastY = 0;
+    const onWheel = (e) => { if (!canScroll(e.target, e.deltaY)) e.preventDefault(); };
+    const onTouchStart = (e) => { lastY = e.touches[0].clientY; };
+    const onTouchMove = (e) => {
+      const y = e.touches[0].clientY;
+      const dy = lastY - y;
+      lastY = y;
+      if (e.cancelable && !canScroll(e.target, dy)) e.preventDefault();
+    };
+    const opts = { passive: false };
+    document.addEventListener('wheel', onWheel, opts);
+    document.addEventListener('touchstart', onTouchStart, opts);
+    document.addEventListener('touchmove', onTouchMove, opts);
+    return () => {
+      document.removeEventListener('wheel', onWheel, opts);
+      document.removeEventListener('touchstart', onTouchStart, opts);
+      document.removeEventListener('touchmove', onTouchMove, opts);
+    };
   }, [open]);
 
   const hasDeal = dealTabsOf(type).length > 0;
@@ -161,15 +194,18 @@ export default function FilterBar({ value, onSubmit, type = DEFAULT_TYPE }) {
       </div>
 
       {open && (
-        <div className={`fpop${open === 'detail' ? ' fpop-detail' : ''}`} role="dialog" aria-label={{ gu: '지역', detail: '상세 조건' }[open] ?? label[open]}>
+        <div ref={popRef} className={`fpop${open === 'detail' ? ' fpop-detail' : ''}`} role="dialog" aria-label={{ gu: '지역', detail: '상세 조건' }[open] ?? label[open]}>
           <div className="fpop-head">
             <strong>{{ gu: '지역', detail: '상세 조건' }[open] ?? label[open]}</strong>
-            <button type="button" className="fpop-close" onClick={() => setOpen(null)} aria-label="닫기">×</button>
+            <button type="button" className="fpop-close" onClick={() => setOpen(null)} aria-label="닫기">
+              {/* × 글자는 글꼴마다 위치가 달라 한쪽으로 치우침 → 선 아이콘으로 정확히 가운데 */}
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
           </div>
           {open === 'gu' ? (
             <div className="chips fpop-gu">
-              <button type="button" className={`chip${!form.gu ? ' on' : ''}`} onClick={() => apply({ gu: '' })}>서울 전체</button>
-              {SEOUL_GU.map((g) => (
+              <button type="button" className={`chip${!form.gu ? ' on' : ''}`} onClick={() => apply({ gu: '' })}>{ALL_REGIONS_LABEL}</button>
+              {REGIONS.map((g) => (
                 <button key={g} type="button" className={`chip${form.gu === g ? ' on' : ''}`} onClick={() => apply({ gu: g })}>{g}</button>
               ))}
             </div>

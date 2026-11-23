@@ -4,13 +4,14 @@ import { loadKakaoMap } from '../../utils/kakaoLoader';
 import { tierOf } from '../../utils/format';
 import { pinClass, pinHtml, placeEl } from './markerEls';
 import { attachTouchFallback } from './touchFallback';
+import { SERVICE_CENTER } from '../../constants/regions';
 
-const SEOUL = { lat: 37.5665, lng: 126.978 };
+const CENTER = SERVICE_CENTER;
 
 /** 카카오맵 — VectorMap · LeafletMap 과 같은 props 를 받습니다. 로드 실패 시 onFail 호출 */
 export default function KakaoMap({
   apartments, activeId, selectedId, onSelect, onBoundsChange, interactive = true, onFail, popup, onPinHover,
-  mapType = 'road', places = [], viewedIds, boundary, boundaryPadding,
+  mapType = 'road', places = [], viewedIds, boundaryIds, boundary, boundaryPadding,
 }) {
   const elRef = useRef(null);
   const [popupEl] = useState(() => {
@@ -37,7 +38,7 @@ export default function KakaoMap({
         if (cancelled || !elRef.current) return;
         elRef.current.innerHTML = ''; // 이전 지도(코드 수정 시 자동 갱신으로 남은 것)가 겹치지 않게 비우고 생성
         const map = new kakao.maps.Map(elRef.current, {
-          center: new kakao.maps.LatLng(SEOUL.lat, SEOUL.lng),
+          center: new kakao.maps.LatLng(CENTER.lat, CENTER.lng),
           level: 8,
           draggable: interactive,
           scrollwheel: interactive,
@@ -150,9 +151,10 @@ export default function KakaoMap({
       const on = id === activeId || id === selectedId;
       el.classList.toggle('active', on);
       el.classList.toggle('viewed', Boolean(viewedIds?.has(id)));
+      el.classList.toggle('has-boundary', Boolean(boundaryIds?.has(String(id))));
       overlay.setZIndex(on ? 10 : 1);
     });
-  }, [activeId, selectedId, apartments, ready, viewedIds]);
+  }, [activeId, selectedId, apartments, ready, viewedIds, boundaryIds]);
 
   // 단지 영역 테두리 (클릭한 매물) + 그 영역으로 확대
   useEffect(() => {

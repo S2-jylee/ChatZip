@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SEOUL_GU } from '../constants/regions';
+import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 import {
   DEFAULT_TYPE, FILTER_KEYS, NEAR_STATION_MIN, areaPresetsOf, dealTabsOf, defaultDealOf, pricePresetsOf, priceStepOf, rentPresetsOf,
 } from '../constants/propertyTypes';
@@ -66,8 +66,8 @@ export default function FilterPanel({ value, onSubmit, type = DEFAULT_TYPE }) {
       <div className="filter-group">
         <span className="filter-label">지역</span>
         <select name="gu" value={form.gu} onChange={(e) => apply({ gu: e.target.value })} className="select">
-          <option value="">서울 전체</option>
-          {SEOUL_GU.map((g) => <option key={g} value={g}>{g}</option>)}
+          <option value="">{ALL_REGIONS_LABEL}</option>
+          {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
         </select>
       </div>
 

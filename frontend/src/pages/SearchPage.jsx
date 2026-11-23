@@ -4,7 +4,7 @@ import AptListItem from '../components/AptListItem';
 import { Empty, ErrorBox, Loading } from '../components/Status';
 import { searchPaged } from '../api/apartments';
 import { errorMessage } from '../api/client';
-import { SEOUL_GU } from '../constants/regions';
+import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 import RecommendPage from './RecommendPage';
 
 const FILTER_KEYS = ['q', 'gu', 'minPrice', 'maxPrice', 'minArea', 'maxArea', 'minBuiltYear', 'maxWalk'];
@@ -87,8 +87,8 @@ function ConditionSearch() {
         </label>
         <label className="field"><span>지역</span>
           <select name="gu" value={form.gu} onChange={change}>
-            <option value="">서울 전체</option>
-            {SEOUL_GU.map((g) => <option key={g} value={g}>{g}</option>)}
+            <option value="">{ALL_REGIONS_LABEL}</option>
+            {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
           </select>
         </label>
         <div className="field"><span>가격 (만원)</span>
@@ -112,8 +112,11 @@ function ConditionSearch() {
             {[5, 10, 15].map((m) => <option key={m} value={m}>지하철역 도보 {m}분 이내</option>)}
           </select>
         </label>
-        <button type="submit" className="btn btn-primary btn-block">검색</button>
-        <button type="button" className="btn btn-ghost btn-block" onClick={reset}>조건 초기화</button>
+        {/* 한 줄: [초기화] [검색 ────] — 지도 상세 조건 창(선택 해제 · 적용하기)과 같은 배치 */}
+        <div className="search-actions">
+          <button type="button" className="btn btn-ghost" onClick={reset}>초기화</button>
+          <button type="submit" className="btn btn-primary">검색</button>
+        </div>
       </form>
 
       <section>
@@ -138,7 +141,7 @@ export default function SearchPage() {
     <div className="container section">
       <header className="page-head">
         <h1>매물찾기</h1>
-        <p className="muted">서울 아파트 실거래 데이터를 조건으로 검색하거나, 예산에 맞춰 추천받으세요.</p>
+        <p className="muted">성남 · 용인 · 수원 아파트 매물을 조건으로 검색하거나, 예산에 맞춰 추천받으세요.</p>
       </header>
       <div className="page-tabs" role="tablist" aria-label="찾는 방법">
         {TABS.map(([k, label]) => (

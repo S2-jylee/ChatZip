@@ -69,7 +69,7 @@ export default function HomePage() {
                   </div>
                   <div className="pop-body">
                     <strong className="pop-name">{apt.name}</strong>
-                    <span className="muted small">서울 {apt.gu} {apt.dong} · 아파트</span>
+                    <span className="muted small">{apt.gu} {apt.dong} · 아파트</span>
                     <span className="muted small">전용 {Math.round(apt.areaM2)}㎡ · {apt.floor}층</span>
                     <div className="pop-bottom">
                       <span className="pop-price">{formatPrice(apt.price)}</span>
@@ -85,7 +85,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- 최근 실거래 TOP 5 | 구별 평균 평당가 (PC 좌우, 휴대폰 위아래) ---------- */}
-      <section className="section section-tinted">
+      <section className="section section-tinted market-section">
         <div className="container market-row">
           <div className="market-col">
             <div className="section-head row">
@@ -103,7 +103,7 @@ export default function HomePage() {
                       <span className="recent-rank">{i + 1}</span>
                       <span className="recent-info">
                         <strong>{apt.name}</strong>
-                        <span className="muted small">서울 {apt.gu} {apt.dong} · 전용 {Math.round(apt.areaM2)}㎡</span>
+                        <span className="muted small">{apt.gu} {apt.dong} · 전용 {Math.round(apt.areaM2)}㎡</span>
                       </span>
                       <span className="recent-date muted small">{formatDate(apt.dealDate)}</span>
                       <span className="recent-price">{formatPrice(apt.price)}</span>
@@ -140,9 +140,15 @@ export default function HomePage() {
       </section>
 
       {/* ---------- 아파트 비교 ---------- */}
-      <section className="container section">
+      <section className="container section compare-section">
         <div className="compare-cta">
-          <span className="compare-cta-icon" aria-hidden="true">⚖️</span>
+          {/* 지도 화면 매물 종류 탭 아이콘과 같은 선 아이콘 (저울) */}
+          <span className="compare-cta-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 4v16M8 20h8M5 7h14" />
+              <path d="M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z" />
+            </svg>
+          </span>
           <div className="compare-cta-text">
             <strong>아파트 비교하기</strong>
             <span className="muted small">관심 매물 중 2~3개를 골라 실거래가, 평당가, 준공연도 등을 한눈에 비교해보세요.</span>

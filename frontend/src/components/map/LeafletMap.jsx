@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import './LeafletMap.css';
 import { tierOf } from '../../utils/format';
 import { pinClass, pinHtml, placeHtml } from './markerEls';
+import { SERVICE_CENTER } from '../../constants/regions';
 
 // WebGL 이 안 될 때 쓰는 예비 지도 (Esri 타일, 키 불필요 · 한글 지명 표시)
 // ※ CARTO 타일은 API 키가 필요해져서("API KEY REQUIRED") 사용하지 않음
@@ -12,11 +13,11 @@ import { pinClass, pinHtml, placeHtml } from './markerEls';
 const ROAD_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
 const SAT_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const ATTRIBUTION = 'Tiles &copy; <a href="https://www.esri.com/">Esri</a>';
-const SEOUL = [37.5665, 126.978];
+const CENTER = [SERVICE_CENTER.lat, SERVICE_CENTER.lng];
 
 export default function LeafletMap({
   apartments, activeId, selectedId, onSelect, onBoundsChange, interactive = true, maxZoom = 15, popup, onPinHover,
-  mapType = 'road', places = [], viewedIds, boundary, boundaryPadding,
+  mapType = 'road', places = [], viewedIds, boundaryIds, boundary, boundaryPadding,
 }) {
   const elRef = useRef(null);
   const mapRef = useRef(null);
@@ -38,7 +39,7 @@ export default function LeafletMap({
   // 지도 생성 (한 번)
   useEffect(() => {
     const map = L.map(elRef.current, {
-      center: SEOUL,
+      center: CENTER,
       zoom: 11,
       zoomControl: interactive,
       dragging: interactive,
@@ -122,9 +123,10 @@ export default function LeafletMap({
       const pin = marker.getElement()?.querySelector('.map-pin');
       pin?.classList.toggle('active', on);
       pin?.classList.toggle('viewed', Boolean(viewedIds?.has(id)));
+      pin?.classList.toggle('has-boundary', Boolean(boundaryIds?.has(String(id))));
       marker.setZIndexOffset(on ? 1000 : 0);
     });
-  }, [activeId, selectedId, apartments, viewedIds, ready]);
+  }, [activeId, selectedId, apartments, viewedIds, boundaryIds, ready]);
 
   // 단지 영역 테두리 (클릭한 매물) + 그 영역으로 확대
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SEOUL_GU } from '../constants/regions';
+import { REGIONS } from '../constants/regions';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -32,7 +32,7 @@ export default function PredictForm({ onSubmit, loading }) {
         <span>지역 (구) *</span>
         <select name="gu" value={form.gu} onChange={change}>
           <option value="">선택</option>
-          {SEOUL_GU.map((g) => <option key={g} value={g}>{g}</option>)}
+          {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
         </select>
       </label>
       <label className="field">

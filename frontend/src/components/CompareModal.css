@@ -5,6 +5,8 @@
 .cmp-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; min-width: 560px; }
 .cmp-table th, .cmp-table td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .cmp-label-col { width: 96px; }
+/* 매물끼리 세로 구분선 (항목 이름 칸과 첫 매물 사이는 없음) */
+.cmp-table td + td, .cmp-table thead th + th + th { border-left: 1px solid var(--line); }
 .cmp-table tbody th { color: var(--muted); font-weight: 600; font-size: 13px; white-space: nowrap; }
 .cmp-table thead th { position: sticky; top: 0; background: var(--paper, #fff); border-bottom: 2px solid var(--ink); }
 .cmp-name { display: block; font-size: 16px; letter-spacing: -0.02em; color: var(--ink); }
@@ -39,4 +41,3 @@
 .compare-bar-info small { display: block; font-size: 12px; opacity: 0.7; font-weight: 500; }
 .compare-bar-actions { display: flex; gap: 8px; }
 .compare-bar .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.3); background: transparent; }
-.fav-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; color: var(--muted); }

@@ -173,7 +173,7 @@ export default function Header() {
           </button>
           <nav className="nav" ref={navRef} aria-label="주 메뉴">
             {MAIN_MENUS.map((m) => (
-              <NavLink key={m.to} to={m.to} end={m.end} className={navClass('nav-link')}>{m.label}</NavLink>
+              <NavLink key={m.to} to={m.to} end={m.end} state={{ menu: true }} className={navClass('nav-link')}>{m.label}</NavLink>
             ))}
           </nav>
           <button type="button" className="nav-arrow right" onClick={() => scrollNav(1)} aria-label="다음 메뉴" tabIndex={-1} hidden={!edge.right}>
@@ -210,7 +210,7 @@ export default function Header() {
             )}
             <div className="menu-section">메뉴</div>
             {MAIN_MENUS.map((m) => (
-              <NavLink key={m.to} to={m.to} end={m.end} className={navClass('menu-link')}>
+              <NavLink key={m.to} to={m.to} end={m.end} state={{ menu: true }} className={navClass('menu-link')}>
                 {m.label}{m.desc && <small>{m.desc}</small>}
               </NavLink>
             ))}

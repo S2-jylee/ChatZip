@@ -22,7 +22,7 @@ export async function searchPlaces(kinds, bounds) {
 /**
  * GET /api/places/bus-stops?south=&west=&north=&east=
  * 응답: [{ stopId, name, lat, lng }]
- * 백엔드: 서울 열린데이터광장 "서울시 버스정류소 위치정보"(CSV) 또는 공공데이터포털 TAGO 정류소 API 를 DB 에 적재 후 범위 조회
+ * 백엔드: 경기데이터드림 "경기도 버스정류소 현황" 또는 공공데이터포털 TAGO 정류소 API 를 DB 에 적재 후 범위 조회
  */
 async function busStops(b) {
   if (!USE_MOCK) {

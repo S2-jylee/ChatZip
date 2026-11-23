@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SEOUL_GU } from '../constants/regions';
+import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 
 /** 홈 검색창 — 지역·최대 가격을 받아 매물찾기(/search)로 이동 (클릭 1) */
 export default function SearchBar() {
@@ -21,8 +21,8 @@ export default function SearchBar() {
       <label className="field">
         <span>지역</span>
         <select value={gu} onChange={(e) => setGu(e.target.value)}>
-          <option value="">서울 전체</option>
-          {SEOUL_GU.map((g) => <option key={g} value={g}>{g}</option>)}
+          <option value="">{ALL_REGIONS_LABEL}</option>
+          {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
         </select>
       </label>
       <label className="field">

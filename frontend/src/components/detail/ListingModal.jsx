@@ -94,7 +94,7 @@ export default function ListingModal({ id, onClose, variant = 'modal' }) {
     const rows = [
       ['단지명', apt.name],
       ['주소', apt.address],
-      ['지역', `서울특별시 ${apt.gu} ${apt.dong}`],
+      ['지역', `경기도 ${apt.gu} ${apt.dong}`],
       ['전용면적', formatArea(apt.areaM2)],
       ['층', `${apt.floor}층`],
       ['준공연도', `${apt.builtYear}년 (${new Date().getFullYear() - apt.builtYear}년차)`],

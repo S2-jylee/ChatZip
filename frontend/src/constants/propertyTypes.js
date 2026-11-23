@@ -32,12 +32,12 @@ export const DEAL_TYPES = [
   { key: 'jeonse', label: '전세', priceLabel: '전세 보증금' },
   { key: 'monthly', label: '월세', priceLabel: '보증금 / 월세' },
 ];
-const DEAL_TABS = { apt: ['sale', 'jeonse', 'monthly'], officetel: ['monthly', 'jeonse', 'sale'], store: ['monthly', 'sale'], villa: ['sale', 'jeonse', 'monthly'], oneroom: ['monthly', 'jeonse', 'sale'] };
+const DEAL_TABS = { apt: ['sale', 'jeonse', 'monthly'], officetel: ['monthly', 'jeonse', 'sale'], store: ['monthly', 'jeonse', 'sale'], villa: ['sale', 'jeonse', 'monthly'], oneroom: ['monthly', 'jeonse', 'sale'] };
 export const dealTabsOf = (type) => (DEAL_TABS[type] ?? []).map((k) => DEAL_TYPES.find((d) => d.key === k));
 export const defaultDealOf = (type) => DEAL_TABS[type]?.[0] ?? 'sale';
 export const dealInfo = (deal) => DEAL_TYPES.find((d) => d.key === deal) ?? DEAL_TYPES[0];
 
-// 필터 사이드바 가격 칩 (만원) — 매물 종류 · 거래 종류별 서울 실거래 가격대에 맞춤
+// 필터 사이드바 가격 칩 (만원) — 매물 종류 · 거래 종류별 가격대 (서울 기준으로 만든 값 — 경기도 시세에 맞게 조정 필요)
 // 매매: 매매가 / 전세: 보증금 / 월세: 보증금(price) + 월세(rent) 두 줄
 const ALL = { label: '전체', min: '', max: '' };
 const chip = (label, min, max, title) => ({ label, min: String(min ?? ''), max: String(max ?? ''), title });
@@ -67,6 +67,7 @@ const PRICE_PRESETS = {
   // 상가 · 사무실: 월세 = 보증금 + 월 임대료
   store: {
     sale: [ALL, chip('~3억', '', 30000), chip('3~10억', 30000, 100000), chip('10억~', 100000, '')],
+    jeonse: [ALL, chip('~2억', '', 20000), chip('2~5억', 20000, 50000), chip('5억~', 50000, '')],
     monthly: [ALL, chip('~3천', '', 3000), chip('3천~1억', 3000, 10000), chip('1억~', 10000, '')],
   },
 };

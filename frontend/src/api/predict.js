@@ -1,19 +1,22 @@
-import { aiApi, USE_MOCK } from './client';
+import { api, USE_MOCK } from './client';
+import { pick } from './adapt';
 import * as mock from './mock';
 
 /**
- * POST /predict (FastAPI)
- * 요청: { gu, area_m2, floor, built_year }   ← 학습 컬럼명과 동일 (snake_case)
- * 응답: { predicted_price }                   ← 만원 정수
- * 필드 이름 변환은 이 파일에서만 합니다.
+ * POST /api/price-estimates (Spring → FastAPI /predict, 정리본 "추천·예측": 프론트는 FastAPI 를 직접 부르지 않음)
+ * 요청: 직접 입력한 조건 { region, area, floor, year }  (FastAPI 학습 입력과 같은 이름 — 확정 필요)
+ * 응답: 예상가 · 단위 · 기준일 → 만원 정수만 반환
  */
 export async function predictPrice({ gu, areaM2, floor, builtYear }) {
-  const payload = {
-    gu,
-    area_m2: Number(areaM2),
+  if (USE_MOCK) {
+    const data = await mock.predict({ gu, area_m2: Number(areaM2), floor: Number(floor), built_year: Number(builtYear) });
+    return Math.round(data.predicted_price);
+  }
+  const { data } = await api.post('/api/price-estimates', {
+    region: gu,
+    area: Number(areaM2),
     floor: Number(floor),
-    built_year: Number(builtYear),
-  };
-  const data = USE_MOCK ? await mock.predict(payload) : (await aiApi.post('/predict', payload)).data;
-  return Math.round(data.predicted_price);
+    year: Number(builtYear),
+  });
+  return Math.round(pick(data, 'estimatedPrice', 'predictedPrice', 'price', 'predicted_price'));
 }

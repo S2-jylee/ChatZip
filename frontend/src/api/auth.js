@@ -1,28 +1,32 @@
 import { api, USE_MOCK } from './client';
+import { toUser } from './adapt';
 import * as mock from './mock';
 
-/** GET /api/auth/me — 로그인 상태면 사용자, 아니면 401 */
+/** GET /api/members/me — 로그인 상태면 사용자, 아니면 401 */
 export async function fetchMe() {
   if (USE_MOCK) return mock.me();
-  const { data } = await api.get('/api/auth/me');
-  return data;
+  const { data } = await api.get('/api/members/me');
+  return toUser(data);
 }
 
-/** POST /api/auth/login { loginId, password } */
+/**
+ * POST /api/auth/login { email, password } → 세션
+ * 화면의 아이디 입력값을 email 로 보냄. 응답에 회원 정보가 없으면 /api/members/me 로 확인
+ */
 export async function login(loginId, password) {
   if (USE_MOCK) return mock.login(loginId, password);
-  const { data } = await api.post('/api/auth/login', { loginId, password });
-  return data;
+  const { data } = await api.post('/api/auth/login', { email: loginId, password });
+  return data && typeof data === 'object' ? toUser(data) : fetchMe();
 }
 
-/** POST /api/auth/signup { loginId, password, name } */
+/** POST /api/members { email, password, nickname } → 201 (중복이면 409) */
 export async function signup(form) {
   if (USE_MOCK) return mock.signup(form);
-  const { data } = await api.post('/api/auth/signup', form);
-  return data;
+  const { data } = await api.post('/api/members', { email: form.loginId, password: form.password, nickname: form.name });
+  return toUser(data);
 }
 
-/** POST /api/auth/logout */
+/** POST /api/auth/logout (세션 + CSRF 토큰) */
 export async function logout() {
   if (USE_MOCK) return mock.logout();
   await api.post('/api/auth/logout');

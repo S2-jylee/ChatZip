@@ -76,10 +76,6 @@ export default function FavoritesPage() {
   } else {
     content = (
       <>
-      <div className="fav-toolbar">
-        <span>비교할 매물을 체크하세요 (2~{MAX}개)</span>
-        {checked.length > 0 && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setChecked([])}>선택 해제</button>}
-      </div>
       <ul className="apt-list">
         {items.map(({ favoriteId, createdAt, apartment }) => {
           const on = checked.includes(apartment.aptId);
@@ -138,9 +134,10 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="container section narrow">
+    <div className="container section">
       <header className="page-head">
         <h1>관심 매물 {!loading && !error && <small>{items.length}건</small>}</h1>
+        <p className="muted">저장한 매물을 모아 보고, 2~{MAX}개를 체크해 실거래가 · 평당가 · 준공연도를 비교해 보세요.</p>
       </header>
       {content}
       {comparing && compareList.length >= 2 && (

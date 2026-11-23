@@ -59,11 +59,11 @@ function GuDetail({ gu }) {
 
       <div className="an-kpis">
         <div className="an-kpi"><span>평균 평당가</span><strong>{formatPriceCompact(d.avgPerPyeong)}</strong>
-          <small className={gap >= 0 ? 'up' : 'down'}>서울 평균 대비 {gap >= 0 ? '+' : ''}{gap}%</small></div>
+          <small className={gap >= 0 ? 'up' : 'down'}>전체 지역 평균 대비 {gap >= 0 ? '+' : ''}{gap}%</small></div>
         <div className="an-kpi"><span>평균 거래가</span><strong>{formatPriceCompact(d.avgPrice)}</strong>
           <small>{formatPriceCompact(d.minPrice)} ~ {formatPriceCompact(d.maxPrice)}</small></div>
         <div className="an-kpi"><span>거래 건수</span><strong>{d.count.toLocaleString()}<em>건</em></strong><small>최근 12개월</small></div>
-        <div className="an-kpi"><span>평당가 순위</span><strong>{d.rank}<em>위</em></strong><small>서울 {d.totalGu}개 구 중</small></div>
+        <div className="an-kpi"><span>평당가 순위</span><strong>{d.rank}<em>위</em></strong><small>{d.totalGu}개 구 중</small></div>
       </div>
 
       <div className="an-split">
@@ -87,9 +87,9 @@ function GuDetail({ gu }) {
       <section>
         <h3>최근 거래</h3>
         <ol className="recent-list">
-          {d.recent.map((apt, i) => (
-            <li key={apt.aptId}>
-              <Link to={detailHref(apt.aptId)} className="recent-row">
+          {d.recent.map((apt, i) => {
+            const row = (
+              <>
                 <span className="recent-rank">{i + 1}</span>
                 <span className="recent-info">
                   <strong>{apt.name}</strong>
@@ -97,9 +97,17 @@ function GuDetail({ gu }) {
                 </span>
                 <span className="recent-date muted small">{formatDate(apt.dealDate)}</span>
                 <span className="recent-price">{formatPrice(apt.price)}</span>
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            // 실거래는 등록 매물이 아닐 수 있음 → 매물 번호가 있을 때만 상세로 이동
+            return (
+              <li key={apt.aptId ?? `${apt.dealDate}-${i}`}>
+                {apt.aptId != null
+                  ? <Link to={detailHref(apt.aptId)} className="recent-row">{row}</Link>
+                  : <div className="recent-row">{row}</div>}
+              </li>
+            );
+          })}
         </ol>
       </section>
     </div>
@@ -140,8 +148,15 @@ export default function AnalysisPage() {
       <div className="an-grid">
         <aside className="card an-rank">
           <div className="an-rank-head">
-            <h2>서울 구별 순위</h2>
-            <div className="an-seg" role="tablist" aria-label="순위 기준">
+            <h2>구별 순위</h2>
+            <div
+              className="an-seg"
+              role="tablist"
+              aria-label="순위 기준"
+              style={{ '--i': Math.max(0, RANK_SORTS.findIndex(([k]) => k === sortKey)) }}
+            >
+              {/* 지도 매매 · 전세 · 월세 탭처럼 주황 선택 표시가 옆으로 미끄러짐 */}
+              <span className="an-seg-thumb" aria-hidden="true" />
               {RANK_SORTS.map(([k, l]) => (
                 <button key={k} type="button" role="tab" aria-selected={sortKey === k} className={sortKey === k ? 'on' : ''} onClick={() => setSortKey(k)}>{l}</button>
               ))}
@@ -169,7 +184,7 @@ export default function AnalysisPage() {
     <div className="container section">
       <header className="page-head">
         <h1>지역별분석</h1>
-        <p className="muted">서울 구별 아파트 실거래 시세를 비교하고, 구를 골라 면적 · 연식별 시세를 확인하세요.</p>
+        <p className="muted">성남 · 용인 · 수원 구별 아파트 실거래 시세를 비교하고, 구를 골라 면적 · 연식별 시세를 확인하세요.</p>
       </header>
       {content}
       <p className="muted small source">데이터 출처: {DATA_SOURCE} · 평당가 = 거래가 ÷ (전용면적 ÷ 3.3058)</p>

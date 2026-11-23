@@ -26,8 +26,9 @@ function detailTags(apt) {
  */
 export default function AptListItem({ apt, rank, active, onHover, actions, leading, variant, aiKind }) {
   const detailHref = useDetailHref();
-  const viewed = useViewed().has(apt.aptId);
   const card = variant === 'card';
+  // 본 매물 회색 표시는 검색 목록에서만 — 관심 매물 카드는 저장한 매물이라 전부 진하게
+  const viewed = useViewed().has(apt.aptId) && !card;
   const area = card ? `${Math.round(Number(apt.areaM2))}㎡` : formatArea(apt.areaM2);
   const price = card && apt.dealType !== 'monthly' ? formatPriceCompact(apt.price) : formatDealPrice(apt);
   return (

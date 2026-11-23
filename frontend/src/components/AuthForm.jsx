@@ -9,13 +9,13 @@ export default function AuthForm({ mode, onSubmit, serverError, loading }) {
   const change = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const validate = () => {
-    if (!form.loginId.trim()) return '아이디를 입력해 주세요.';
+    if (!form.loginId.trim()) return '이메일을 입력해 주세요.';
     if (!form.password) return '비밀번호를 입력해 주세요.';
     if (!isSignup) return '';
-    if (!/^[a-zA-Z0-9_]{4,20}$/.test(form.loginId)) return '아이디는 영문·숫자·_ 4~20자로 입력해 주세요.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.loginId.trim())) return '이메일 형식으로 입력해 주세요.';
     if (form.password.length < 8) return '비밀번호는 8자 이상이어야 합니다.';
     if (form.password !== form.passwordConfirm) return '비밀번호 확인이 일치하지 않습니다.';
-    if (!form.name.trim()) return '이름을 입력해 주세요.';
+    if (!form.name.trim()) return '닉네임을 입력해 주세요.';
     return '';
   };
 
@@ -34,8 +34,8 @@ export default function AuthForm({ mode, onSubmit, serverError, loading }) {
   return (
     <form className="form" onSubmit={handleSubmit} noValidate>
       <label className="field">
-        <span>아이디</span>
-        <input name="loginId" autoComplete="username" value={form.loginId} onChange={change} />
+        <span>이메일</span>
+        <input type="email" name="loginId" autoComplete="email" placeholder="example@email.com" value={form.loginId} onChange={change} />
       </label>
       <label className="field">
         <span>비밀번호{isSignup && ' (8자 이상)'}</span>
@@ -48,8 +48,8 @@ export default function AuthForm({ mode, onSubmit, serverError, loading }) {
             <input type="password" name="passwordConfirm" autoComplete="new-password" value={form.passwordConfirm} onChange={change} />
           </label>
           <label className="field">
-            <span>이름</span>
-            <input name="name" autoComplete="name" value={form.name} onChange={change} />
+            <span>닉네임</span>
+            <input name="name" autoComplete="nickname" value={form.name} onChange={change} />
           </label>
         </>
       )}

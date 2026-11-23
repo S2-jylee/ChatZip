@@ -3,17 +3,16 @@ import axios from 'axios';
 // 서버 주소는 .env 한 곳에서만 관리합니다. (기획서 11.1)
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
-/** Spring Boot (:8080) — 세션 쿠키를 보내야 하므로 withCredentials 필수 */
+/**
+ * Spring Boot (:8080) — 세션 쿠키를 보내야 하므로 withCredentials 필수
+ * CSRF: Spring CookieCsrfTokenRepository 의 XSRF-TOKEN 쿠키를 X-XSRF-TOKEN 헤더로 (포트가 달라도 보내도록 withXSRFToken)
+ * AI(FastAPI)는 Spring 을 거쳐서만 호출 (정리본 "추천·예측")
+ */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
   withCredentials: true,
+  withXSRFToken: true,
   timeout: 10000,
-});
-
-/** FastAPI (:8000) — 로그인 불필요 */
-export const aiApi = axios.create({
-  baseURL: import.meta.env.VITE_AI_URL || 'http://localhost:8000',
-  timeout: 5000,
 });
 
 export function statusOf(err) {

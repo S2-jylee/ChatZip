@@ -3,9 +3,18 @@
 .an-rank { padding: 20px; position: sticky; top: calc(var(--header-h) + 16px); }
 .an-rank-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
 .an-rank-head h2 { margin: 0; font-size: 18px; }
-.an-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
-.an-seg button { border: 0; background: none; padding: 7px 4px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; }
-.an-seg button.on { background: var(--paper); color: var(--navy); box-shadow: var(--shadow-sm); }
+.an-seg { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
+/* 선택 표시 = 메인 버튼 주황, 3칸 중 --i 번째로 이동 (index.css .deal-thumb 와 같은 방식) */
+.an-seg-thumb {
+  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 16px) / 3);
+  border-radius: 6px; background: var(--btn);
+  transform: translateX(calc(var(--i) * (100% + 4px)));
+  transition: transform 0.22s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+.an-seg button { position: relative; z-index: 1; border: 0; background: none; padding: 7px 4px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: color 0.2s; }
+.an-seg button:hover { color: var(--ink); }
+.an-seg button.on, .an-seg button.on:hover { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .an-seg-thumb, .an-seg button { transition: none; } }
 .an-rank-list { list-style: none; margin: 0; padding: 0; max-height: calc(100vh - var(--header-h) - 170px); overflow-y: auto; }
 .an-rank-row {
   width: 100%; display: grid; grid-template-columns: 22px 64px 1fr 74px; align-items: center; gap: 8px;

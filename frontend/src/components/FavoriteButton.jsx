@@ -57,8 +57,9 @@ export default function FavoriteButton({ aptId, compact = false, icon = false })
         aria-label={saved ? '찜 해제' : '찜하기'}
         title={saved ? '찜 해제' : '찜하기 (관심 매물)'}
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" />
+        {/* 아래 꼭지점 · 가운데 홈이 또렷하게 직선으로 모이는 하트 (모서리는 둥글게 이음) */}
+        <svg viewBox="0 0 24 24" width="20" height="20" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z" />
         </svg>
       </button>
     );
