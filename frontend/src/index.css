@@ -878,3 +878,23 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 /* 목록 카드: 상세 정보 태그 */
 .apt-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .apt-tags span { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--bg); color: var(--ink-2); }
+
+/* ---------- 헤더: 이름 드롭다운 메뉴 ---------- */
+.user-menu-wrap { position: relative; }
+button.user-pill { font: inherit; cursor: pointer; background: transparent; }
+.user-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 1600; width: 220px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 6px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.2);
+}
+.user-menu-head { display: flex; align-items: center; gap: 10px; padding: 10px 10px 12px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.user-menu-head div { display: flex; flex-direction: column; min-width: 0; }
+.user-menu-head strong { font-size: 15px; color: var(--ink); }
+.user-menu-head small { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-avatar.lg { width: 36px; height: 36px; font-size: 16px; flex: none; }
+.user-menu-item {
+  display: block; width: 100%; padding: 10px 10px; border: 0; border-radius: 8px; background: none; text-align: left;
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); text-decoration: none; cursor: pointer;
+}
+.user-menu-item:hover { background: var(--bg); }
+.user-menu-logout { margin-top: 4px; border-top: 1px solid var(--line); border-radius: 0 0 8px 8px; color: var(--muted); font-weight: 500; }

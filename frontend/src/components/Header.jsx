@@ -5,6 +5,12 @@ import { MAIN_MENUS } from '../constants/menus';
 
 // 메뉴 = 기능 단위 (홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물) — constants/menus.js
 
+// 로그인 이름(○○님) 드롭다운 메뉴 항목
+const USER_LINKS = [
+  { to: '/favorites', label: '관심 매물' },
+  { to: '/search?tab=recommend', label: '맞춤 추천' },
+];
+
 const navClass = (base) => ({ isActive }) => `${base}${isActive ? ' active' : ''}`;
 
 export default function Header() {
@@ -12,6 +18,17 @@ export default function Header() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false); // 모바일 전체 메뉴(오른쪽 패널)
+  const [userOpen, setUserOpen] = useState(false); // PC: 이름 누르면 드롭다운
+  const userRef = useRef(null);
+  useEffect(() => { setUserOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!userOpen) return undefined;
+    const onDown = (e) => { if (!userRef.current?.contains(e.target)) setUserOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setUserOpen(false); };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [userOpen]);
   const navRef = useRef(null);
   // 모바일 메뉴 줄: 양 끝에 더 볼 메뉴가 있으면 ‹ › 버튼 표시
   const [edge, setEdge] = useState({ left: false, right: false });
@@ -95,14 +112,35 @@ export default function Header() {
   let authArea = null;
   if (!checking && user) {
     authArea = (
-      <>
-        {/* 로그인하면 이름 알약 + 로그아웃 */}
-        <span className="user-pill">
+      // 로그인하면 이름 알약 → 누르면 드롭다운 메뉴 (휴대폰은 ☰ 메뉴)
+      <div className="user-menu-wrap" ref={userRef}>
+        <button
+          type="button"
+          className={`user-pill${userOpen ? ' active' : ''}`}
+          aria-haspopup="menu"
+          aria-expanded={userOpen}
+          onClick={() => setUserOpen((v) => !v)}
+        >
           <span className="user-avatar" aria-hidden="true">{user.name?.[0] ?? '?'}</span>
           <span className="user-pill-name"><b>{user.name}</b>님</span>
-        </span>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={handleLogout}>로그아웃</button>
-      </>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: userOpen ? 'rotate(180deg)' : 'none' }}><path d="M6 9l6 6 6-6" /></svg>
+        </button>
+        {userOpen && (
+          <div className="user-menu" role="menu">
+            <div className="user-menu-head">
+              <span className="user-avatar lg" aria-hidden="true">{user.name?.[0] ?? '?'}</span>
+              <div>
+                <strong>{user.name}님</strong>
+                <small>{user.provider === 'kakao' ? '카카오 로그인' : (user.email || user.loginId)}</small>
+              </div>
+            </div>
+            {USER_LINKS.map((l) => (
+              <Link key={l.to} to={l.to} role="menuitem" className="user-menu-item" onClick={() => setUserOpen(false)}>{l.label}</Link>
+            ))}
+            <button type="button" role="menuitem" className="user-menu-item user-menu-logout" onClick={() => { setUserOpen(false); handleLogout(); }}>로그아웃</button>
+          </div>
+        )}
+      </div>
     );
   } else if (!checking) {
     // 로그인 전: 사람 아이콘 하나 → 로그인 모달 (회원가입은 모달 안에서 전환)
