@@ -15,7 +15,7 @@
 .cmp-table td { color: var(--ink); font-weight: 600; }
 .cmp-small { font-size: 12px; font-weight: 500 !important; color: var(--ink-2) !important; }
 .cmp-price { color: var(--navy); font-size: 15px; }
-.cmp-verdict { display: inline-block; margin: 0; font-size: 12px; padding: 4px 8px; }
+.verdict.cmp-verdict { display: inline-block; margin: 0; font-size: 12px; padding: 4px 8px; border-radius: 6px; } /* 상세 화면용 .verdict(위아래 여백 16px)보다 우선 */
 
 /* 항목별 가장 유리한 값 */
 .cmp-table td.is-best { background: var(--primary-soft, var(--btn-soft)); }

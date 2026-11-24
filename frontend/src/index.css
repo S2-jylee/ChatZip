@@ -179,6 +179,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
   background: var(--accent); color: var(--paper);
 }
 .logo-accent { color: var(--accent); }
+.logo-img { display: block; width: auto; height: 44px; } /* 헤더 로고 이미지 (말풍선형 319×191) */
 /* 직방 스타일 메뉴: 굵은 글자, 선택된 메뉴는 색만 바뀜 */
 .nav-wrap { flex: 1; min-width: 0; display: flex; }
 .nav-arrow { display: none; }
@@ -310,6 +311,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .status p { margin: 0; }
 .status strong { color: var(--ink); font-size: 16px; }
 .status a { color: var(--primary); font-weight: 700; }
+.status a.btn-primary { color: var(--paper); text-decoration: none; }
 .status-empty { border: 1.5px dashed var(--line-strong); border-radius: var(--radius); background: var(--paper); }
 .status-error { border: 1px solid var(--danger-line); border-radius: var(--radius); background: var(--danger-wash); }
 .status-error strong { color: var(--danger); }
@@ -696,6 +698,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
   .header-inner { flex-wrap: wrap; height: auto; padding: 0 12px; gap: 0; }
   .logo { height: 52px; font-size: 19px; }
   .logo-mark { width: 28px; height: 28px; }
+  .logo-img { height: 38px; }
   .header-auth { margin-left: auto; }
   .header-auth .user-pill { display: none; } /* 로그인 후엔 ☰ 메뉴에 이름 · 마이페이지 */
   .menu-btn { display: grid; }
@@ -1068,19 +1071,21 @@ button.user-pill { font: inherit; cursor: pointer; background: transparent; }
 
 /* ---------- 관심매물: 카드 보기 | 표 보기 ---------- */
 /* 한 줄: 왼쪽 3단계 띠 · 오른쪽 보기 탭 — 탭을 띠와 같은 높이 · 모서리 · 테두리로 맞춰 한 덩어리로 */
-.fav-toolbar { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
-.fav-toolbar .fav-steps { flex: 1; min-width: 0; margin: 0; }
-.fav-toolbar .fav-view { align-self: stretch; border: 1px solid var(--line); border-radius: var(--radius); }
-.fav-toolbar .fav-view .deal-thumb { border-radius: 10px; }
-.fav-toolbar .fav-view .deal-tab { display: grid; place-items: center; border-radius: 10px; }
-.fav-note-sub { padding-left: 24px; color: var(--muted); }
-.fav-note + .fav-note-sub { margin-top: -8px; } /* 정렬 안내: 위 설명 바로 아래, 글자 줄에 맞춰 들여씀 */
-.fav-view { flex: none; width: 200px; }
+.fav-toolbar { margin-bottom: 16px; }
+.fav-toolbar .fav-steps { margin: 0; }
+/* 목록 바로 위 한 줄: AI 배지 설명(왼쪽) · 보기 전환(오른쪽) */
+.fav-listhead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.fav-listhead .fav-note { margin: 0; flex: 1; min-width: 0; }
+/* 보기 전환: 작고 차분한 아이콘 토글 (선택 = 흰 바탕 · 진한 글자) */
+.fav-view { flex: none; display: inline-flex; gap: 2px; padding: 3px; border-radius: 9px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.fav-view button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color .15s, color .15s; }
+.fav-view button:hover { color: var(--ink); }
+.fav-view button.on { background: var(--paper); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(16, 24, 40, .1); }
 .fav-table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
 .fav-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
 .fav-table th, .fav-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; white-space: nowrap; }
 .fav-table tbody tr:last-child td { border-bottom: 0; }
-.fav-table thead th { font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg); }
+.fav-table thead th { font-size: 12px; font-weight: 700; color: var(--muted); background: var(--paper); border-bottom-color: var(--line-strong); /* 흰 머리줄 + 조금 진한 구분선 → 페이지 배경과 섞이지 않음 */ }
 .fav-table tbody tr { transition: background-color 0.15s; }
 .fav-table tbody tr:hover { background: var(--hero-fade); }
 .fav-table tbody tr.on { background: var(--primary-soft); }
@@ -1097,6 +1102,8 @@ button.user-pill { font: inherit; cursor: pointer; background: transparent; }
 .fav-sort:hover, .fav-sort.on { color: var(--ink); }
 .fav-sort-mark { display: inline-flex; width: 12px; color: var(--btn); }
 .fav-sort-mark .icon.up { transform: rotate(180deg); } /* 오름차순 = 위 화살표 */
+.fav-sort:not(.on) .fav-sort-mark { color: color-mix(in srgb, var(--muted) 60%, transparent); } /* 정렬 안 된 열: 연한 ↕ (누를 수 있다는 표시) */
+.fav-sort:not(.on):hover .fav-sort-mark { color: var(--ink); }
 
 /* ---------- 관심매물: 비교 흐름 3단계 띠 ---------- */
 .fav-steps {
@@ -1113,10 +1120,8 @@ button.user-pill { font: inherit; cursor: pointer; background: transparent; }
 .fav-steps li.now .fav-step-no { background: var(--btn); color: var(--paper); }
 .fav-step-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
 .fav-step-text b { font-size: 15px; color: var(--ink-2); }
-.fav-steps li.now .fav-step-text b { color: var(--ink); }
 .fav-step-text b em { margin-left: 4px; font-style: normal; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 .fav-step-text small { font-size: 13px; color: var(--muted); }
-.fav-step-btn { margin-top: 4px; }
 @media (max-width: 640px) {
   .fav-steps { grid-template-columns: minmax(0, 1fr); }
   .fav-steps li { padding: 12px 16px; }

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FAVORITES_PATH, MAIN_MENUS, RECOMMEND_PATH } from '../constants/menus';
 import { scrollBehavior } from '../utils/motion';
+import logoImg from '../assets/chatzip-logo.png';
 
 // 메뉴 = 기능 단위 (홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물) — constants/menus.js
 
@@ -159,14 +160,7 @@ export default function Header() {
     <header className="header">
       <div className="header-inner">
         <Link to="/" className="logo" aria-label="ChatZip 홈">
-          <span className="logo-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 11l9-7 9 7" />
-              <path d="M5 10v10h14V10" />
-              <path d="M10 20v-5h4v5" />
-            </svg>
-          </span>
-          Chat<span className="logo-accent">Zip</span>
+          <img src={logoImg} alt="ChatZip" className="logo-img" width="319" height="191" />
         </Link>
         {/* PC: 메뉴 한 줄 · 모바일: 둘째 줄 알약 모양 탭 (가로 스크롤) */}
         <div className={`nav-wrap${edge.left ? ' can-left' : ''}${edge.right ? ' can-right' : ''}`}>

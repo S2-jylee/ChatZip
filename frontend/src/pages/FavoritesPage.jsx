@@ -34,9 +34,9 @@ const COLUMNS = [
 
 /**
  * 비교 흐름 3단계 띠 — 메인 "비교하고 고르기"와 같은 순서 (찜하기 → 2~3개 고르기 → 비교하기)
- * 지금 단계를 표시하고, 3단계는 고를 만큼 고르면 바로 비교 창을 여는 버튼
+ * 단계 내용은 그대로 두고 동그라미 번호 색만 바뀜 (비교 창은 아래 비교 바의 [비교하기] 버튼으로 엶)
  */
-function CompareSteps({ count, max, onCompare }) {
+function CompareSteps({ count, max }) {
   const ready = count >= 2;
   const step = ready ? 3 : 2;
   const pickText = count === 0 ? `비교할 매물을 2~${max}개 골라 주세요`
@@ -54,12 +54,7 @@ function CompareSteps({ count, max, onCompare }) {
       </li>
       <li className={step === 3 ? 'now' : ''} aria-current={step === 3 ? 'step' : undefined}>
         <span className="fav-step-no" aria-hidden="true">3</span>
-        <span className="fav-step-text">
-          <b>비교하기</b>
-          {ready
-            ? <button type="button" className="btn btn-primary btn-sm fav-step-btn" onClick={onCompare}>지금 비교하기</button>
-            : <small>실거래가 · 평당가 · 준공연도를 나란히</small>}
-        </span>
+        <span className="fav-step-text"><b>비교하기</b><small>실거래가 · 평당가 · 준공연도를 나란히</small></span>
       </li>
     </ol>
   );
@@ -181,32 +176,30 @@ export default function FavoritesPage() {
   } else {
     content = (
       <>
-      {/* 한 줄: 왼쪽 비교 3단계 띠 · 오른쪽 보기 전환 탭(지도 매매 · 전세 · 월세 탭과 같은 부품, 띠와 같은 높이) — 좁은 화면은 탭 숨김 → 띠만 */}
+      {/* 비교 3단계 띠 (전체 폭) */}
       <div className="fav-toolbar">
-        <CompareSteps count={checked.length} max={MAX} onCompare={() => setComparing(true)} />
+        <CompareSteps count={checked.length} max={MAX} />
+      </div>
+
+      {/* 목록 바로 위 한 줄: 왼쪽 AI 배지 설명 · 오른쪽 작은 보기 전환(아이콘) — 좁은 화면은 카드로만 → 전환 숨김 */}
+      <div className="fav-listhead">
+        {Object.keys(aiKinds).length > 0 ? (
+          <p className="fav-note">
+            <Icon name="info" />
+            <span><b>AI 배지</b>는 거래가를 AI 예상가와 비교한 참고 표시예요. 예상가와 ±5% 이내면 적정가, 그보다 낮으면 저평가, 높으면 고평가로 보여드려요.</span>
+          </p>
+        ) : <span />}
         {!narrow && (
-          <div
-            className="deal-tabs fav-view"
-            role="group"
-            aria-label="보기 방식"
-            style={{ '--n': VIEWS.length, '--i': Math.max(0, VIEWS.findIndex(([k]) => k === view)) }}
-          >
-            <span className="deal-thumb" aria-hidden="true" />
+          <div className="fav-view" role="group" aria-label="보기 방식">
             {VIEWS.map(([k, l]) => (
-              <button key={k} type="button" aria-pressed={view === k} className={`deal-tab${view === k ? ' on' : ''}`} onClick={() => setView(k)}>{l}</button>
+              <button key={k} type="button" aria-pressed={view === k} className={view === k ? 'on' : ''} onClick={() => setView(k)} title={l}>
+                <Icon name={k === 'card' ? 'grid' : 'list'} size={15} />
+                <span>{l.replace(' 보기', '')}</span>
+              </button>
             ))}
           </div>
         )}
       </div>
-
-      {/* 목록 바로 위 설명: AI 배지 뜻 (배지가 있을 때) · 표 정렬 방법 (표 보기일 때) */}
-      {Object.keys(aiKinds).length > 0 && (
-        <p className="fav-note">
-          <Icon name="info" />
-          <span><b>AI 배지</b>는 거래가를 AI 예상가와 비교한 참고 표시예요. 예상가와 ±5% 이내면 적정가, 그보다 낮으면 저평가, 높으면 고평가로 보여드려요.</span>
-        </p>
-      )}
-      {showTable && <p className="fav-note fav-note-sub">열 제목을 누르면 그 기준으로 정렬돼요.</p>}
 
       {showTable ? (
         <div className="fav-table-wrap">
@@ -224,7 +217,7 @@ export default function FavoritesPage() {
                   >
                     <button type="button" className={`fav-sort${sort?.key === k ? ' on' : ''}`} onClick={() => sortBy(k)}>
                       {label}
-                      <span className="fav-sort-mark">{sort?.key === k && <Icon name="chevronDown" size={12} className={sort.dir > 0 ? 'up' : ''} />}</span>
+                      <span className="fav-sort-mark">{sort?.key === k ? <Icon name="chevronDown" size={12} className={sort.dir > 0 ? 'up' : ''} /> : <Icon name="sort" size={12} />}</span>
                     </button>
                   </th>
                 ))}
