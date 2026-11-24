@@ -313,7 +313,9 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 }
 .quicklink:hover { transform: translateY(-3px); border-color: var(--primary); }
 .quicklink-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.quicklink-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--primary-soft); font-size: 22px; }
+.quicklink-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+/* 선 아이콘 (components/Icon.jsx) — 글자와 같은 줄에 놓일 때 높이 맞춤 */
+.icon { flex-shrink: 0; vertical-align: -0.15em; }
 .quicklink-no { font-size: 12px; font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
 .quicklink strong { font-size: 19px; }
 .quicklink p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }

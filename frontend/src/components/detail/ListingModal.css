@@ -91,7 +91,7 @@
 .ratio { display: flex; flex-direction: column; gap: 8px; }
 .ratio-head { display: flex; align-items: baseline; gap: 10px; }
 .ratio-num { font-size: 26px; font-weight: 800; color: var(--ink); }
-.ratio-badge { font-size: 13px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+.ratio-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
 .ratio-ok .ratio-badge { background: #e7f8ee; color: var(--good); }
 .ratio-warn .ratio-badge { background: #fdf3e1; color: #b45309; }
 .ratio-danger .ratio-badge { background: #fdecec; color: var(--danger); }
@@ -124,7 +124,7 @@
 
 /* ---- 계약 전 확인 (빌라) ---- */
 .violation { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; }
-.violation strong { font-size: 14px; }
+.violation strong { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; }
 .violation-ok { background: #e7f8ee; } .violation-ok strong { color: var(--good); }
 .violation-danger { background: #fdecec; } .violation-danger strong { color: var(--danger); }
 .violation-unknown { background: var(--bg); } .violation-unknown strong { color: var(--ink-2); }

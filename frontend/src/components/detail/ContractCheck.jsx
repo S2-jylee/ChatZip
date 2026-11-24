@@ -1,5 +1,7 @@
 // 빌라 계약 전 확인 — 위반건축물 여부(건축물대장) + 체크리스트와 공식 발급 링크
 // 링크는 공공기관 공식 사이트만. 등기부 열람·발급 수수료는 사용자가 인터넷등기소에서 직접 냄 (우리 비용 없음)
+import Icon from '../Icon';
+
 const CHECKS = [
   { title: '등기부등본', desc: '소유자가 계약하는 사람과 같은지, 근저당·압류·가압류가 있는지', href: 'https://www.iros.go.kr', site: '인터넷등기소' },
   { title: '건축물대장', desc: '위반건축물 표시, 용도(주택인지), 전용면적이 계약서와 같은지', href: 'https://www.gov.kr', site: '정부24' },
@@ -21,7 +23,7 @@ export default function ContractCheck({ violation }) {
       <h3 className="modal-h">계약 전 확인</h3>
       {violation !== undefined && (
         <div className={`violation violation-${v.kind}`}>
-          <strong>{v.kind === 'danger' ? '⚠ ' : ''}{v.label}</strong>
+          <strong>{v.kind === 'danger' && <Icon name="alert" size={15} />}{v.label}</strong>
           <span>{v.desc}</span>
         </div>
       )}

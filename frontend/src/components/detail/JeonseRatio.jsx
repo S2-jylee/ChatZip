@@ -3,6 +3,7 @@ import { getJeonseRatio } from '../../api/apartments';
 import { errorMessage, statusOf } from '../../api/client';
 import { formatDate, formatPrice } from '../../utils/format';
 import { ErrorBox, Loading } from '../Status';
+import Icon from '../Icon';
 
 // 전세가율 구간: 70% 미만 보통 · 70~80% 높은 편 · 80% 이상 깡통전세 주의
 function levelOf(ratio) {
@@ -50,7 +51,7 @@ function RatioBody({ data }) {
     <div className={`ratio ratio-${lv.kind}`}>
       <div className="ratio-head">
         <strong className="ratio-num">{data.ratio.toFixed(1)}%</strong>
-        <span className="ratio-badge">{lv.kind === 'danger' ? '⚠ ' : ''}{lv.label}</span>
+        <span className="ratio-badge">{lv.kind === 'danger' && <Icon name="alert" size={13} />}{lv.label}</span>
       </div>
       <div className="ratio-bar" role="img" aria-label={`전세가율 ${data.ratio.toFixed(1)}%, ${lv.label}`}>
         <span className="ratio-zone z-ok" style={{ width: '70%' }} />
