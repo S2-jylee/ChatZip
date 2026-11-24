@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SEARCH_PATH } from '../constants/menus';
 import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 
 /** 홈 검색창 — 지역·최대 가격을 받아 매물찾기(/search)로 이동 (클릭 1) */
@@ -13,7 +14,7 @@ export default function SearchBar() {
     const params = new URLSearchParams();
     if (gu) params.set('gu', gu);
     if (maxPrice) params.set('maxPrice', maxPrice);
-    navigate(`/search?${params.toString()}`);
+    navigate(`${SEARCH_PATH}?${params.toString()}`);
   };
 
   return (

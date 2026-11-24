@@ -11,6 +11,7 @@ import { errorMessage, statusOf } from '../api/client';
 import { formatDate } from '../utils/format';
 import { useAiKinds } from '../utils/useAiKinds';
 import { useTitle } from '../utils/useTitle';
+import { SEARCH_PATH } from '../constants/menus';
 
 export default function FavoritesPage() {
   const { openAuth } = useAuth();
@@ -90,7 +91,7 @@ export default function FavoritesPage() {
   else if (!items.length) {
     content = (
       <Empty title="저장한 관심 매물이 없습니다">
-        <Link to="/search">매물찾기에서 찾아보세요 →</Link>
+        <Link to={SEARCH_PATH}>매물찾기에서 찾아보세요 →</Link>
       </Empty>
     );
   } else {

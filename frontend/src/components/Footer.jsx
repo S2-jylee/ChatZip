@@ -1,10 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
-import { MAIN_MENUS, MAP_PATH } from '../constants/menus';
+import { ANALYSIS_PATH, FAVORITES_PATH, MAIN_MENUS, MAP_PATH, PREDICT_PATH, RECOMMEND_PATH, SEARCH_PATH } from '../constants/menus';
 
-const FIND_LINKS = MAIN_MENUS.filter((m) => ['/search', '/analysis', MAP_PATH].includes(m.to));
+const FIND_LINKS = MAIN_MENUS.filter((m) => [SEARCH_PATH, ANALYSIS_PATH, MAP_PATH].includes(m.to));
 const SERVICE_LINKS = [
-  { to: '/search?tab=recommend', label: '맞춤 추천' },
-  ...MAIN_MENUS.filter((m) => ['/predict', '/favorites'].includes(m.to)),
+  { to: RECOMMEND_PATH, label: '맞춤 추천' },
+  ...MAIN_MENUS.filter((m) => [PREDICT_PATH, FAVORITES_PATH].includes(m.to)),
 ];
 
 /** 사이트 하단 — 지도 화면은 지도가 화면 전체를 쓰므로 표시하지 않음 */

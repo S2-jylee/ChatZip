@@ -18,7 +18,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import { LIVE_APIS, USE_MOCK } from './api/client';
 import SearchPage from './pages/SearchPage';
 import AnalysisPage from './pages/AnalysisPage';
-import { MAP_PATH } from './constants/menus';
+import { ANALYSIS_PATH, FAVORITES_PATH, MAP_PATH, PREDICT_PATH, SEARCH_PATH } from './constants/menus';
 import { DEFAULT_TYPE, isTypeKey } from './constants/propertyTypes';
 
 // 주소에 ?detail={id} 가 있으면 어느 화면이든 매물 상세 모달 (뒤로가기 = 닫기)
@@ -77,16 +77,16 @@ export default function App() {
       <main className="main">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path={SEARCH_PATH} element={<SearchPage />} />
+          <Route path={ANALYSIS_PATH} element={<AnalysisPage />} />
           <Route path={MAP_PATH} element={<MapRoute />} />
           {Object.entries(LEGACY_TYPE_PATHS).map(([p, t]) => (
             <Route key={p} path={p} element={<Redirect to={MAP_PATH} extra={t === 'apt' ? {} : { type: t }} />} />
           ))}
           <Route path="/apartments/:id" element={<DetailPage />} />
-          <Route path="/recommend" element={<Redirect to="/search" extra={{ tab: 'recommend' }} />} />
-          <Route path="/predict" element={<PredictPage />} />
-          <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
+          <Route path="/recommend" element={<Redirect to={SEARCH_PATH} extra={{ tab: 'recommend' }} />} />
+          <Route path={PREDICT_PATH} element={<PredictPage />} />
+          <Route path={FAVORITES_PATH} element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
           {/* 마이페이지 (김미정 html → React, 원본 그대로) */}
           <Route path="/mypage" element={<MypageIndex />} />
           <Route path="/mypage/favorites" element={<MypageFavorites />} />

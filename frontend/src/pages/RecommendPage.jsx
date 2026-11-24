@@ -11,7 +11,6 @@ import { useViewed } from '../utils/viewed';
 
 /** 맞춤 추천 — 매물찾기 화면의 "맞춤 추천" 탭 (embedded) */
 export default function RecommendPage({ embedded = false }) {
-  const initial = null;
   const [results, setResults] = useState(null); // null = 아직 검색 전
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,7 +60,7 @@ export default function RecommendPage({ embedded = false }) {
 
   const body = (
       <div className="two-col">
-        <ConditionForm key={initial ? JSON.stringify(initial) : 'empty'} initial={initial ?? undefined} onSubmit={run} loading={loading} />
+        <ConditionForm onSubmit={run} loading={loading} />
         <section>
           {results && !loading && !error && <h2 className="list-title">추천 결과 {results.length}건</h2>}
           {content}

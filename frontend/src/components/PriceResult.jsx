@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { MAP_PATH } from '../constants/menus';
 import { formatArea, formatPrice, perPyeong } from '../utils/format';
 import Disclaimer from './Disclaimer';
 
@@ -7,7 +8,7 @@ export default function PriceResult({ input, price, guAvg }) {
   const myPerPyeong = perPyeong(price, input.areaM2);
   const vsGu = guAvg ? ((myPerPyeong - guAvg) / guAvg) * 100 : null;
   const area = Number(input.areaM2);
-  const mapLink = `/map?gu=${encodeURIComponent(input.gu)}&minArea=${Math.floor(area - 10)}&maxArea=${Math.ceil(area + 10)}`;
+  const mapLink = `${MAP_PATH}?gu=${encodeURIComponent(input.gu)}&minArea=${Math.floor(area - 10)}&maxArea=${Math.ceil(area + 10)}`;
 
   return (
     <section className="card result">

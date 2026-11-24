@@ -1,11 +1,13 @@
 // 지도 화면 위쪽 매물 종류 탭 (/map?type=…). type 값은 API 쿼리 ?type= 로 그대로 전달됩니다.
 // sample: true = 실거래 DB가 아직 없어 샘플(더미) 데이터로 보여주는 종류 → 탭 · 목록에 "샘플" 표시
+import { MAP_PATH } from './menus';
+
 export const PROPERTY_TYPES = [
-  { type: 'apt', path: '/map', label: '아파트' },
-  { type: 'villa', path: '/map?type=villa', label: '빌라, 투룸', sample: true },
-  { type: 'oneroom', path: '/map?type=oneroom', label: '원룸', sample: true },
-  { type: 'officetel', path: '/map?type=officetel', label: '오피스텔', sample: true },
-  { type: 'store', path: '/map?type=store', label: '상가, 사무실', sample: true },
+  { type: 'apt', path: MAP_PATH, label: '아파트' },
+  { type: 'villa', path: `${MAP_PATH}?type=villa`, label: '빌라, 투룸', sample: true },
+  { type: 'oneroom', path: `${MAP_PATH}?type=oneroom`, label: '원룸', sample: true },
+  { type: 'officetel', path: `${MAP_PATH}?type=officetel`, label: '오피스텔', sample: true },
+  { type: 'store', path: `${MAP_PATH}?type=store`, label: '상가, 사무실', sample: true },
 ];
 export const isTypeKey = (t) => PROPERTY_TYPES.some((x) => x.type === t);
 

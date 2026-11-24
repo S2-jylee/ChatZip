@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Disclaimer from './Disclaimer';
+import { FAVORITES_PATH } from '../constants/menus';
 import { predictPrice } from '../api/predict';
 import { dataSourceOf, typeInfo } from '../constants/propertyTypes';
 import { formatArea, formatDate, formatPrice, perPyeong, verdictOf } from '../utils/format';
@@ -112,7 +113,7 @@ export default function CompareModal({ apartments, onClose }) {
                 {apartments.map((a) => (
                   <th key={a.aptId} scope="col">
                     <strong className="cmp-name">{a.name}</strong>
-                    <Link to={`/favorites?detail=${a.aptId}`} className="cmp-link" onClick={onClose}>상세 보기 →</Link>
+                    <Link to={`${FAVORITES_PATH}?detail=${a.aptId}`} className="cmp-link" onClick={onClose}>상세 보기 →</Link>
                   </th>
                 ))}
               </tr>
