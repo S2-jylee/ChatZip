@@ -31,6 +31,7 @@ function ConditionSearch() {
   const [form, setForm] = useState(applied);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0); // "다시 시도" — 주소가 그대로여도 다시 불러오기
   const key = params.toString();
 
   useEffect(() => { setForm(pick(params)); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -43,7 +44,7 @@ function ConditionSearch() {
       .then((d) => { if (!cancelled) setData(d); })
       .catch((err) => { if (!cancelled) setError(errorMessage(err, '매물을 불러오지 못했습니다.')); });
     return () => { cancelled = true; };
-  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const update = (next) => {
     const p = new URLSearchParams();
@@ -56,7 +57,7 @@ function ConditionSearch() {
   const goPage = (n) => { update({ ...applied, sort, page: n }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   let content;
-  if (error) content = <ErrorBox message={error} onRetry={() => update({ ...applied, sort, page })} />;
+  if (error) content = <ErrorBox message={error} onRetry={() => setReloadKey((n) => n + 1)} />;
   else if (!data) content = <Loading />;
   else if (!data.content.length) content = <Empty title="조건에 맞는 매물이 없습니다">조건을 넓혀 다시 검색해 보세요.</Empty>;
   else {

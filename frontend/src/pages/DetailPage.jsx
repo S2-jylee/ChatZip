@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import AptInfo from '../components/AptInfo';
 import PriceCompare from '../components/PriceCompare';
 import FavoriteButton from '../components/FavoriteButton';
@@ -10,10 +10,14 @@ import { getApartment, searchApartments } from '../api/apartments';
 import { predictPrice } from '../api/predict';
 import { errorMessage, statusOf } from '../api/client';
 import { statsByGu } from '../utils/format';
+import { MAP_PATH } from '../constants/menus';
 
 export default function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  // 공유 링크로 바로 들어온 경우(앱 안 이전 기록 없음) 뒤로 가기 대신 지도로
+  const goBack = () => (location.key === 'default' ? navigate(MAP_PATH) : navigate(-1));
   const [apt, setApt] = useState(null);
   const [state, setState] = useState('loading'); // loading | ok | notfound | error
   const [error, setError] = useState('');
@@ -75,7 +79,7 @@ export default function DetailPage() {
     return (
       <div className="container section">
         <Empty title="존재하지 않는 매물입니다">
-          <Link to="/map">지도 검색으로 돌아가기</Link>
+          <Link to={MAP_PATH}>지도 검색으로 돌아가기</Link>
         </Empty>
       </div>
     );
@@ -84,7 +88,7 @@ export default function DetailPage() {
 
   return (
     <div className="container section">
-      <button type="button" className="back-link" onClick={() => navigate(-1)}>← 목록으로</button>
+      <button type="button" className="back-link" onClick={goBack}>← 목록으로</button>
       <div className="detail-grid">
         <div className="detail-col">
           <AptInfo apt={apt} guAvg={guAvg} />

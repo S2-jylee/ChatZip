@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MAIN_MENUS } from '../constants/menus';
+import { MAIN_MENUS, SHOW_MYPAGE } from '../constants/menus';
 
 // 메뉴 = 기능 단위 (홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물) — constants/menus.js
 
 // 로그인 이름(○○님) 드롭다운 메뉴 항목
 const USER_LINKS = [
-  { to: '/mypage', label: '마이페이지' },
+  ...(SHOW_MYPAGE ? [{ to: '/mypage', label: '마이페이지' }] : []),
   { to: '/favorites', label: '관심 매물' },
   { to: '/search?tab=recommend', label: '맞춤 추천' },
 ];
