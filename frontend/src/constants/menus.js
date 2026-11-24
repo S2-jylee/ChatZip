@@ -3,9 +3,6 @@
 // 매물 종류(아파트 · 빌라 · 원룸 · 오피스텔 · 상가)는 지도 화면 안의 탭으로 (아파트 외는 샘플 데이터)
 export const MAP_PATH = '/map';
 
-// 마이페이지는 아직 공개 전 (원본 이식 상태라 깨진 링크·샘플 데이터가 남아 있음). 공개할 때 true 로
-export const SHOW_MYPAGE = false;
-
 export const MAIN_MENUS = [
   { to: '/', label: '홈', end: true },
   { to: '/search', label: '매물찾기', desc: '조건 검색 · 맞춤 추천' },

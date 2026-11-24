@@ -18,7 +18,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import { LIVE_APIS, USE_MOCK } from './api/client';
 import SearchPage from './pages/SearchPage';
 import AnalysisPage from './pages/AnalysisPage';
-import { MAP_PATH, SHOW_MYPAGE } from './constants/menus';
+import { MAP_PATH } from './constants/menus';
 import { DEFAULT_TYPE, isTypeKey } from './constants/propertyTypes';
 
 // 주소에 ?detail={id} 가 있으면 어느 화면이든 매물 상세 모달 (뒤로가기 = 닫기)
@@ -87,10 +87,10 @@ export default function App() {
           <Route path="/recommend" element={<Redirect to="/search" extra={{ tab: 'recommend' }} />} />
           <Route path="/predict" element={<PredictPage />} />
           <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
-          {/* 마이페이지 (김미정 html → React, 원본 그대로) — 공개 전이라 SHOW_MYPAGE 로 숨김 */}
-          {SHOW_MYPAGE && <Route path="/mypage" element={<MypageIndex />} />}
-          {SHOW_MYPAGE && <Route path="/mypage/favorites" element={<MypageFavorites />} />}
-          {SHOW_MYPAGE && <Route path="/mypage/profile" element={<MypageProfile />} />}
+          {/* 마이페이지 (김미정 html → React, 원본 그대로) */}
+          <Route path="/mypage" element={<MypageIndex />} />
+          <Route path="/mypage/favorites" element={<MypageFavorites />} />
+          <Route path="/mypage/profile" element={<MypageProfile />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<LoginPage mode="signup" />} />
           <Route path="*" element={<NotFoundPage />} />
