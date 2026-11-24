@@ -382,8 +382,8 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
         {hintOn && !detailId && !hovered && !loading && apartments.length > 0 && (
           <div className="map-hint">
             {/* 터치 화면엔 마우스 올림이 없어 짧은 문구 */}
-            <span className="hint-mouse">마커에 마우스를 올리면 요약 · 클릭하면 상세 정보와 단지 영역</span>
-            <span className="hint-touch">마커를 누르면 요약 · 한 번 더 누르면 상세 정보</span>
+            <span className="hint-mouse">마커에 마우스를 올리면 요약, 클릭하면 상세 정보와 단지 영역</span>
+            <span className="hint-touch">마커를 누르면 요약, 한 번 더 누르면 상세 정보</span>
           </div>
         )}
       </section>

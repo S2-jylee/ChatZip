@@ -55,11 +55,10 @@ export default function HomePage() {
       <section className="hero">
         <div className="container hero-wide">
           <div className="hero-copy">
-            <span className="hero-badge">AI 부동산 매물 추천</span>
             <h1 className="hero-title">
               찾고, 비교하고, 한눈에 보는 <span className="text-gradient">Chat Zip</span>
             </h1>
-            <p className="hero-sub">실거래가, 시세, 조건 맞춤 추천까지 — 부동산 탐색을 더 쉽고 똑똑하게</p>
+            <p className="hero-sub">실거래가와 시세 확인부터 AI 맞춤 추천까지, 부동산 탐색을 더 쉽고 똑똑하게</p>
             <SearchBar />
           </div>
         </div>
@@ -72,7 +71,7 @@ export default function HomePage() {
             <h2>실시간 인기 매물 TOP 5</h2>
             <p className="muted">지금 가장 많이 보고 있는 매물을 확인해보세요.</p>
           </div>
-          <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 매물 보기 →</Link>
+          <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 매물 보기</Link>
         </div>
         {popError ? <ErrorBox message="인기 매물을 불러오지 못했습니다." onRetry={loadPopular} />
           : !popular ? <Loading />
@@ -112,7 +111,7 @@ export default function HomePage() {
                 <h2>최근 실거래 TOP 5</h2>
                 <p className="muted">가장 최근에 거래된 주요 매물 시세를 확인하세요.</p>
               </div>
-              <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 보기 →</Link>
+              <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 보기</Link>
             </div>
             {aptError ? <ErrorBox message="최근 실거래를 불러오지 못했습니다." onRetry={loadApartments} />
               : !apartments ? <Loading />
@@ -178,7 +177,7 @@ export default function HomePage() {
             <strong>아파트 비교하기</strong>
             <span className="muted small">관심 매물 중 2~3개를 골라 실거래가, 평당가, 준공연도 등을 한눈에 비교해보세요.</span>
           </div>
-          <Link to={FAVORITES_PATH} className="btn btn-primary btn-sm">비교하러 가기 →</Link>
+          <Link to={FAVORITES_PATH} className="btn btn-primary btn-sm">비교하러 가기</Link>
         </div>
       </section>
     </>

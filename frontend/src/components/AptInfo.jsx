@@ -15,8 +15,8 @@ export default function AptInfo({ apt, guAvg }) {
 
   return (
     <section className="card">
-      <span className="eyebrow">{apt.gu} · {apt.dong}</span>
       <h1 className="detail-title">{apt.name}</h1>
+      <p className="muted detail-loc">{apt.gu} {apt.dong}</p>
 
       <div className="detail-kpis">
         <div className="kpi kpi-main">

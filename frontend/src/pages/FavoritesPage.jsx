@@ -91,7 +91,7 @@ export default function FavoritesPage() {
   else if (!items.length) {
     content = (
       <Empty title="저장한 관심 매물이 없습니다">
-        <Link to={SEARCH_PATH}>매물찾기에서 찾아보세요 →</Link>
+        <Link to={SEARCH_PATH}>매물찾기에서 찾아보세요</Link>
       </Empty>
     );
   } else {
@@ -158,7 +158,7 @@ export default function FavoritesPage() {
     <div className="container section">
       <header className="page-head">
         <h1>관심 매물 {!loading && !error && !needLogin && <small>{items.length}건</small>}</h1>
-        <p className="muted">저장한 매물을 모아 보고, 2~{MAX}개를 체크해 실거래가 · 평당가 · 준공연도를 비교해 보세요.</p>
+        <p className="muted">저장한 매물을 모아 보고, 2~{MAX}개를 체크해 실거래가, 평당가, 준공연도를 비교해 보세요.</p>
       </header>
       {notice && (
         <div className="status status-error" role="alert">

@@ -1,11 +1,4 @@
-/* 마커 위에 뜨는 미리보기 팝업 — 지도 라이브러리 기본 말풍선 스타일 제거 */
-.map-popup-body .preview-card {
-  position: relative;
-  inset: auto;
-  width: 280px;
-  max-width: calc(100vw - 48px);
-  animation: popup-in 0.16s ease-out;
-}
+/* 마커 위에 뜨는 팝업 — 지도 라이브러리 기본 말풍선 스타일 제거 */
 @keyframes popup-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
 
 /* MapLibre (벡터 지도) */
@@ -19,31 +12,22 @@
 .map-popup-leaflet .leaflet-popup-tip-container { display: none; }
 
 /* 카카오맵: 마커 말풍선 높이만큼 위로 */
-.map-popup-kakao { padding-bottom: 46px; }
+.map-popup-kakao { padding-bottom: 48px; }
 
 /* 팝업의 빈 영역(여백·컨테이너)은 마우스를 통과시키고 카드만 받음
    → 팝업이 마커를 덮어 hover 가 풀렸다 잡혔다 하는 깜빡임 방지 */
 .map-popup, .map-popup .maplibregl-popup-content,
 .map-popup-leaflet, .map-popup-leaflet .leaflet-popup-content-wrapper, .map-popup-leaflet .leaflet-popup-content,
 .map-popup-kakao, .map-popup-body { pointer-events: none; }
-.map-popup-body .preview-card { pointer-events: auto; }
 /* 카카오가 팝업을 감싸는 바깥 div — 지도에 붙는 시점이 늦어서 JS 대신 CSS(:has)로 지정 */
 div:has(> .map-popup-kakao) { pointer-events: none !important; }
 
-/* 클릭 카드: 실거래가 한 줄 */
-.preview-price-row {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
-  background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: nowrap;
-}
-.preview-price-row span { font-size: 12px; color: var(--muted); font-weight: 600; }
-.preview-price-row small { font-weight: 500; margin-left: 2px; }
-.preview-price-row strong { font-size: 16px; color: var(--navy); }
 
 /* hover 말풍선: 매물 요약 + 찜 하트 (흰 박스 · 얇은 테두리) */
 .map-tip {
   display: flex; flex-direction: column; gap: 2px; min-width: 220px;
-  background: #fff; border: 1px solid #d9dde5; border-radius: 6px; padding: 10px 12px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16); white-space: nowrap;
+  background: var(--paper); border: 1px solid var(--line-cool); border-radius: 6px; padding: 8px 12px;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--scrim-ink) 16%, transparent); white-space: nowrap;
   pointer-events: auto; /* 하트를 누를 수 있게 */
   animation: popup-in 0.12s ease-out;
 }
@@ -52,12 +36,12 @@ div:has(> .map-popup-kakao) { pointer-events: none !important; }
 .map-tip-meta { font-size: 12px; color: var(--muted); }
 .map-tip-price {
   display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line);
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
 }
 /* 터치 화면: 말풍선 안 '상세 정보 보기' 버튼 (손가락으로 누르기 좋게 높이 확보) */
 .map-tip-more {
   margin-top: 8px; padding: 8px 0; border: 0; border-radius: 6px;
-  background: var(--btn-soft, #fff3e8); color: var(--btn, #f47b20);
+  background: var(--btn-soft, var(--accent-wash)); color: var(--btn, var(--accent));
   font: inherit; font-size: 13px; font-weight: 800; cursor: pointer;
 }
 .map-tip-price span { font-size: 12px; color: var(--muted); font-weight: 600; }
@@ -70,8 +54,8 @@ div:has(> .map-popup-kakao) { pointer-events: none !important; }
   display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0;
   border: 0; border-radius: 50%; background: transparent; cursor: pointer;
 }
-.heart-btn svg { fill: none; stroke: #e5484d; stroke-width: 1.8; transition: transform 0.12s, fill 0.12s; }
-.heart-btn:hover { background: #fdecec; }
+.heart-btn svg { fill: none; stroke: var(--heart); stroke-width: 1.8; transition: transform 0.12s, fill 0.12s; }
+.heart-btn:hover { background: var(--danger-soft); }
 .heart-btn:hover svg { transform: scale(1.1); }
-.heart-btn.on svg { fill: #e5484d; }
+.heart-btn.on svg { fill: var(--heart); }
 .heart-btn:disabled { opacity: 0.6; cursor: wait; }

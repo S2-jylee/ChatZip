@@ -59,7 +59,7 @@ function GuDetail({ gu }) {
         <div>
           <h2>{d.gu} 아파트 시세</h2>
         </div>
-        <Link to={`${MAP_PATH}?gu=${encodeURIComponent(d.gu)}`} className="btn btn-ghost btn-sm">지도에서 보기 →</Link>
+        <Link to={`${MAP_PATH}?gu=${encodeURIComponent(d.gu)}`} className="btn btn-ghost btn-sm">지도에서 보기</Link>
       </div>
 
       <div className="an-kpis">
@@ -193,7 +193,7 @@ export default function AnalysisPage() {
     <div className="container section">
       <header className="page-head">
         <h1>지역별분석</h1>
-        <p className="muted">성남 · 용인 · 수원 구별 아파트 실거래 시세를 비교하고, 구를 골라 면적 · 연식별 시세를 확인하세요.</p>
+        <p className="muted">성남, 용인, 수원의 구별 아파트 실거래 시세를 비교하고, 구를 골라 면적별, 연식별 시세를 확인하세요.</p>
       </header>
       {content}
       <p className="muted small source">데이터 출처: {DATA_SOURCE} · 평당가 = 거래가 ÷ (전용면적 ÷ 3.3058)</p>

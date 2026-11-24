@@ -1,8 +1,10 @@
+/* Hallmark · checked: 2026-11-24 · genre: modern-minimal (inferred) · stamp in index.css
+ * built: the project · redesign: polish · v2.0.0 */
 /* ---------- 지역별분석 ---------- */
 .an-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start; }
 .an-rank { padding: 20px; position: sticky; top: calc(var(--header-h) + 16px); }
-.an-rank-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-.an-rank-head h2 { margin: 0; font-size: 18px; }
+.an-rank-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.an-rank-head h2 { margin: 0; font-size: 18px; text-wrap: balance; }
 .an-seg { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
 /* 선택 표시 = 메인 버튼 주황, 3칸 중 --i 번째로 이동 (index.css .deal-thumb 와 같은 방식) */
 .an-seg-thumb {
@@ -11,9 +13,9 @@
   transform: translateX(calc(var(--i) * (100% + 4px)));
   transition: transform 0.22s cubic-bezier(0.3, 0.8, 0.3, 1);
 }
-.an-seg button { position: relative; z-index: 1; border: 0; background: none; padding: 7px 4px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: color 0.2s; }
+.an-seg button { position: relative; z-index: 1; border: 0; background: none; padding: 8px 4px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: color 0.2s; }
 .an-seg button:hover { color: var(--ink); }
-.an-seg button.on, .an-seg button.on:hover { color: #fff; }
+.an-seg button.on, .an-seg button.on:hover { color: var(--paper); }
 @media (prefers-reduced-motion: reduce) { .an-seg-thumb, .an-seg button { transition: none; } }
 .an-rank-list { list-style: none; margin: 0; padding: 0; max-height: calc(100vh - var(--header-h) - 170px); overflow-y: auto; }
 .an-rank-row {
@@ -30,20 +32,20 @@
 .an-rank-val { font-size: 13px; font-weight: 800; text-align: right; white-space: nowrap; }
 
 .an-main { padding: 24px 28px; min-width: 0; scroll-margin-top: calc(var(--header-h) + 12px); }
-.an-detail { display: flex; flex-direction: column; gap: 26px; }
+.an-detail { display: flex; flex-direction: column; gap: 24px; }
 .an-detail h3 { font-size: 16px; margin: 0 0 12px; }
 .an-detail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .an-detail-head h2 { margin: 4px 0 0; font-size: 24px; }
 .an-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .an-kpi { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .an-kpi span { font-size: 13px; color: var(--muted); font-weight: 700; }
-.an-kpi strong { font-size: 24px; font-weight: 900; color: var(--navy); white-space: nowrap; }
+.an-kpi strong { font-size: 24px; font-weight: 800; color: var(--navy); white-space: nowrap; }
 .an-kpi strong em { font-style: normal; font-size: 14px; color: var(--muted); margin-left: 2px; }
 .an-kpi small { font-size: 12px; color: var(--muted); font-weight: 600; }
 .an-kpi small.up { color: var(--danger); }
 .an-kpi small.down { color: var(--primary); }
 .an-split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.an-bar { display: grid; grid-template-columns: 78px 1fr 96px; align-items: center; gap: 10px; padding: 7px 0; }
+.an-bar { display: grid; grid-template-columns: 78px 1fr 96px; align-items: center; gap: 8px; padding: 8px 0; }
 .an-bar-label { font-size: 13px; font-weight: 700; color: var(--ink-2); }
 .an-bar-track { height: 10px; background: var(--bg); border-radius: 0 4px 4px 0; overflow: hidden; }
 .an-bar-track div { height: 100%; background: var(--primary); border-radius: 0 4px 4px 0; }
@@ -57,7 +59,7 @@
   .an-kpis { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .an-main { padding: 18px 16px; }
+  .an-main { padding: 16px 16px; }
   .an-split { grid-template-columns: 1fr; }
   .an-detail-head { flex-wrap: wrap; align-items: flex-start; }
   .an-kpi strong { font-size: 20px; }

@@ -1,4 +1,4 @@
-.maplibregl-map { font-family: inherit; background: #f8f7f4; }
+.maplibregl-map { font-family: inherit; background: var(--map-ground); }
 .pin-ml { cursor: pointer; }
 .pin-ml .map-pin { position: relative; }
 .maplibregl-ctrl-attrib { font-size: 11px; }

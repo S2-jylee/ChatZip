@@ -36,7 +36,7 @@ export default function MapTooltip({ apt, onEnter, onLeave, onDetail }) {
       </div>
       {/* 터치 화면용: 말풍선에서 바로 상세로 */}
       {onDetail && (
-        <button type="button" className="map-tip-more" onClick={onDetail}>상세 정보 보기 ›</button>
+        <button type="button" className="map-tip-more" onClick={onDetail}>상세 정보 보기</button>
       )}
     </div>
   );

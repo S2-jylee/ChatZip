@@ -1,14 +1,16 @@
+/* Hallmark · checked: 2026-11-24 · genre: modern-minimal (inferred) · stamp in index.css
+ * built: the project · redesign: polish · v2.0.0 */
 /* ---------- 로그인 · 회원가입 모달 ---------- */
 .auth-backdrop {
   position: fixed; inset: 0; z-index: 6000;
-  background: rgba(15, 23, 42, 0.45);
+  background: color-mix(in srgb, var(--scrim-ink) 45%, transparent);
   display: grid; place-items: center; padding: 24px 16px; overflow-y: auto;
   animation: auth-fade 0.15s ease-out;
 }
 .auth-modal {
   position: relative; width: min(440px, 100%);
-  background: var(--paper); border-radius: 18px; padding: 32px 28px 26px;
-  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.28);
+  background: var(--paper); border-radius: 18px; padding: 32px 28px 24px;
+  box-shadow: 0 24px 64px color-mix(in srgb, var(--scrim-ink) 28%, transparent);
   animation: auth-in 0.18s ease-out;
 }
 @keyframes auth-fade { from { opacity: 0; } }
@@ -18,23 +20,23 @@
   border: 0; background: transparent; font-size: 24px; line-height: 1; color: var(--muted); cursor: pointer;
 }
 .auth-close:hover { background: var(--bg); color: var(--ink); }
-.auth-title { margin: 0 0 20px; font-size: 28px; font-weight: 900; letter-spacing: -0.03em; color: var(--navy); }
+.auth-title { margin: 0 0 20px; font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--navy); }
 
 .auth-modal .form .btn-primary { background: var(--btn); border-color: var(--btn); }
 
 /* 로그인 · 카카오 버튼: 아이콘은 맨 왼쪽, 글자는 가운데 */
 .auth-btn { position: relative; height: 52px; border-radius: 8px; font-size: 16px; font-weight: 800; }
 .auth-btn-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; }
-/* 카카오 — 카카오 로그인 디자인 가이드 색 (#FEE500 바탕 · #191919 글자/로고) */
+/* 카카오 — 카카오 로그인 디자인 가이드 색 (#FEE500 바탕 · #191919 글자/로고, 토큰은 index.css) */
 .btn-kakao {
   width: 100%; border: 0; display: flex; align-items: center; justify-content: center;
-  background: #fee500; color: #191919; cursor: pointer;
+  background: var(--kakao); color: var(--kakao-ink); cursor: pointer;
 }
-.btn-kakao:hover:not(:disabled) { background: #f5dc00; }
-.btn-kakao:disabled { opacity: 0.6; cursor: default; }
+.btn-kakao:hover:not(:disabled) { background: var(--kakao-hover); }
+.btn-kakao:disabled { background: var(--neutral-soft); color: var(--muted); cursor: not-allowed; }
 .auth-kakao-note { margin: 8px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
 
-.auth-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; color: var(--muted); font-size: 13px; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; color: var(--muted); font-size: 13px; }
 .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
 .auth-switch { margin: 20px 0 0; text-align: center; font-size: 15px; color: var(--ink-2); }
@@ -44,6 +46,6 @@
 }
 
 @media (max-width: 600px) {
-  .auth-modal { padding: 28px 20px 22px; }
+  .auth-modal { padding: 28px 20px 24px; }
   .auth-title { font-size: 24px; }
 }

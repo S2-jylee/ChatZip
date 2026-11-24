@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AptListItem from '../components/AptListItem';
+import Icon from '../components/Icon';
 import { Empty, ErrorBox, Loading } from '../components/Status';
 import { searchPaged } from '../api/apartments';
 import { errorMessage } from '../api/client';
@@ -85,12 +86,12 @@ function ConditionSearch() {
         </ul>
         {data.totalPages > 1 && (
           <nav className="pager" aria-label="페이지">
-            <button type="button" disabled={data.page === 0} onClick={() => goPage(data.page - 1)} aria-label="이전 페이지">‹</button>
+            <button type="button" disabled={data.page === 0} onClick={() => goPage(data.page - 1)} aria-label="이전 페이지"><Icon name="chevronLeft" /></button>
             {pageItems(data.page, data.totalPages).map((i) => (typeof i === 'string'
               ? <span key={i} className="pager-gap" aria-hidden="true">…</span>
               : <button key={i} type="button" className={i === data.page ? 'on' : ''} aria-current={i === data.page ? 'page' : undefined} aria-label={`${i + 1}페이지`} onClick={() => goPage(i)}>{i + 1}</button>
             ))}
-            <button type="button" disabled={data.page >= data.totalPages - 1} onClick={() => goPage(data.page + 1)} aria-label="다음 페이지">›</button>
+            <button type="button" disabled={data.page >= data.totalPages - 1} onClick={() => goPage(data.page + 1)} aria-label="다음 페이지"><Icon name="chevronRight" /></button>
           </nav>
         )}
       </>
@@ -172,7 +173,7 @@ export default function SearchPage() {
     <div className="container section">
       <header className="page-head">
         <h1>매물찾기</h1>
-        <p className="muted">성남 · 용인 · 수원 아파트 매물을 조건으로 검색하거나, 예산에 맞춰 추천받으세요.</p>
+        <p className="muted">성남, 용인, 수원의 아파트 매물을 조건으로 검색하거나, 예산에 맞춰 추천받으세요.</p>
       </header>
       <div className="page-tabs" role="tablist" aria-label="찾는 방법" onKeyDown={onTabKey}>
         {TABS.map(([k, label]) => (

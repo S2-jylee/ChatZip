@@ -19,7 +19,7 @@ export default function Footer() {
           <Link to="/" className="footer-logo" aria-label="ChatZip 홈">
             Chat<span className="logo-accent">Zip</span>
           </Link>
-          <p>경기도(성남 · 용인 · 수원) 매물 검색 · 지역 분석 · AI 예상가 서비스</p>
+          <p>경기도 성남, 용인, 수원의 매물 검색과 지역 분석, AI 예상가 서비스</p>
         </div>
 
         <nav className="footer-links" aria-label="하단 메뉴">

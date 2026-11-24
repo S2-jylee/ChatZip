@@ -155,8 +155,8 @@ export default function ListingModal({ id, onClose, variant = 'modal' }) {
     <header className="modal-head">
       <div>
         {isSide && <button type="button" className="side-back" onClick={onClose}>← 목록</button>}
-        {apt && <span className="eyebrow">{typeInfo(apt.type).label} · {apt.gu} {apt.dong}</span>}
         <h2 className="modal-title">{apt?.name ?? '매물 상세'}</h2>
+        {apt && <p className="muted small modal-sub">{typeInfo(apt.type).label}, {apt.gu} {apt.dong}</p>}
       </div>
       <div className="modal-head-actions">
         {apt && <FavoriteButton aptId={apt.aptId} compact />}
