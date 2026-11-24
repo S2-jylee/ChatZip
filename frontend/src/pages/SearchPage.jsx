@@ -6,6 +6,8 @@ import { searchPaged } from '../api/apartments';
 import { errorMessage } from '../api/client';
 import { ALL_REGIONS_LABEL, REGIONS } from '../constants/regions';
 import RecommendPage from './RecommendPage';
+import { scrollBehavior } from '../utils/motion';
+import { useTitle } from '../utils/useTitle';
 
 const FILTER_KEYS = ['q', 'gu', 'minPrice', 'maxPrice', 'minArea', 'maxArea', 'minBuiltYear', 'maxWalk'];
 const SORTS = [
@@ -69,7 +71,7 @@ function ConditionSearch() {
   const change = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const submit = (e) => { e.preventDefault(); update({ ...form, sort, page: 0 }); };
   const reset = () => update({ sort });
-  const goPage = (n) => { update({ ...applied, sort, page: n }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const goPage = (n) => { update({ ...applied, sort, page: n }); window.scrollTo({ top: 0, behavior: scrollBehavior() }); };
 
   let content;
   if (error) content = <ErrorBox message={error} onRetry={() => setReloadKey((n) => n + 1)} />;
@@ -153,6 +155,7 @@ function ConditionSearch() {
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
   const tab = params.get('tab') === 'recommend' ? 'recommend' : 'search';
+  useTitle(tab === 'recommend' ? '맞춤 추천 · 매물찾기' : '매물찾기');
   const pickTab = (k) => setParams(k === 'search' ? {} : { tab: k });
   // 탭 키보드 이동: ← → Home End (선택된 탭만 Tab 키로 들어감)
   const onTabKey = (e) => {

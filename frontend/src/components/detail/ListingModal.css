@@ -134,3 +134,10 @@
 .check-list strong { font-size: 14px; }
 .check-link { flex: none; font-size: 12px; font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
 .check-link:hover { text-decoration: underline; }
+
+/* ---------- 확인 창 (ConfirmDialog) ---------- */
+.confirm-modal { width: min(400px, 100%); padding: 24px; }
+.confirm-title { margin: 0 0 8px; font-size: 18px; letter-spacing: -0.02em; }
+.confirm-modal p { margin: 0; line-height: 1.5; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+@media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal { animation: none; } }

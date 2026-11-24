@@ -7,6 +7,8 @@ import { DATA_SOURCE } from '../constants/regions';
 import { MAP_PATH } from '../constants/menus';
 import { formatDate, formatPrice, formatPriceCompact } from '../utils/format';
 import { useDetailHref } from '../utils/detailLink';
+import { scrollBehavior } from '../utils/motion';
+import { useTitle } from '../utils/useTitle';
 import './AnalysisPage.css';
 
 const RANK_SORTS = [
@@ -30,6 +32,7 @@ function GuDetail({ gu }) {
   const detailHref = useDetailHref();
   const [d, setD] = useState(null);
   const [error, setError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,14 +42,16 @@ function GuDetail({ gu }) {
       .then((x) => { if (!cancelled) setD(x); })
       .catch((err) => { if (!cancelled) setError(errorMessage(err, '통계를 불러오지 못했습니다.')); });
     return () => { cancelled = true; };
-  }, [gu]);
+  }, [gu, reloadKey]);
 
-  if (error) return <ErrorBox message={error} />;
+  if (error) return <ErrorBox message={error} onRetry={() => setReloadKey((n) => n + 1)} />;
   if (!d) return <Loading />;
 
-  const gap = Math.round(((d.avgPerPyeong - d.seoulAvgPerPyeong) / d.seoulAvgPerPyeong) * 100);
-  const maxArea = Math.max(...d.byArea.map((b) => b.avgPerPyeong));
-  const maxAge = Math.max(...d.byAge.map((b) => b.avgPerPyeong));
+  // 전체 평균이 0이면 비교 불가(null), 구간 데이터가 비면 막대 기준 1 → NaN · Infinity 방지
+  const gap = d.seoulAvgPerPyeong ? Math.round(((d.avgPerPyeong - d.seoulAvgPerPyeong) / d.seoulAvgPerPyeong) * 100) : null;
+  const maxOf = (rows) => Math.max(1, ...(rows ?? []).map((b) => b.avgPerPyeong || 0));
+  const maxArea = maxOf(d.byArea);
+  const maxAge = maxOf(d.byAge);
 
   return (
     <div className="an-detail">
@@ -59,7 +64,7 @@ function GuDetail({ gu }) {
 
       <div className="an-kpis">
         <div className="an-kpi"><span>평균 평당가</span><strong>{formatPriceCompact(d.avgPerPyeong)}</strong>
-          <small className={gap >= 0 ? 'up' : 'down'}>전체 지역 평균 대비 {gap >= 0 ? '+' : ''}{gap}%</small></div>
+          {gap !== null && <small className={gap >= 0 ? 'up' : 'down'}>전체 지역 평균 대비 {gap >= 0 ? '+' : ''}{gap}%</small>}</div>
         <div className="an-kpi"><span>평균 거래가</span><strong>{formatPriceCompact(d.avgPrice)}</strong>
           <small>{formatPriceCompact(d.minPrice)} ~ {formatPriceCompact(d.maxPrice)}</small></div>
         <div className="an-kpi"><span>거래 건수</span><strong>{d.count.toLocaleString()}<em>건</em></strong><small>최근 12개월</small></div>
@@ -69,14 +74,16 @@ function GuDetail({ gu }) {
       <div className="an-split">
         <section>
           <h3>면적대별 평균 평당가</h3>
-          {d.byArea.map((b) => (
+          {!d.byArea?.length && <p className="muted small">면적대별 거래가 없습니다.</p>}
+          {(d.byArea ?? []).map((b) => (
             <Bar key={b.label} label={b.label} value={b.avgPerPyeong} max={maxArea}
               text={b.count ? formatPriceCompact(b.avgPerPyeong) : '거래 없음'} sub={b.count ? `${b.count}건` : ''} />
           ))}
         </section>
         <section>
           <h3>준공 연식별 평균 평당가</h3>
-          {d.byAge.map((b) => (
+          {!d.byAge?.length && <p className="muted small">연식별 거래가 없습니다.</p>}
+          {(d.byAge ?? []).map((b) => (
             <Bar key={b.label} label={b.label} value={b.avgPerPyeong} max={maxAge}
               text={b.count ? formatPriceCompact(b.avgPerPyeong) : '거래 없음'} sub={b.count ? `${b.count}건` : ''} />
           ))}
@@ -86,8 +93,9 @@ function GuDetail({ gu }) {
 
       <section>
         <h3>최근 거래</h3>
+        {!d.recent?.length && <p className="muted small">최근 거래가 없습니다.</p>}
         <ol className="recent-list">
-          {d.recent.map((apt, i) => {
+          {(d.recent ?? []).map((apt, i) => {
             const row = (
               <>
                 <span className="recent-rank">{i + 1}</span>
@@ -120,6 +128,7 @@ export default function AnalysisPage() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
   const [sortKey, setSortKey] = useState('avgPerPyeong');
+  useTitle(params.get('gu') ? `${params.get('gu')} 시세 · 지역별분석` : '지역별분석');
 
   const load = () => {
     setError('');
@@ -134,7 +143,7 @@ export default function AnalysisPage() {
   const select = (gu) => {
     setParams({ gu }, { replace: true });
     if (window.matchMedia('(max-width: 1000px)').matches) {
-      document.querySelector('.an-main')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('.an-main')?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     }
   };
   const valueText = (s) => (sortKey === 'count' ? `${s.count}건` : formatPriceCompact(s[sortKey]));

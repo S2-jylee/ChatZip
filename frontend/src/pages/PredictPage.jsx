@@ -6,13 +6,17 @@ import { predictPrice } from '../api/predict';
 import { searchApartments } from '../api/apartments';
 import { errorMessage } from '../api/client';
 import { statsByGu } from '../utils/format';
+import { useTitle } from '../utils/useTitle';
 
 export default function PredictPage() {
   const [result, setResult] = useState(null); // { input, price, guAvg }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [lastInput, setLastInput] = useState(null); // 다시 시도용
+  useTitle('AI 가격 예측');
 
   const run = async (input) => {
+    setLastInput(input);
     setLoading(true);
     setError('');
     try {
@@ -32,9 +36,9 @@ export default function PredictPage() {
 
   let content;
   if (loading) content = <Loading text="AI가 가격을 예측하는 중…" />;
-  else if (error) content = <ErrorBox message={error} />;
+  else if (error) content = <ErrorBox message={error} onRetry={lastInput ? () => run(lastInput) : undefined} />;
   else if (result) content = <PriceResult input={result.input} price={result.price} guAvg={result.guAvg} />;
-  else content = <Empty title="결과가 여기에 표시됩니다">왼쪽에 아파트 정보를 입력해 주세요.</Empty>;
+  else content = <Empty title="결과가 여기에 표시됩니다">아파트 정보를 입력하고 예측해 보세요.</Empty>;
 
   return (
     <div className="container section">

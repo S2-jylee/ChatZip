@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { MAIN_MENUS } from '../constants/menus';
+import { scrollBehavior } from '../utils/motion';
 
 // 메뉴 = 기능 단위 (홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물) — constants/menus.js
 
@@ -49,7 +50,7 @@ export default function Header() {
   }, []);
   const scrollNav = (dir) => {
     const nav = navRef.current;
-    nav?.scrollBy({ left: dir * nav.clientWidth * 0.6, behavior: 'smooth' });
+    nav?.scrollBy({ left: dir * nav.clientWidth * 0.6, behavior: scrollBehavior() });
   };
 
   const handleLogout = async () => {
@@ -64,7 +65,7 @@ export default function Header() {
     const nav = navRef.current;
     const el = nav?.querySelector('.nav-link.active');
     if (nav && el && nav.scrollWidth > nav.clientWidth) {
-      nav.scrollTo({ left: el.offsetLeft - (nav.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
+      nav.scrollTo({ left: el.offsetLeft - (nav.clientWidth - el.offsetWidth) / 2, behavior: scrollBehavior() });
     }
   }, [pathname]);
 

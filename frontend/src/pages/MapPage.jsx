@@ -13,6 +13,7 @@ import { searchPlaces } from '../api/places';
 import { errorMessage } from '../api/client';
 import { cleanParams } from '../utils/format';
 import { useViewed } from '../utils/viewed';
+import { useTitle } from '../utils/useTitle';
 import { DEFAULT_TYPE, FILTER_KEYS, PROPERTY_TYPES, dealTabsOf, defaultDealOf } from '../constants/propertyTypes';
 import { EXTRA_KINDS_BY_TYPE, placeKind } from '../constants/placeKinds';
 
@@ -41,6 +42,7 @@ const inBounds =(a, b) => a.lat >= b.south && a.lat <= b.north && a.lng >= b.wes
 
 export default function MapPage({ type = DEFAULT_TYPE }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  useTitle('지도');
   const [apartments, setApartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

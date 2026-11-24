@@ -1,30 +1,45 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import FavoriteButton from '../components/FavoriteButton';
-import { Loading } from '../components/Status';
+import { Empty, ErrorBox, Loading } from '../components/Status';
 import { getPopular, searchApartments } from '../api/apartments';
 import { DATA_SOURCE } from '../constants/regions';
 import { formatDate, formatPrice, statsByGu } from '../utils/format';
 import { useDetailHref } from '../utils/detailLink';
 import { photoOf } from '../utils/photo';
+import { useTitle } from '../utils/useTitle';
 
 
 export default function HomePage() {
   const detailHref = useDetailHref();
   const [apartments, setApartments] = useState(null);
   const [popular, setPopular] = useState(null);
+  const [aptError, setAptError] = useState(false);
+  const [popError, setPopError] = useState(false);
+  useTitle(''); // 홈은 기본 제목
 
-  useEffect(() => {
+  // 섹션별로 따로 불러오고, 실패하면 그 섹션에만 "다시 시도"
+  const loadApartments = useCallback(() => {
     let cancelled = false;
+    setApartments(null);
+    setAptError(false);
     searchApartments({})
       .then((data) => { if (!cancelled) setApartments(data); })
-      .catch(() => { if (!cancelled) setApartments([]); });
-    getPopular(5)
-      .then((data) => { if (!cancelled) setPopular(data); })
-      .catch(() => { if (!cancelled) setPopular([]); });
+      .catch(() => { if (!cancelled) setAptError(true); });
     return () => { cancelled = true; };
   }, []);
+  const loadPopular = useCallback(() => {
+    let cancelled = false;
+    setPopular(null);
+    setPopError(false);
+    getPopular(5)
+      .then((data) => { if (!cancelled) setPopular(data); })
+      .catch(() => { if (!cancelled) setPopError(true); });
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => loadApartments(), [loadApartments]);
+  useEffect(() => loadPopular(), [loadPopular]);
 
   const guStats = useMemo(() => statsByGu(apartments ?? []), [apartments]);
   const recent = useMemo(
@@ -58,7 +73,10 @@ export default function HomePage() {
           </div>
           <Link to="/search" className="btn btn-ghost btn-sm">전체 매물 보기 →</Link>
         </div>
-        {!popular ? <Loading /> : (
+        {popError ? <ErrorBox message="인기 매물을 불러오지 못했습니다." onRetry={loadPopular} />
+          : !popular ? <Loading />
+          : !popular.length ? <Empty title="아직 인기 매물이 없습니다" />
+          : (
           <ol className="pop-grid">
             {popular.map((apt, i) => (
               <li key={apt.aptId} className="pop-card">
@@ -95,7 +113,10 @@ export default function HomePage() {
               </div>
               <Link to="/search" className="btn btn-ghost btn-sm">전체 보기 →</Link>
             </div>
-            {!apartments ? <Loading /> : (
+            {aptError ? <ErrorBox message="최근 실거래를 불러오지 못했습니다." onRetry={loadApartments} />
+              : !apartments ? <Loading />
+              : !recent.length ? <Empty title="최근 거래가 없습니다" />
+              : (
               <ol className="recent-list">
                 {recent.map((apt, i) => (
                   <li key={apt.aptId}>
@@ -119,7 +140,10 @@ export default function HomePage() {
               <h2>구별 평균 평당가</h2>
               <p className="muted">구를 누르면 지역별분석에서 자세한 시세를 볼 수 있어요.</p>
             </div>
-            {!apartments ? <Loading /> : (
+            {aptError ? <ErrorBox message="구별 시세를 불러오지 못했습니다." onRetry={loadApartments} />
+              : !apartments ? <Loading />
+              : !guStats.length ? <Empty title="시세 데이터가 없습니다" />
+              : (
               <div className="gu-grid compact">
                 {guStats.map((s, i) => (
                   <Link key={s.gu} to={`/analysis?gu=${encodeURIComponent(s.gu)}`} className="gu-card">

@@ -11,6 +11,7 @@ import { predictPrice } from '../api/predict';
 import { errorMessage, statusOf } from '../api/client';
 import { statsByGu } from '../utils/format';
 import { MAP_PATH } from '../constants/menus';
+import { useTitle } from '../utils/useTitle';
 
 export default function DetailPage() {
   const { id } = useParams();
@@ -23,6 +24,7 @@ export default function DetailPage() {
   const [error, setError] = useState('');
   const [prediction, setPrediction] = useState({ loading: false, value: null, error: '' });
   const [sameGu, setSameGu] = useState([]);
+  useTitle(apt?.name ?? (state === 'notfound' ? '없는 매물' : '매물 상세'));
 
   const loadApt = useCallback(() => {
     let cancelled = false;
