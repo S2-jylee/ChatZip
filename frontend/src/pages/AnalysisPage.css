@@ -1,66 +1,128 @@
 /* Hallmark · checked: 2026-11-24 · genre: modern-minimal (inferred) · stamp in index.css
  * built: the project · redesign: polish · v2.0.0 */
 /* ---------- 지역별분석 ---------- */
-.an-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start; }
-.an-rank { padding: 20px; position: sticky; top: calc(var(--header-h) + 16px); }
-.an-rank-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
-.an-rank-head h2 { margin: 0; font-size: 18px; text-wrap: balance; }
-.an-seg { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
-/* 선택 표시 = 메인 버튼 주황, 3칸 중 --i 번째로 이동 (index.css .deal-thumb 와 같은 방식) */
-.an-seg-thumb {
-  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 16px) / 3);
+/* 1. 구 고르기: 시별로 묶은 칩 */
+.an-picker { display: flex; flex-wrap: wrap; gap: 16px 32px; margin-bottom: 16px; padding: 16px 20px; box-shadow: none; scroll-margin-top: calc(var(--header-h) + 12px); }
+.an-picker-group { display: flex; align-items: center; gap: 12px; }
+.an-picker-city { flex: none; min-width: 28px; font-size: 13px; font-weight: 800; color: var(--muted); }
+.an-picker .chip { font: inherit; font-size: 14px; font-weight: 700; }
+/* 3. 다른 구와 비교 */
+/* 태블릿 · 휴대폰: 한 칸 — 제목 · 설명 → 가로 전체 탭(지도와 같은 부품) → 고른 구 순위 → 막대 목록 */
+.an-compare { margin-top: 16px; padding: 24px 28px; box-shadow: none; display: flex; flex-direction: column; gap: 16px; }
+.an-compare-head { display: flex; flex-direction: column; gap: 16px; }
+.an-compare-head h2 { margin: 0 0 4px; font-size: 18px; }
+.an-compare-head p { margin: 0; }
+.an-compare .an-seg { width: 100%; }
+.an-sort-menu { display: none; }
+/* 고른 구가 이 기준으로 몇 위인지 */
+.an-callout { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.an-callout b { color: var(--navy); }
+/* PC: 두 칸 — 왼쪽 = 제목 · 세로 기준 메뉴 · 순위 한 줄, 오른쪽 = 막대 목록 */
+@media (min-width: 1001px) {
+  .an-compare { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; align-items: start; }
+  .an-compare .an-seg { display: none; }
+  .an-callout { padding-top: 16px; border-top: 1px solid var(--line); }
+}
+/* 세로 기준 메뉴 = 지도 매매 · 전세 · 월세 탭(index.css .deal-tabs)을 세로로: 회색 틀 + 주황 표시가 --i 번째 칸으로 이동 */
+.an-sort-menu { position: relative; grid-auto-rows: 1fr; padding: 4px; background: var(--bg); border-radius: var(--radius-sm); }
+@media (min-width: 1001px) { .an-sort-menu { display: grid; gap: 4px; } }
+.an-sort-thumb {
+  position: absolute; left: 4px; right: 4px; top: 4px;
+  height: calc((100% - 8px - (var(--n) - 1) * 4px) / var(--n));
   border-radius: 6px; background: var(--btn);
-  transform: translateX(calc(var(--i) * (100% + 4px)));
+  transform: translateY(calc(var(--i) * (100% + 4px)));
   transition: transform 0.22s cubic-bezier(0.3, 0.8, 0.3, 1);
 }
-.an-seg button { position: relative; z-index: 1; border: 0; background: none; padding: 8px 4px; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: color 0.2s; }
-.an-seg button:hover { color: var(--ink); }
-.an-seg button.on, .an-seg button.on:hover { color: var(--paper); }
-@media (prefers-reduced-motion: reduce) { .an-seg-thumb, .an-seg button { transition: none; } }
-.an-rank-list { list-style: none; margin: 0; padding: 0; max-height: calc(100vh - var(--header-h) - 170px); overflow-y: auto; }
+.an-sort-opt {
+  position: relative; z-index: 1; /* 글자는 선택 표시 위에 */
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2px; width: 100%; padding: 10px 14px; text-align: left;
+  border: 0; border-radius: 6px; background: none; font: inherit; color: var(--ink-2); cursor: pointer; transition: color 0.2s;
+}
+.an-sort-opt strong { font-size: 14px; font-weight: 700; }
+.an-sort-opt span { font-size: 12px; color: var(--muted); transition: color 0.2s; }
+.an-sort-opt:hover { color: var(--ink); }
+.an-sort-opt.on, .an-sort-opt.on:hover { color: var(--paper); }
+.an-sort-opt.on span { color: color-mix(in srgb, var(--paper) 88%, transparent); }
+/* 회색 칸끼리 구분선 (칸 사이 4px 간격 한가운데) — 주황 칸 위아래는 선 숨김 */
+.an-sort-opt + .an-sort-opt::before {
+  content: ''; position: absolute; top: -2.5px; left: 14px; right: 14px; height: 1px; background: var(--line-strong);
+}
+.an-sort-opt.on::before, .an-sort-opt.on + .an-sort-opt::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .an-sort-thumb, .an-sort-opt, .an-sort-opt span { transition: none; } }
+/* 순위 기준: 모양은 지도 매매 · 전세 · 월세 탭(index.css .deal-tabs)을 그대로 씀 — 여기선 폭만 정함 */
+.an-rank-list { list-style: none; margin: 0; padding: 0; }
 .an-rank-row {
-  width: 100%; display: grid; grid-template-columns: 22px 64px 1fr 74px; align-items: center; gap: 8px;
+  width: 100%; display: grid; grid-template-columns: 20px 140px minmax(0, 1fr) 96px; align-items: center; gap: 12px;
   padding: 8px 8px; border: 0; border-radius: 8px; background: none; font: inherit; cursor: pointer; text-align: left;
 }
 .an-rank-row:hover { background: var(--bg); }
-.an-rank-row.on { background: var(--primary-soft); }
+.an-rank-row.on { background: var(--primary-soft); } /* 고른 구: 바탕 + 구 이름 네이비 */
 .an-rank-row.on .an-rank-gu { color: var(--navy); }
-.an-rank-no { font-size: 12px; font-weight: 800; color: var(--muted); text-align: center; }
-.an-rank-gu { font-size: 14px; font-weight: 800; }
-.an-rank-bar { height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
-.an-rank-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--tier-low), var(--primary)); border-radius: 99px; }
-.an-rank-val { font-size: 13px; font-weight: 800; text-align: right; white-space: nowrap; }
+.an-rank-row .rank-no { font-size: 13px; text-align: center; }
+/* 구 이름: 작은 시 + 굵은 구 한 줄 */
+.an-rank-gu { display: flex; align-items: baseline; gap: 4px; min-width: 0; white-space: nowrap; }
+.an-rank-gu small { font-size: 11px; font-weight: 600; color: var(--muted); }
+.an-rank-gu b { font-size: 14px; font-weight: 800; white-space: nowrap; }
+.an-rank-bar { height: 8px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.an-rank-bar span { display: block; height: 100%; background: var(--navy); border-radius: 99px; }
+.an-rank-list li:first-child .an-rank-bar span { background: var(--accent); } /* 1위만 포인트색 (메인 막대와 같은 규칙) */
+.an-rank-val { font-size: 13px; font-weight: 800; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-.an-main { padding: 24px 28px; min-width: 0; scroll-margin-top: calc(var(--header-h) + 12px); }
+.an-main { box-shadow: none; padding: 24px 28px; min-width: 0; scroll-margin-top: calc(var(--header-h) + 12px); }
 .an-detail { display: flex; flex-direction: column; gap: 24px; }
 .an-detail h3 { font-size: 16px; margin: 0 0 12px; }
 .an-detail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .an-detail-head h2 { margin: 4px 0 0; font-size: 24px; }
-.an-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.an-kpi { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+/* 요약 숫자: 큰 칸(평균 평당가) + 작은 칸 3개 한 줄 */
+.an-kpis { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px; }
+.an-kpi { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.an-kpi-main { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg); }
+.an-kpi-main strong { font-size: 32px; }
+.an-kpi-sub { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.an-kpi-sub .an-kpi { padding: 16px; }
+.an-kpi-sub .an-kpi + .an-kpi { border-left: 1px solid var(--line); }
+.an-kpi-sub .an-kpi strong { font-size: 20px; }
 .an-kpi span { font-size: 13px; color: var(--muted); font-weight: 700; }
-.an-kpi strong { font-size: 24px; font-weight: 800; color: var(--navy); white-space: nowrap; }
+.an-kpi strong { font-size: 24px; font-weight: 800; color: var(--navy); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .an-kpi strong em { font-style: normal; font-size: 14px; color: var(--muted); margin-left: 2px; }
 .an-kpi small { font-size: 12px; color: var(--muted); font-weight: 600; }
 .an-kpi small.up { color: var(--danger); }
 .an-kpi small.down { color: var(--primary); }
-.an-split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.an-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* 차트 상자: 위 요약 숫자 상자와 같은 테두리 · 모서리로 두 차트를 따로 묶음 (막대 색은 같게 — 색에 뜻이 생기지 않게) */
+.an-chart { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.an-detail .an-chart h3 { margin: 0; }
+.an-chart-sub { margin: 4px 0 12px; font-size: 13px; color: var(--muted); }
+.an-chart > p.muted.small:last-child { margin: 8px 0 0; }
 .an-bar { display: grid; grid-template-columns: 78px 1fr 96px; align-items: center; gap: 8px; padding: 8px 0; }
 .an-bar-label { font-size: 13px; font-weight: 700; color: var(--ink-2); }
 .an-bar-track { height: 10px; background: var(--bg); border-radius: 0 4px 4px 0; overflow: hidden; }
 .an-bar-track div { height: 100%; background: var(--primary); border-radius: 0 4px 4px 0; }
 .an-bar-value { font-size: 13px; font-weight: 800; text-align: right; white-space: nowrap; }
 .an-bar-value small { margin-left: 4px; color: var(--muted); font-weight: 600; }
+.an-bar-value { font-variant-numeric: tabular-nums; }
+/* 최근 거래: 가격 네이비 (메인과 같게) */
+.an-detail .recent-price { color: var(--navy); font-variant-numeric: tabular-nums; }
 
 @media (max-width: 1000px) {
-  .an-grid { grid-template-columns: 1fr; }
-  .an-rank { position: static; }
-  .an-rank-list { max-height: 340px; }
-  .an-kpis { grid-template-columns: repeat(2, 1fr); }
+  .an-kpis { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
-  .an-main { padding: 16px 16px; }
+  .an-main, .an-compare { padding: 16px; }
+  .an-picker { flex-direction: column; gap: 12px; padding: 16px; }
+  .an-picker-group { align-items: flex-start; }
+  .an-picker-city { padding-top: 8px; }
+  .an-rank-row { grid-template-columns: 20px minmax(0, 1fr) 80px; row-gap: 4px; }
+  .an-rank-bar { grid-column: 2 / -1; grid-row: 2; }
   .an-split { grid-template-columns: 1fr; }
+  .an-chart { padding: 16px; }
   .an-detail-head { flex-wrap: wrap; align-items: flex-start; }
-  .an-kpi strong { font-size: 20px; }
+  .an-kpi-main strong { font-size: 26px; }
+  .an-kpi-sub .an-kpi { padding: 12px; }
+  .an-kpi-sub .an-kpi strong { font-size: 17px; }
+}
+@media (max-width: 480px) {
+  /* 아주 좁은 화면: 작은 칸 3개를 세로로 (금액이 잘리지 않게) */
+  .an-kpi-sub { grid-template-columns: minmax(0, 1fr); }
+  .an-kpi-sub .an-kpi + .an-kpi { border-left: 0; border-top: 1px solid var(--line); }
 }

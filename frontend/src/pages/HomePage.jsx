@@ -2,15 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import FavoriteButton from '../components/FavoriteButton';
+import Icon from '../components/Icon';
 import { Empty, ErrorBox, Loading } from '../components/Status';
 import { getPopular, searchApartments } from '../api/apartments';
-import { DATA_SOURCE } from '../constants/regions';
+import { DATA_SOURCE, REGIONS } from '../constants/regions';
 import { formatDate, formatPrice, statsByGu } from '../utils/format';
 import { useDetailHref } from '../utils/detailLink';
 import { photoOf } from '../utils/photo';
 import { useTitle } from '../utils/useTitle';
 import { ANALYSIS_PATH, FAVORITES_PATH, SEARCH_PATH } from '../constants/menus';
-
 
 export default function HomePage() {
   const detailHref = useDetailHref();
@@ -51,15 +51,30 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ---------- 히어로: 통합 검색 ---------- */}
+      {/* ---------- 히어로: 왼쪽 정렬 검색 + 지역 바로가기 + 출처 ---------- */}
       <section className="hero">
-        <div className="container hero-wide">
+        <div className="container home-hero">
           <div className="hero-copy">
-            <h1 className="hero-title">
-              찾고, 비교하고, 한눈에 보는 <span className="text-gradient">Chat Zip</span>
-            </h1>
-            <p className="hero-sub">실거래가와 시세 확인부터 AI 맞춤 추천까지, 부동산 탐색을 더 쉽고 똑똑하게</p>
+            <p className="hero-eyebrow">경기 성남 · 용인 · 수원 아파트</p>
+            <h1 className="hero-title">실거래가로 확인하는<br />우리 동네 아파트 시세</h1>
+            <p className="hero-sub">국토교통부 공개 데이터를 바탕으로 매물을 찾고, 비교하고, 시세를 확인하세요.</p>
             <SearchBar />
+            <div className="hero-quick">
+              <span className="hero-quick-label">지역 바로 보기</span>
+              <ul className="hero-chips">
+                {REGIONS.map((g) => (
+                  <li key={g}>
+                    <Link to={`${SEARCH_PATH}?gu=${encodeURIComponent(g)}`} className="chip">
+                      {g.replace('시 ', ' ')}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="hero-trust muted small">
+              데이터 출처: {DATA_SOURCE}
+              {recent[0] && <> · 최근 거래 {formatDate(recent[0].dealDate)}</>}
+            </p>
           </div>
         </div>
       </section>
@@ -71,7 +86,7 @@ export default function HomePage() {
             <h2>실시간 인기 매물 TOP 5</h2>
             <p className="muted">지금 가장 많이 보고 있는 매물을 확인해보세요.</p>
           </div>
-          <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 매물 보기</Link>
+          <Link to={SEARCH_PATH} className="section-link">전체 매물 보기 <Icon name="arrowRight" /></Link>
         </div>
         {popError ? <ErrorBox message="인기 매물을 불러오지 못했습니다." onRetry={loadPopular} />
           : !popular ? <Loading />
@@ -83,10 +98,12 @@ export default function HomePage() {
                 <Link to={detailHref(apt.aptId)} className="pop-link">
                   <div className="pop-thumb">
                     <img src={photoOf(apt, i)} alt="" className="pop-art" loading="lazy" />
-                    <span className={`pop-rank${i === 0 ? ' first' : ''}`}>{i + 1}</span>
                   </div>
                   <div className="pop-body">
-                    <strong className="pop-name">{apt.name}</strong>
+                    <span className="pop-title">
+                      <span className="pop-rank">{i + 1}</span>
+                      <strong className="pop-name">{apt.name}</strong>
+                    </span>
                     <span className="muted small">{apt.gu} {apt.dong} · 아파트</span>
                     <span className="muted small">전용 {Math.round(apt.areaM2)}㎡ · {apt.floor}층</span>
                     <div className="pop-bottom">
@@ -103,15 +120,15 @@ export default function HomePage() {
       </section>
 
       {/* ---------- 최근 실거래 TOP 5 | 구별 평균 평당가 (PC 좌우, 휴대폰 위아래) ---------- */}
-      <section className="section section-tinted market-section">
+      <section className="section market-section">
         <div className="container market-row">
           <div className="market-col">
-            <div className="section-head row">
-              <div>
+            <div className="section-head">
+              <div className="panel-title">
                 <h2>최근 실거래 TOP 5</h2>
-                <p className="muted">가장 최근에 거래된 주요 매물 시세를 확인하세요.</p>
+                <Link to={SEARCH_PATH} className="section-link">전체 보기 <Icon name="arrowRight" /></Link>
               </div>
-              <Link to={SEARCH_PATH} className="btn btn-ghost btn-sm">전체 보기</Link>
+              <p className="muted">가장 최근에 거래된 매물이에요. <b className="term">전용면적</b>은 현관 안쪽 실제 생활 공간 넓이예요 (84㎡ ≈ 25평).</p>
             </div>
             {aptError ? <ErrorBox message="최근 실거래를 불러오지 못했습니다." onRetry={loadApartments} />
               : !apartments ? <Loading />
@@ -121,7 +138,7 @@ export default function HomePage() {
                 {recent.map((apt, i) => (
                   <li key={apt.aptId}>
                     <Link to={detailHref(apt.aptId)} className="recent-row">
-                      <span className="recent-rank">{i + 1}</span>
+                      <span className="rank-no">{i + 1}</span>
                       <span className="recent-info">
                         <strong>{apt.name}</strong>
                         <span className="muted small">{apt.gu} {apt.dong} · 전용 {Math.round(apt.areaM2)}㎡</span>
@@ -137,47 +154,68 @@ export default function HomePage() {
 
           <div className="market-col">
             <div className="section-head">
-              <h2>구별 평균 평당가</h2>
-              <p className="muted">구를 누르면 지역별분석에서 자세한 시세를 볼 수 있어요.</p>
+              <div className="panel-title">
+                <h2>구별 평균 평당가</h2>
+                <Link to={ANALYSIS_PATH} className="section-link">지역별 분석 <Icon name="arrowRight" /></Link>
+              </div>
+              <p className="muted"><b className="term">평당가</b>는 3.3㎡(1평)당 가격이라 넓이가 달라도 비교할 수 있어요. 구를 누르면 자세한 시세를 볼 수 있어요.</p>
             </div>
             {aptError ? <ErrorBox message="구별 시세를 불러오지 못했습니다." onRetry={loadApartments} />
               : !apartments ? <Loading />
               : !guStats.length ? <Empty title="시세 데이터가 없습니다" />
               : (
-              <div className="gu-grid compact">
+              /* 가로 막대 목록: 구 이름 · 막대 · 값을 한 줄에 (색만으로 뜻을 전하지 않게 값은 글자로) */
+              <ol className="gu-bars">
                 {guStats.map((s, i) => (
-                  <Link key={s.gu} to={`${ANALYSIS_PATH}?gu=${encodeURIComponent(s.gu)}`} className="gu-card">
-                    <div className="gu-card-top">
-                      <span className="gu-rank">{i + 1}</span>
-                      <strong>{s.gu}</strong>
-                      <span className="muted small">{s.count}건</span>
-                    </div>
-                    <p className="gu-price">평당 {formatPrice(s.avgPerPyeong)}</p>
-                    <div className="gu-bar"><div style={{ width: `${(s.avgPerPyeong / maxAvg) * 100}%` }} /></div>
-                  </Link>
+                  <li key={s.gu}>
+                    <Link to={`${ANALYSIS_PATH}?gu=${encodeURIComponent(s.gu)}`} className="gu-bar-row">
+                      <span className="rank-no">{i + 1}</span>
+                      <span className="gu-bar-name">
+                        <strong>{s.gu}</strong>
+                        <span className="muted small">{s.count}건</span>
+                      </span>
+                      <span className="gu-bar-track" aria-hidden="true">
+                        <span style={{ width: `${(s.avgPerPyeong / maxAvg) * 100}%` }} />
+                      </span>
+                      <span className="gu-bar-value">평당 {formatPrice(s.avgPerPyeong)}</span>
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ol>
             )}
           </div>
         </div>
-        <p className="container muted small source">데이터 출처: {DATA_SOURCE}</p>
       </section>
 
-      {/* ---------- 아파트 비교 ---------- */}
+      {/* ---------- 아파트 비교: 찜하기 → 고르기 → 비교 순서 안내 ---------- */}
       <section className="container section compare-section">
-        <div className="compare-cta">
-          {/* 지도 화면 매물 종류 탭 아이콘과 같은 선 아이콘 (저울) */}
-          <span className="compare-cta-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 4v16M8 20h8M5 7h14" />
-              <path d="M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z" />
-            </svg>
-          </span>
-          <div className="compare-cta-text">
-            <strong>아파트 비교하기</strong>
-            <span className="muted small">관심 매물 중 2~3개를 골라 실거래가, 평당가, 준공연도 등을 한눈에 비교해보세요.</span>
+        <div className="compare-final">
+          <div className="compare-final-head">
+            <p className="compare-eyebrow">비교하고 고르기</p>
+            <h2>마음에 드는 곳을 골라 나란히 비교해보세요</h2>
+            <p className="muted">실거래가, 평당가, 준공연도를 한 화면에서 비교할 수 있어요.</p>
           </div>
-          <Link to={FAVORITES_PATH} className="btn btn-primary btn-sm">비교하러 가기</Link>
+          <ol className="compare-steps">
+            <li>
+              <span className="compare-step-icon" aria-hidden="true"><Icon name="heart" size={20} /></span>
+              <span className="compare-step-text"><b>찜하기</b><span className="muted small">매물의 하트를 눌러 관심 매물에 담아요</span></span>
+            </li>
+            <li>
+              <span className="compare-step-icon" aria-hidden="true"><Icon name="check" size={20} /></span>
+              <span className="compare-step-text"><b>2~3개 고르기</b><span className="muted small">관심 매물에서 비교할 곳을 선택해요</span></span>
+            </li>
+            <li>
+              {/* 저울 선 아이콘 (지도 화면 매물 종류 탭과 같은 모양) */}
+              <span className="compare-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 4v16M8 20h8M5 7h14" />
+                  <path d="M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z" />
+                </svg>
+              </span>
+              <span className="compare-step-text"><b>한눈에 비교</b><span className="muted small">가격과 조건을 나란히 놓고 봐요</span></span>
+            </li>
+          </ol>
+          <Link to={FAVORITES_PATH} className="btn btn-primary compare-final-btn">관심 매물에서 비교하기</Link>
         </div>
       </section>
     </>

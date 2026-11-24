@@ -122,7 +122,6 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .main { flex: 1; display: flex; flex-direction: column; }
 .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 .section { padding-top: 40px; padding-bottom: 56px; }
-.section-tinted { background: linear-gradient(180deg, var(--tint) 0%, var(--bg) 100%); }
 
 /* 하단 푸터 (지도 화면 제외) */
 .footer { background: var(--navy); color: color-mix(in srgb, var(--paper) 70%, transparent); font-size: 14px; margin-top: 40px; }
@@ -322,26 +321,35 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------- 홈 · 히어로 ---------- */
-.hero {
-  position: relative; overflow: hidden; padding: 56px 0 64px;
-  background:
-    radial-gradient(900px 400px at 85% -10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%),
-    linear-gradient(180deg, var(--paper) 0%, var(--hero-fade) 100%);
-  border-bottom: 1px solid var(--line); /* 가로 전체에 고르게 경계 (한쪽만 진해지지 않게) */
-}
-/* 홈: 지도 없이 가운데 정렬 + 가로로 넓은 검색창 */
-.hero-wide { text-align: center; padding-top: 24px; padding-bottom: 8px; }
-.hero-wide .hero-title { font-size: 46px; }
-.hero-wide .searchbar { max-width: 1000px; margin: 0 auto; padding: 20px; text-align: left; }
-.hero-wide .searchbar .field { flex: 1 1 0; }
-.hero-wide .searchbar .btn { min-width: 160px; }
-.hero-title { font-size: 50px; line-height: 1.15; font-weight: 800; letter-spacing: -0.04em; margin: 16px 0 16px; }
+/* 단색 바탕 + 아래 경계선만 (빛 번짐·그라데이션 없음) */
+.hero { padding: 48px 0 48px; background: var(--paper); border-bottom: 1px solid var(--line); }
+/* 홈: 왼쪽 정렬 한 단 (글·검색창이 너무 길게 늘어나지 않게 폭 제한) */
+/* 홈: 아래 섹션과 같은 컨테이너 폭 · 같은 왼쪽 선. 검색창이 오른쪽 끝까지 채워 쏠려 보이지 않게 */
+.hero-eyebrow { margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--accent); }
+.hero-title { font-size: 36px; line-height: 1.3; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 12px; }
 .text-gradient { color: var(--accent); } /* 이름은 그대로, 주황 단색 */
-.hero-sub { font-size: 17px; color: var(--muted); margin: 0 0 28px; }
+.hero-sub { font-size: 16px; color: var(--muted); margin: 0 0 24px; }
 .searchbar {
   display: flex; gap: 8px; align-items: flex-end;
-  background: var(--paper); padding: 16px; border-radius: 16px;
-  box-shadow: var(--shadow-lg); /* 테두리 없이 그림자로만 띄움 */
+  background: var(--paper); padding: 16px; border-radius: var(--radius);
+  border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); /* 띄우지 않고 테두리로 구분 */
+}
+.home-hero .searchbar .field { flex: 1 1 0; }
+.home-hero .searchbar .btn { min-width: 140px; }
+/* "지역 바로 보기" 글자는 칩 위에 → 칩이 검색창 폭을 다 써서 한 줄에 들어가게 */
+.hero-quick { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.hero-quick-label { flex: none; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.hero-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-chips .chip { display: inline-block; padding: 8px 10px; text-decoration: none; background: var(--paper); }
+.hero-trust { margin: 16px 0 0; }
+
+@media (max-width: 1000px) {
+  .hero-title { font-size: 30px; }
+}
+@media (max-width: 640px) {
+  .hero { padding: 32px 0; }
+  .hero-title { font-size: 26px; }
+  .home-hero .searchbar .btn { min-width: 0; }
 }
 
 /* ---------- 이용 방법 ---------- */
@@ -361,47 +369,38 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .quicklink p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
 .quicklink-arrow { margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--primary); }
 
-/* ---------- 구별 시세 ---------- */
-.gu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-.gu-card {
-  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm);
-  padding: 16px; text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s;
-}
-.gu-card:hover { border-color: var(--primary); }
-.gu-card-top { display: flex; align-items: center; gap: 8px; }
-.gu-card-top strong { flex: 1; }
-.gu-rank {
-  display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px;
-  background: var(--primary-soft); color: var(--primary); font-size: 12px; font-weight: 800;
-}
-.gu-price { margin: 8px 0 8px; font-weight: 800; color: var(--navy); }
-.gu-bar { height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
-.gu-bar div { height: 100%; background: linear-gradient(90deg, var(--tier-low), var(--primary)); border-radius: 99px; }
-
 /* ---------- 매물 카드 그리드 ---------- */
 /* 메인: 실시간 인기 매물 TOP 5 */
 .pop-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-.pop-card { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: border-color 0.15s, transform 0.15s; }
-.pop-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.pop-card { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: border-color 0.15s; }
+.pop-card:hover { border-color: var(--primary); }
 .pop-link { display: block; text-decoration: none; color: inherit; }
 .pop-thumb { position: relative; }
-.pop-art { display: block; width: 100%; aspect-ratio: 16 / 10; }
-.pop-rank {
-  position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 8px;
-  display: grid; place-items: center; background: var(--paper); color: var(--navy); font-weight: 800; font-size: 13px;
-  box-shadow: 0 1px 4px color-mix(in srgb, var(--scrim-ink) 18%, transparent);
-}
-.pop-rank.first { background: var(--accent); color: var(--paper); }
+.pop-art { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+/* 순위: 사진 위 배지 대신 이름 앞 숫자 글자 */
+.pop-title { display: flex; align-items: baseline; gap: 8px; min-width: 0; margin-bottom: 2px; }
+.pop-rank { flex: none; font-weight: 800; font-size: 15px; color: var(--accent); font-variant-numeric: tabular-nums; }
 .pop-fav { position: absolute; top: 6px; right: 6px; }
 .pop-body { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px 16px; }
-.pop-name { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px; }
+.pop-name { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pop-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
-.pop-price { font-size: 16px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+.pop-price { font-size: 18px; font-weight: 800; color: var(--navy); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .deal-chip { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: var(--bg); color: var(--ink-2); }
 
 /* 메인: 최근 실거래 TOP 5 | 구별 평균 평당가 */
-.market-row { display: grid; grid-template-columns: 1fr 1.25fr; gap: 28px; align-items: start; }
-.market-col { min-width: 0; }
+.market-row { display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; align-items: stretch; }
+/* 패널: 그림자 없이 얇은 테두리만 */
+.market-col { min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.market-col .section-head { margin-bottom: 0; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.market-col .section-head h2 { font-size: 20px; } /* 패널 제목은 섹션 제목(26px)보다 한 단계 작게 */
+/* 패널 머리: 제목 줄 = 제목 + 오른쪽 링크, 설명은 그 아래 패널 폭 전체 사용 */
+.panel-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.panel-title h2 { margin: 0; }
+.panel-title .section-link { min-height: 32px; }
+.term { font-weight: 700; color: var(--ink-2); } /* 설명 속 처음 보는 용어 */
+.market-col .recent-list { border: 0; padding: 0; border-radius: 0; }
+.market-col .recent-row { padding: 12px 4px; }
+.market-col .recent-price { color: var(--navy); font-variant-numeric: tabular-nums; }
 .recent-list { list-style: none; margin: 0; padding: 0; overflow: hidden; /* 첫 줄 위 · 마지막 줄 아래 빈틈 없이, 호버 배경은 둥근 모서리 안에서 잘림 */ background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
 .recent-list li + li { border-top: 1px solid var(--line); }
 .recent-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; }
@@ -414,23 +413,29 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .recent-info strong { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recent-date { white-space: nowrap; }
 .recent-price { font-weight: 800; color: var(--accent); white-space: nowrap; min-width: 96px; text-align: right; }
-.gu-grid.compact { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 8px; }
-.gu-grid.compact .gu-card { padding: 8px 12px; }
-.gu-grid.compact .gu-price { font-size: 13px; margin: 8px 0; }
-.gu-grid.compact .gu-card-top { font-size: 14px; }
 
-/* 메인: 아파트 비교 배너 */
-.compare-cta {
-  display: flex; align-items: center; gap: 16px; padding: 20px 24px;
-  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-}
-/* 최근 실거래 섹션 ↔ 아파트 비교 사이: 두 섹션 여백(56px + 40px)이 겹쳐 너무 벌어짐 → 위 섹션 아래 24px 만 남김
-   (.section.xxx 로 써야 모바일 .section 여백 규칙보다 우선) */
+/* 메인: 맨 아래 아파트 비교 — 찜하기 → 고르기 → 비교 순서 안내
+   (시세 섹션 아래 여백과 겹쳐 너무 벌어지지 않게 위 섹션 아래 24px 만 남김) */
 .section.market-section { padding-bottom: 24px; }
-.section.compare-section { padding-top: 0; }
-.compare-cta-icon { display: grid; place-items: center; flex: none; color: var(--accent); }
-.compare-cta-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.compare-cta-text strong { font-size: 17px; }
+.section.compare-section { padding-top: 16px; }
+.compare-eyebrow { margin: 0 0 4px; font-size: 13px; font-weight: 800; color: var(--accent); }
+.compare-final {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head btn" "steps steps";
+  align-items: center; gap: 24px 32px; padding: 32px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.compare-final-head { grid-area: head; }
+.compare-final-head h2 { margin: 0; font-size: 24px; }
+.compare-final-head p:last-child { margin: 8px 0 0; }
+.compare-final-btn { grid-area: btn; min-height: 48px; padding: 0 24px; display: inline-flex; align-items: center; }
+.compare-steps {
+  grid-area: steps; list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.compare-steps li { display: flex; align-items: flex-start; gap: 12px; }
+.compare-step-icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-wash); color: var(--accent); }
+.compare-step-text { display: flex; flex-direction: column; gap: 2px; }
+.compare-step-text b { font-size: 15px; }
 
 @media (max-width: 1100px) {
   .pop-grid { grid-template-columns: repeat(3, 1fr); }
@@ -440,8 +445,11 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
   .pop-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
   .pop-card { flex: 0 0 62%; scroll-snap-align: start; }
   .recent-date { display: none; }
-  .compare-cta { flex-wrap: wrap; }
-  .compare-cta .btn { width: 100%; }
+  .market-col { padding: 16px; }
+  .compare-final { grid-template-columns: 1fr; grid-template-areas: "head" "steps" "btn"; padding: 24px 16px; gap: 20px; }
+  .compare-final-head h2 { font-size: 20px; }
+  .compare-steps { grid-template-columns: 1fr; padding-top: 20px; }
+  .compare-final-btn { width: 100%; justify-content: center; }
 }
 
 
@@ -656,7 +664,6 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
   .header-inner { gap: 12px; }
   .nav-link { font-size: 14px; padding: 8px 8px; }
   .two-col, .detail-grid, .quicklinks { grid-template-columns: 1fr; }
-  .hero-title { font-size: 38px; }
   /* 모바일 지도 페이지: 지도는 위에 고정, 아래 목록 영역만 스크롤 */
   .map-page {
     grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(350px, 44vh) minmax(0, 1fr); /* 350px: 세로 버튼 최대 7개(원룸, 260) + 확대/축소(84) 가 겹치지 않는 최소 높이 */
@@ -762,18 +769,37 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .deal-tag { font-size: 11px; font-weight: 800; color: var(--accent); margin-right: 8px; }
 .hero-title .text-gradient { white-space: nowrap; }
 .hero-title { word-break: keep-all; }
-.pop-art { object-fit: cover; }
 
-/* 메인: 최근 실거래 · 구별 평균 평당가를 각각 패널로 구분 */
-.market-row { gap: 24px; align-items: stretch; }
-.market-col { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
-.market-col .section-head { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
-.market-col .section-head:has(+ .recent-list) { margin-bottom: 0; } /* 최근 실거래: 구분선 바로 아래부터 첫 줄 */
-.market-col .recent-list { border: 0; padding: 0; border-radius: 0; }
-.market-col .recent-row { padding: 12px 4px; }
-.market-col .gu-card { background: var(--bg); border-color: transparent; }
-.market-col .gu-card:hover { border-color: var(--primary); }
-@media (max-width: 600px) { .market-col { padding: 16px 16px; } }
+
+/* 홈 공통: 순위는 배지 대신 숫자 글자 · "전체 보기"는 글자 링크 */
+.rank-no { flex: none; width: 20px; font-weight: 800; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.section-link {
+  display: inline-flex; align-items: center; gap: 4px; flex: none; min-height: 44px; padding: 0 4px;
+  font-size: 14px; font-weight: 700; color: var(--primary); text-decoration: none; transition: color 0.15s;
+}
+.section-link:hover { color: var(--accent); }
+.section-link .icon { transition: transform 0.15s; }
+.section-link:hover .icon { transform: translateX(2px); }
+@media (prefers-reduced-motion: reduce) { .section-link .icon { transition: none; } }
+
+/* 홈: 구별 평균 평당가 가로 막대 목록 */
+.gu-bars { list-style: none; margin: 0; padding: 0; }
+.gu-bars li + li { border-top: 1px solid var(--line); }
+.gu-bar-row {
+  display: grid; grid-template-columns: 20px minmax(112px, auto) minmax(0, 1fr) 112px; align-items: center; gap: 12px;
+  padding: 8px 4px; text-decoration: none; color: inherit; transition: background-color 0.15s;
+}
+.gu-bar-row:hover { background: var(--bg); }
+.gu-bar-name { display: flex; align-items: baseline; gap: 8px; min-width: 0; white-space: nowrap; }
+.gu-bar-name strong { font-size: 14px; }
+.gu-bar-track { height: 8px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.gu-bar-track span { display: block; height: 100%; background: var(--navy); border-radius: 99px; }
+.gu-bars li:first-child .gu-bar-track span { background: var(--accent); } /* 1위만 포인트색 */
+.gu-bar-value { font-size: 14px; font-weight: 800; color: var(--navy); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .gu-bar-row { grid-template-columns: 20px minmax(0, 1fr) auto; row-gap: 4px; }
+  .gu-bar-track { grid-column: 2 / -1; grid-row: 2; }
+}
 
 /* 헤더: 로그인 시 이름 알약 → 마이페이지 */
 .user-pill {
@@ -794,7 +820,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 .page-tab:hover { color: var(--ink); }
 .page-tab.on { color: var(--navy); border-bottom-color: var(--accent); }
 .search-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.search-head .list-title b { color: var(--accent); }
+
 .search-head .select { width: auto; padding: 8px 12px; font-size: 14px; }
 .pager { display: flex; justify-content: center; gap: 4px; margin-top: 20px; flex-wrap: wrap; }
 .pager button { min-width: 36px; height: 36px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; font: inherit; font-weight: 700; cursor: pointer; }
@@ -926,3 +952,206 @@ button.user-pill { font: inherit; cursor: pointer; background: transparent; }
 }
 .user-menu-item:hover { background: var(--bg); }
 .user-menu-logout { margin-top: 4px; border-top: 1px solid var(--line); border-radius: 0 0 8px 8px; color: var(--muted); font-weight: 500; }
+
+/* ---------- 매물찾기 · 조건 검색 ---------- */
+/* 위쪽 필터 바: 검색어 줄 + 조건 버튼 줄 (지도 필터와 같은 칩 · 입력 창) */
+.sbar { position: relative; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; padding: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+.sbar-search { display: flex; gap: 8px; }
+.sbar-input { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+.sbar-input:focus-within { border-color: var(--primary); outline: 2px solid var(--focus); outline-offset: 2px; }
+.sbar-input > .icon { color: var(--muted); }
+.sbar-submit { flex: none; min-width: 120px; height: 48px; font-size: 15px; } /* 입력칸(46px + 테두리)과 같은 높이 */
+.sbar-search input { flex: 1; min-width: 0; height: 46px; border: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); }
+.sbar-search input:focus { outline: none; }
+.sbar-clear { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer; }
+.sbar-clear:hover { background: var(--bg); color: var(--ink); }
+.sbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sbar-item { position: relative; }
+.sbar-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--paper);
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink-2); cursor: pointer; white-space: nowrap;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+.sbar-btn:hover { border-color: var(--btn); }
+.sbar-btn .icon { color: var(--muted); }
+/* 조건이 걸린 버튼 = 지도 필터 바와 같게: 주황 채움 + 흰 글자, 값은 버튼에 바로 표시 */
+.sbar-btn.on { border-color: var(--btn); background: var(--btn); color: var(--paper); }
+.sbar-btn.on .icon { color: var(--paper); }
+.sbar-btn.on .sbar-label { font-weight: 600; }
+.sbar-btn.open { border-color: var(--btn); box-shadow: inset 0 0 0 1px var(--btn); }
+.sbar-btn.open .icon:last-child { transform: rotate(180deg); }
+.sbar-btn .icon { transition: transform 0.15s; }
+.sbar-value { font-weight: 800; font-variant-numeric: tabular-nums; }
+.sbar-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--paper); color: var(--btn); font-size: 11px; line-height: 18px; text-align: center; }
+.sbar-reset { margin-left: auto; min-height: 40px; padding: 0 8px; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); text-decoration: underline; cursor: pointer; }
+.sbar-reset:hover { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .sbar-btn .icon { transition: none; } }
+/* 버튼 아래 작은 창 */
+.spop {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 380px;
+  display: flex; flex-direction: column; gap: 12px; padding: 16px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--scrim-ink) 14%, transparent);
+}
+.spop-right { left: auto; right: 0; }
+.spop .form-error { margin: 0; }
+.spop .fpop-actions { margin-top: 4px; }
+.fpop-input { width: 100%; padding: 8px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); font: inherit; font-size: 14px; }
+.fpop-input:focus-visible { border-color: var(--navy); outline: 2px solid var(--focus); outline-offset: 2px; }
+.field-hint { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* 결과: 넓은 화면은 2열 */
+.search-head .list-title b { color: var(--navy); }
+.search-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+/* 빈 결과: 다음 행동 버튼 */
+.empty-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.empty-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+@media (max-width: 1000px) {
+  .search-list { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .sbar { padding: 12px; }
+  .sbar-submit { min-width: 72px; }
+  /* 좁은 화면: 작은 창을 필터 바 폭 전체로 */
+  .sbar-item { position: static; }
+  .spop, .spop-right { left: 0; right: 0; width: auto; }
+  .sbar-btn { height: 36px; padding: 0 10px; font-size: 13px; }
+  .sbar-reset { margin-left: 0; }
+}
+
+
+
+/* ---------- 매물찾기 · 맞춤 추천: 조건 검색과 같은 위쪽 바 ---------- */
+.rec-budget-label { flex: none; display: inline-flex; align-items: center; gap: 4px; padding-right: 8px; border-right: 1px solid var(--line); font-size: 14px; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+.req { padding: 1px 6px; border-radius: 4px; background: var(--btn-soft); color: var(--btn-hover); font-size: 11px; font-style: normal; font-weight: 800; }
+.rec-unit { flex: none; padding-right: 4px; font-size: 14px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.rec-unit b { color: var(--navy); font-variant-numeric: tabular-nums; }
+.rec-bar > .form-error { margin: -4px 0 0; }
+/* 결과: 왼쪽 목록 | 오른쪽 지도 */
+.rec-results { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.rec-results .result-map { position: sticky; top: calc(var(--header-h) + 16px); height: min(560px, calc(100vh - var(--header-h) - 32px)); margin: 0; }
+@media (max-width: 1000px) {
+  .rec-results { grid-template-columns: minmax(0, 1fr); }
+  .rec-results .result-map { position: static; order: -1; height: 300px; }
+}
+@media (max-width: 640px) {
+  .rec-budget-label .req { display: none; } /* 좁은 화면: 칸이 좁아 "필수" 표시는 안내 줄로 대신 */
+}
+
+
+
+/* ---------- AI 가격 예측: 매물찾기 · 맞춤 추천과 같은 위쪽 바 ---------- */
+.predict-fields { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 0.9fr) auto; gap: 12px; align-items: end; }
+.predict-fields .field input, .predict-fields .field select { height: 48px; padding: 0 12px; }
+.predict-submit { min-width: 140px; }
+.predict-bar > .form-error { margin: 0; }
+/* 결과: 전체 폭 — 예상가 왼쪽, 요약 숫자 3칸은 넓게 */
+.predict-results .result { box-shadow: none; padding: 28px 32px; }
+.predict-results .detail-kpis { margin: 12px 0 16px; }
+@media (max-width: 800px) {
+  /* 좁은 화면: 2 × 2 칸 + 버튼 가로 전체 */
+  .predict-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .predict-submit { grid-column: 1 / -1; width: 100%; }
+}
+@media (max-width: 640px) {
+  .predict-results .result { padding: 20px 16px; }
+}
+/* 결과 머리 줄: 제목 + AI 표시 / 오른쪽 "지도에서 보기" */
+.result-title { display: inline-flex; align-items: center; gap: 8px; }
+.result .card-head .result-action { margin-top: 0; align-self: center; flex: none; }
+@media (max-width: 640px) {
+  .result .card-head { flex-wrap: wrap; }
+  .result .card-head .result-action { width: 100%; order: 3; } /* 좁은 화면: 제목 아래 가로 전체 */
+}
+
+
+
+/* ---------- 관심매물: 카드 보기 | 표 보기 ---------- */
+/* 한 줄: 왼쪽 3단계 띠 · 오른쪽 보기 탭 — 탭을 띠와 같은 높이 · 모서리 · 테두리로 맞춰 한 덩어리로 */
+.fav-toolbar { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
+.fav-toolbar .fav-steps { flex: 1; min-width: 0; margin: 0; }
+.fav-toolbar .fav-view { align-self: stretch; border: 1px solid var(--line); border-radius: var(--radius); }
+.fav-toolbar .fav-view .deal-thumb { border-radius: 10px; }
+.fav-toolbar .fav-view .deal-tab { display: grid; place-items: center; border-radius: 10px; }
+.fav-note-sub { padding-left: 24px; color: var(--muted); }
+.fav-note + .fav-note-sub { margin-top: -8px; } /* 정렬 안내: 위 설명 바로 아래, 글자 줄에 맞춰 들여씀 */
+.fav-view { flex: none; width: 200px; }
+.fav-table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+.fav-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.fav-table th, .fav-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; white-space: nowrap; }
+.fav-table tbody tr:last-child td { border-bottom: 0; }
+.fav-table thead th { font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg); }
+.fav-table tbody tr { transition: background-color 0.15s; }
+.fav-table tbody tr:hover { background: var(--hero-fade); }
+.fav-table tbody tr.on { background: var(--primary-soft); }
+.fav-table .col-check, .fav-table .col-del { width: 1%; text-align: center; }
+.fav-table .col-num { text-align: right; }
+.fav-table thead .col-area, .fav-table thead .col-floor, .fav-table thead .col-built,
+.fav-table thead .col-price, .fav-table thead .col-ppy, .fav-table thead .col-saved { text-align: right; }
+.fav-table .col-name a { font-weight: 700; color: var(--ink); text-decoration: none; }
+.fav-table .col-name a:hover { color: var(--primary); text-decoration: underline; }
+.fav-table .col-gu { color: var(--ink-2); }
+.fav-table .fav-price { font-weight: 800; color: var(--navy); }
+/* 정렬 버튼: 열 제목 전체가 버튼 */
+.fav-sort { display: inline-flex; align-items: center; gap: 2px; padding: 4px 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.fav-sort:hover, .fav-sort.on { color: var(--ink); }
+.fav-sort-mark { display: inline-flex; width: 12px; color: var(--btn); }
+.fav-sort-mark .icon.up { transform: rotate(180deg); } /* 오름차순 = 위 화살표 */
+
+/* ---------- 관심매물: 비교 흐름 3단계 띠 ---------- */
+.fav-steps {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 0 0 16px; padding: 0; list-style: none;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.fav-steps li { display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px; min-width: 0; }
+.fav-steps li + li { border-left: 1px solid var(--line); }
+.fav-step-no {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg); color: var(--muted); font-size: 13px; font-weight: 800;
+}
+.fav-steps li.done .fav-step-no { background: var(--primary-soft); color: var(--navy); }
+.fav-steps li.now .fav-step-no { background: var(--btn); color: var(--paper); }
+.fav-step-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.fav-step-text b { font-size: 15px; color: var(--ink-2); }
+.fav-steps li.now .fav-step-text b { color: var(--ink); }
+.fav-step-text b em { margin-left: 4px; font-style: normal; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fav-step-text small { font-size: 13px; color: var(--muted); }
+.fav-step-btn { margin-top: 4px; }
+@media (max-width: 640px) {
+  .fav-steps { grid-template-columns: minmax(0, 1fr); }
+  .fav-steps li { padding: 12px 16px; }
+  .fav-steps li + li { border-left: 0; border-top: 1px solid var(--line); }
+}
+
+/* ---------- 관심매물: 카드 (조용한 관심 해제 · 큰 비교 체크 · AI 배지 설명 · PC 2열) ---------- */
+.fav-note { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; font-size: 13px; color: var(--ink-2); }
+.fav-note .icon { margin-top: 2px; color: var(--muted); }
+.fav-note b { color: var(--ink); }
+@media (min-width: 1001px) { .fav-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+.apt-fav .apt-item-leading { padding-left: 12px; }
+/* 비교 체크: 체크박스 + "비교"(고르면 "비교 1") 글자, 누르는 영역 44px 이상 */
+.cmp-pick {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-width: 52px; min-height: 56px; padding: 6px 4px; border-radius: 10px; cursor: pointer;
+  font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; transition: background-color 0.15s, color 0.15s;
+}
+.cmp-pick:hover { background: var(--bg); color: var(--ink-2); }
+.cmp-pick.on span { padding: 1px 6px; border-radius: 4px; background: var(--navy); color: var(--paper); }
+.cmp-pick.full { cursor: not-allowed; opacity: 0.45; }
+.cmp-pick.full:hover { background: none; }
+.cmp-pick .cmp-check { width: 20px; height: 20px; margin: 0; }
+/* 표 보기: 체크박스 옆 "비교 1" */
+.fav-table .col-check { white-space: nowrap; }
+.cmp-order { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: var(--navy); color: var(--paper); font-size: 11px; font-weight: 800; vertical-align: 2px; }
+/* 관심 해제: 채운 하트 아이콘 버튼 (44px) — 카드 · 표 공통 */
+.fav-remove {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 0; border-radius: 50%; background: none; color: var(--heart); cursor: pointer; transition: background-color 0.15s;
+}
+.fav-remove:hover:not(:disabled) { background: var(--danger-wash); }
+.fav-remove:disabled { opacity: 0.4; cursor: wait; }
+.fav-table td.col-del { padding-top: 4px; padding-bottom: 4px; }
+.apt-fav .apt-item-actions { gap: 2px; }
+/* 빈 화면: 하트로 저장하는 방법 + 매물찾기 버튼 */
+.fav-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.fav-empty .icon { color: var(--heart); vertical-align: -2px; }

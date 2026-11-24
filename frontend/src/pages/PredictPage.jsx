@@ -46,10 +46,9 @@ export default function PredictPage() {
         <h1>AI 가격 예측</h1>
         <p className="muted">조건을 직접 입력하면 실거래 데이터로 학습한 모델이 예상가를 알려드려요.</p>
       </header>
-      <div className="two-col">
-        <PredictForm onSubmit={run} loading={loading} />
-        <section>{content}</section>
-      </div>
+      {/* 위쪽 입력 바 + 아래 결과 (매물찾기 · 맞춤 추천과 같은 배치) */}
+      <PredictForm onSubmit={run} loading={loading} />
+      <section className="predict-results">{content}</section>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConditionForm from '../components/ConditionForm';
 import AptListItem from '../components/AptListItem';
@@ -9,7 +9,7 @@ import { errorMessage } from '../api/client';
 import { useDetailHref } from '../utils/detailLink';
 import { useViewed } from '../utils/viewed';
 
-/** 맞춤 추천 — 매물찾기 화면의 "맞춤 추천" 탭 (embedded) */
+/** 맞춤 추천 — 매물찾기 화면의 "맞춤 추천" 탭 (embedded). 조건 검색 탭과 같은 배치: 위쪽 조건 바 + 아래 결과 */
 export default function RecommendPage({ embedded = false }) {
   const [results, setResults] = useState(null); // null = 아직 검색 전
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,14 @@ export default function RecommendPage({ embedded = false }) {
   else if (results === null) content = <Empty title="조건을 입력해 주세요">예산과 원하는 조건으로 상위 10건을 추천해 드려요.</Empty>;
   else if (!results.length) content = <Empty>예산을 늘리거나 조건을 줄여 보세요.</Empty>;
   else {
+    // 넓은 화면: 왼쪽 목록 | 오른쪽 지도 (지도는 스크롤을 따라옴), 좁은 화면: 지도 위 · 목록 아래
     content = (
-      <>
+      <div className="rec-results">
+        <ul className="apt-list">
+          {results.map((apt, i) => (
+            <AptListItem key={apt.aptId} apt={apt} rank={i + 1} active={apt.aptId === activeId} onHover={setActiveId} />
+          ))}
+        </ul>
         <MapView
           className="result-map"
           apartments={results}
@@ -49,23 +55,22 @@ export default function RecommendPage({ embedded = false }) {
           onSelect={(apt) => navigate(detailHref(apt.aptId))}
           viewedIds={viewedIds}
         />
-        <ul className="apt-list">
-          {results.map((apt, i) => (
-            <AptListItem key={apt.aptId} apt={apt} rank={i + 1} active={apt.aptId === activeId} onHover={setActiveId} />
-          ))}
-        </ul>
-      </>
+      </div>
     );
   }
 
   const body = (
-      <div className="two-col">
-        <ConditionForm onSubmit={run} loading={loading} />
-        <section>
-          {results && !loading && !error && <h2 className="list-title">추천 결과 {results.length}건</h2>}
-          {content}
-        </section>
-      </div>
+    <>
+      <ConditionForm onSubmit={run} loading={loading} />
+      <section className="search-results">
+        {results && !loading && !error && (
+          <div className="search-head">
+            <h2 className="list-title">추천 결과 <b>{results.length}</b>건</h2>
+          </div>
+        )}
+        {content}
+      </section>
+    </>
   );
   if (embedded) return body;
   return (

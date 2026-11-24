@@ -11,7 +11,10 @@ function validate({ gu, areaM2, floor, builtYear }) {
   return '';
 }
 
-/** 가격 예측 입력 폼 */
+/**
+ * 가격 예측 입력 — 매물찾기 · 맞춤 추천과 같은 위쪽 바
+ * [지역] [전용면적] [층] [준공연도] [예상가 확인] 한 줄 (좁은 화면은 2 × 2 + 버튼)
+ */
 export default function PredictForm({ onSubmit, loading }) {
   const [form, setForm] = useState({ gu: '', areaM2: '', floor: '', builtYear: '' });
   const [error, setError] = useState('');
@@ -26,20 +29,19 @@ export default function PredictForm({ onSubmit, loading }) {
   };
 
   return (
-    <form className="card form" onSubmit={handleSubmit}>
-      <h2 className="card-title">아파트 정보 입력</h2>
-      <label className="field">
-        <span>지역 (구) *</span>
-        <select name="gu" value={form.gu} onChange={change}>
-          <option value="">선택</option>
-          {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
-        </select>
-      </label>
-      <label className="field">
-        <span>전용면적 (㎡) *</span>
-        <input type="number" name="areaM2" min="1" step="0.01" placeholder="예: 84.97" value={form.areaM2} onChange={change} />
-      </label>
-      <div className="field-row">
+    <form className="sbar predict-bar" onSubmit={handleSubmit} noValidate aria-label="아파트 정보 입력">
+      <div className="predict-fields">
+        <label className="field">
+          <span>지역 (구) *</span>
+          <select name="gu" value={form.gu} onChange={change}>
+            <option value="">선택</option>
+            {REGIONS.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </label>
+        <label className="field">
+          <span>전용면적 (㎡) *</span>
+          <input type="number" name="areaM2" min="1" step="0.01" placeholder="예: 84.97" value={form.areaM2} onChange={change} />
+        </label>
         <label className="field">
           <span>층 *</span>
           <input type="number" name="floor" step="1" placeholder="예: 12" value={form.floor} onChange={change} />
@@ -48,11 +50,11 @@ export default function PredictForm({ onSubmit, loading }) {
           <span>준공연도 *</span>
           <input type="number" name="builtYear" step="1" placeholder="예: 2010" value={form.builtYear} onChange={change} />
         </label>
+        <button type="submit" className="btn btn-primary sbar-submit predict-submit" disabled={loading}>
+          {loading ? '예측 중…' : 'AI 예상가 확인'}
+        </button>
       </div>
-      {error && <p className="form-error">{error}</p>}
-      <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-        {loading ? '예측 중…' : 'AI 예상가 확인'}
-      </button>
+      {error && <p className="form-error" role="alert">{error}</p>}
     </form>
   );
 }

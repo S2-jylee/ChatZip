@@ -12,9 +12,13 @@ export default function PriceResult({ input, price, guAvg }) {
 
   return (
     <section className="card result">
+      {/* 머리 줄: 왼쪽 제목, 오른쪽 다음 행동 버튼 (아래는 예상가 → 요약 숫자 → 참고용 안내로 끊김 없이) */}
       <div className="card-head">
-        <span className="eyebrow">AI 예상가</span>
-        <span className="tag-ai">AI</span>
+        <span className="result-title">
+          <span className="eyebrow">AI 예상가</span>
+          <span className="tag-ai">AI</span>
+        </span>
+        <Link to={mapLink} className="btn btn-ghost btn-sm result-action">비슷한 면적 매물 지도에서 보기</Link>
       </div>
       <p className="result-price">{formatPrice(price)}</p>
       <p className="muted">
@@ -38,7 +42,6 @@ export default function PriceResult({ input, price, guAvg }) {
         </div>
       </div>
 
-      <Link to={mapLink} className="btn btn-ghost">비슷한 면적 매물 지도에서 보기</Link>
       <Disclaimer />
     </section>
   );
