@@ -7,6 +7,7 @@ import { MAIN_MENUS } from '../constants/menus';
 
 // 로그인 이름(○○님) 드롭다운 메뉴 항목
 const USER_LINKS = [
+  { to: '/mypage', label: '마이페이지' },
   { to: '/favorites', label: '관심 매물' },
   { to: '/search?tab=recommend', label: '맞춤 추천' },
 ];

@@ -80,7 +80,7 @@ function GuDetail({ gu }) {
             <Bar key={b.label} label={b.label} value={b.avgPerPyeong} max={maxAge}
               text={b.count ? formatPriceCompact(b.avgPerPyeong) : '거래 없음'} sub={b.count ? `${b.count}건` : ''} />
           ))}
-          <p className="muted small">평균 준공연도 {d.avgBuiltYear}년</p>
+          <p className="muted small">평균 준공연도 {d.avgBuiltYear ? `${d.avgBuiltYear}년` : '정보 없음'}</p>
         </section>
       </div>
 
@@ -101,7 +101,7 @@ function GuDetail({ gu }) {
             );
             // 실거래는 등록 매물이 아닐 수 있음 → 매물 번호가 있을 때만 상세로 이동
             return (
-              <li key={apt.aptId ?? `${apt.dealDate}-${i}`}>
+              <li key={`${apt.aptId ?? ''}-${apt.dealDate}-${i}`}>
                 {apt.aptId != null
                   ? <Link to={detailHref(apt.aptId)} className="recent-row">{row}</Link>
                   : <div className="recent-row">{row}</div>}

@@ -7,6 +7,9 @@
 /* 단지 테두리가 있는 매물: 분홍 (본 매물이어도 분홍). index.css 의 tier 배경색보다 우선하도록 선택자를 강하게 */
 .map-pin.has-boundary:not(.active):not(:hover) { --pin: #e8559a; background: #e8559a; }
 .map-pin.has-boundary:not(.active):not(:hover)::after { border-top-color: #e8559a; }
+/* 실서버(백엔드)에서 받은 매물: 노란색 (본 매물·테두리보다 우선) */
+.map-pin.is-live:not(.active):not(:hover) { --pin: #facc15; background: #facc15; color: #1f2937; }
+.map-pin.is-live:not(.active):not(:hover)::after { border-top-color: #facc15; }
 .map-pin:hover, .map-pin.active { --pin: var(--accent); }
 .map-pin, .map-pin.tier-low, .map-pin.tier-mid, .map-pin.tier-high, .map-pin.tier-top,
 .map-pin:hover, .map-pin.active {
