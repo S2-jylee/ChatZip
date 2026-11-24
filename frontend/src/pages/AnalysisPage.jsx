@@ -151,14 +151,14 @@ export default function AnalysisPage() {
             <h2>구별 순위</h2>
             <div
               className="an-seg"
-              role="tablist"
+              role="group"
               aria-label="순위 기준"
               style={{ '--i': Math.max(0, RANK_SORTS.findIndex(([k]) => k === sortKey)) }}
             >
               {/* 지도 매매 · 전세 · 월세 탭처럼 주황 선택 표시가 옆으로 미끄러짐 */}
               <span className="an-seg-thumb" aria-hidden="true" />
               {RANK_SORTS.map(([k, l]) => (
-                <button key={k} type="button" role="tab" aria-selected={sortKey === k} className={sortKey === k ? 'on' : ''} onClick={() => setSortKey(k)}>{l}</button>
+                <button key={k} type="button" aria-pressed={sortKey === k} className={sortKey === k ? 'on' : ''} onClick={() => setSortKey(k)}>{l}</button>
               ))}
             </div>
           </div>

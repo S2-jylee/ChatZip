@@ -252,13 +252,12 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
         {detailId && <ListingModal key={detailId} id={detailId} variant="side" onClose={() => setDetail(null)} />}
         <div style={{ display: detailId ? 'none' : 'contents' }}>
         {/* 매물 종류 탭 */}
-        <div className="type-tabs" role="tablist" aria-label="매물 종류">
+        <div className="type-tabs" role="group" aria-label="매물 종류">
           {PROPERTY_TYPES.map((t) => (
             <button
               key={t.type}
               type="button"
-              role="tab"
-              aria-selected={type === t.type}
+              aria-pressed={type === t.type}
               className={`type-tab${type === t.type ? ' on' : ''}`}
               onClick={() => pickType(t.type)}
             >
@@ -292,7 +291,7 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
         {dealTabs.length > 0 && (
           <div
             className="deal-tabs"
-            role="tablist"
+            role="group"
             aria-label="거래 종류"
             style={{ '--n': dealTabs.length, '--i': Math.max(0, dealTabs.findIndex((d) => d.key === deal)) }}
           >
@@ -302,8 +301,7 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
               <button
                 key={d.key}
                 type="button"
-                role="tab"
-                aria-selected={deal === d.key}
+                aria-pressed={deal === d.key}
                 className={`deal-tab${deal === d.key ? ' on' : ''}`}
                 onClick={() => pickDeal(d.key)}
               >
@@ -340,6 +338,7 @@ export default function MapPage({ type = DEFAULT_TYPE }) {
           className="side-toggle"
           onClick={() => setSideOpen((v) => !v)}
           aria-expanded={sideOpen}
+          aria-label={sideOpen ? '목록 접기' : '목록 펼치기'}
           title={sideOpen ? '목록 접기' : '목록 펼치기'}
         >
           <span aria-hidden="true">{sideOpen ? '‹' : '›'}</span>

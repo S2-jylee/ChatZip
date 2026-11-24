@@ -805,6 +805,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .pager button:hover:not(:disabled) { border-color: var(--navy); }
 .pager button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
 .pager button:disabled { opacity: 0.4; cursor: default; }
+.pager-gap { min-width: 24px; height: 36px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
 
 
 /* ---------- 지도: 매물 종류 탭 · 샘플 안내 ----------
