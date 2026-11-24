@@ -5,6 +5,7 @@ import {
 import { useDetailHref } from '../utils/detailLink';
 import { useViewed } from '../utils/viewed';
 import { OPTION_LABEL } from '../constants/propertyTypes';
+import Icon from './Icon';
 
 // 층 표시: 0 = 반지하, 음수 = 지하
 const floorText = (f) => (f === 0 ? '반지하' : f < 0 ? `지하 ${-f}층` : `${f}층`);
@@ -51,7 +52,7 @@ export default function AptListItem({ apt, rank, active, onHover, actions, leadi
           <span className="apt-meta">
             {apt.gu} {apt.dong} · {area} · {floorText(apt.floor)} · {apt.builtYear}년
           </span>
-          {apt.nearestStation && <span className="apt-station">{stationText(apt.nearestStation)}</span>}
+          {apt.nearestStation && <span className="apt-station"><Icon name="train" size={13} />{stationText(apt.nearestStation)}</span>}
           {!card && detailTags(apt).length > 0 && (
             <span className="apt-tags">{detailTags(apt).map((t) => <span key={t}>{t}</span>)}</span>
           )}

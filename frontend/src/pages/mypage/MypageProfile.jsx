@@ -116,7 +116,7 @@ export default function MypageProfile() {
                                 <h2>회원정보 수정</h2>
                                 <p>본인 확인이 완료되었습니다.</p>
                             </div>
-                            <span className="verified">✓ 인증 완료</span>
+                            <span className="verified"><Icon name="check" size={14} /> 인증 완료</span>
                         </div>
 
                         <form id="profileForm" onSubmit={handleSubmit}>
