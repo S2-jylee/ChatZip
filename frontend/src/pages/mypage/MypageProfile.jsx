@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import css from './profile.css?inline';
 import usePageStyle from './usePageStyle';
+import Icon from '../../components/Icon';
 
 /*
  * 김미정 profile.html 을 React 로 옮긴 것 (내용 · 동작 그대로)
@@ -89,15 +90,15 @@ export default function MypageProfile() {
                     </div>
 
                     <nav className="side-menu">
-                        <a href="/mypage">⌂ &nbsp; 마이페이지 홈</a>
-                        <a href="/mypage/favorites">♡ &nbsp; 관심매물</a>
+                        <a href="/mypage"><Icon name="home" /> &nbsp;마이페이지 홈</a>
+                        <a href="/mypage/favorites"><Icon name="heart" /> &nbsp;관심매물</a>
                         <a href="/mypage/profile" className="active">
-                            ♙ &nbsp; 회원정보 수정
+                            <Icon name="user" /> &nbsp;회원정보 수정
                         </a>
 
                         <div className="divider"></div>
-                        <a href="settings.html">⚙ &nbsp; 알림 설정</a>
-                        <a href="#" onClick={() => logout()}>⊗ &nbsp; 계정 관리</a>
+                        <a href="settings.html"><Icon name="bell" /> &nbsp;알림 설정</a>
+                        <a href="#" onClick={() => logout()}><Icon name="user" /> &nbsp;계정 관리</a>
                     </nav>
                 </aside>
 
@@ -105,7 +106,7 @@ export default function MypageProfile() {
                 <main className="main">
 
                     <div className="breadcrumb">
-                        ⌂ &nbsp; 마이페이지 &gt; 회원정보 수정
+                        <Icon name="home" size={14} /> &nbsp;마이페이지 &gt; 회원정보 수정
                     </div>
 
                     <section className="content-card">
@@ -151,7 +152,7 @@ export default function MypageProfile() {
                             </div>
 
                             <div className="info-text">
-                                ⓘ 이메일 변경은 별도 인증 절차가 필요합니다.
+                                <Icon name="info" size={14} /> 이메일 변경은 별도 인증 절차가 필요합니다.
                             </div>
 
                             {/* 비밀번호 변경 */}

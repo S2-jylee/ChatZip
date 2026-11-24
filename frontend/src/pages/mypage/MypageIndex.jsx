@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import css from './index.css?inline';
 import usePageStyle from './usePageStyle';
+import Icon from '../../components/Icon';
 
 /*
  * 김미정 index.html 을 React 로 옮긴 것 (내용 · 동작 그대로)
@@ -312,7 +313,7 @@ export default function MypageIndex() {
                                             {' '}{p.floor} · {p.year}
                                         </p>
 
-                                        <p>🚇 {p.station}</p>
+                                        <p><Icon name="train" size={14} /> {p.station}</p>
 
                                         <div className="favorite-price">
                                             {p.price}
