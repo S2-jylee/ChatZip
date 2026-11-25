@@ -17,7 +17,7 @@ const USER_LINKS = [
 const navClass = (base) => ({ isActive }) => `${base}${isActive ? ' active' : ''}`;
 
 export default function Header() {
-  const { user, checking, logout, openAuth } = useAuth();
+  const { user, isAdmin, checking, logout, openAuth } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false); // 모바일 전체 메뉴(오른쪽 패널)
@@ -145,6 +145,18 @@ export default function Header() {
         )}
       </div>
     );
+    // 관리자 계정만: 로그인 정보 오른쪽에 관리자 페이지 버튼
+    if (isAdmin) {
+      authArea = (
+        <>
+          {authArea}
+          <Link to="/admin" className="admin-entry" title="관리자 페이지">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" /></svg>
+            <span>관리자</span>
+          </Link>
+        </>
+      );
+    }
   } else if (!checking) {
     // 로그인 전: 사람 아이콘 하나 → 로그인 모달 (회원가입은 모달 안에서 전환)
     authArea = (
@@ -211,6 +223,7 @@ export default function Header() {
               </NavLink>
             ))}
             {user && <div className="menu-section">내 계정</div>}
+            {isAdmin && <Link to="/admin" className="menu-link">관리자 페이지</Link>}
             {user && <button type="button" className="menu-link menu-logout" onClick={handleLogout}>로그아웃</button>}
           </div>
         </div>

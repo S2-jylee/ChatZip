@@ -938,6 +938,13 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; overflow-wrap: break-word; min-
 
 /* ---------- 헤더: 이름 드롭다운 메뉴 ---------- */
 .user-menu-wrap { position: relative; }
+/* 관리자 계정만 보이는 '관리자' 버튼 (이름 알약 오른쪽) */
+.admin-entry {
+  display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 12px;
+  border: 1.5px solid color-mix(in srgb, var(--paper) 35%, transparent); border-radius: 99px;
+  color: var(--paper); font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.admin-entry:hover { border-color: var(--paper); background: color-mix(in srgb, var(--paper) 10%, transparent); }
 button.user-pill { font: inherit; cursor: pointer; background: transparent; }
 .user-menu {
   position: absolute; top: calc(100% + 8px); right: 0; z-index: 1600; width: 220px;

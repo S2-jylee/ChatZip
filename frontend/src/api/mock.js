@@ -126,6 +126,8 @@ for (const [gu, [lat, lng, perM2, dongs]] of Object.entries(GU_INFO)) {
 }
 
 const APARTMENTS = [...SAMPLE_SALES, ...GENERATED].map((a) => ({ ...a, nearestStation: stationById(a.gu, a.aptId) }));
+/** 관리자 화면(단지 관리) 처음 데이터용 — 목업 매물 전체 */
+export const mockApartments = () => APARTMENTS;
 
 // 상세 필터용 정보 — 샘플에 있는 옵션(엘리베이터 · 가전)은 그대로 쓰고,
 // 샘플에 없는 값(구조 · 주차 · 반려동물 · 업종 · 권리금)은 목업 전용으로 id 로 정함
@@ -195,8 +197,24 @@ const load = (key, fallback) => {
 const save = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* 무시 */ }
 };
-const users = load('mock.users', [{ userId: 1, loginId: 'test', password: 'test1234', name: '테스트', role: 'USER', email: 'test@chatzip.kr', createdAt: '2026-03-02' }]);
+// 테스트 계정: test@chatzip.kr = 관리자(ADMIN) · user@chatzip.kr = 일반 회원(USER)
+const SEED_USERS = [
+  { userId: 1, loginId: 'test', password: 'test1234', name: '관리자', role: 'ADMIN', email: 'test@chatzip.kr', createdAt: '2026-03-02' },
+  { userId: 2, loginId: 'user', password: 'user1234', name: '일반회원', role: 'USER', email: 'user@chatzip.kr', createdAt: '2026-11-25' },
+];
+const users = load('mock.users', SEED_USERS.map((u) => ({ ...u })));
+// 예전에 저장된 목록도 맞춤: test 는 관리자로, 일반 회원 계정이 없으면 추가
+SEED_USERS.forEach((seed) => {
+  const u = users.find((x) => x.email === seed.email);
+  if (!u) users.push({ ...seed, userId: Math.max(0, ...users.map((x) => x.userId)) + 1 });
+  else if (seed.role === 'ADMIN') Object.assign(u, { role: 'ADMIN', name: seed.name });
+});
+save('mock.users', users);
 let session = load('mock.session', null);
+if (session) {
+  const u = users.find((x) => x.userId === session.userId);
+  if (u && (u.role !== session.role || u.name !== session.name)) { session = { ...session, role: u.role, name: u.name }; save('mock.session', session); }
+}
 let favorites = load('mock.favorites', []); // { favoriteId, userId, aptId, createdAt }
 
 const publicUser = (u) => ({
@@ -334,7 +352,7 @@ export async function login(loginId, password) {
 export async function signup({ loginId, password, name }) {
   await delay();
   if (users.some((x) => x.loginId === loginId || x.email === loginId)) throw httpError(409, '이미 가입된 이메일입니다.');
-  const u = { userId: users.length + 1, loginId, password, name, role: 'USER', email: loginId, createdAt: new Date().toISOString().slice(0, 10) };
+  const u = { userId: Math.max(0, ...users.map((x) => x.userId)) + 1, loginId, password, name, role: 'USER', email: loginId, createdAt: new Date().toISOString().slice(0, 10) };
   users.push(u);
   save('mock.users', users);
   return publicUser(u);
@@ -344,7 +362,7 @@ export async function kakaoLogin() {
   await delay();
   let u = users.find((x) => x.provider === 'kakao');
   if (!u) {
-    u = { userId: users.length + 1, loginId: 'kakao_1', password: null, name: '카카오', role: 'USER', provider: 'kakao', email: 'kakao@example.com', createdAt: new Date().toISOString().slice(0, 10) };
+    u = { userId: Math.max(0, ...users.map((x) => x.userId)) + 1, loginId: 'kakao_1', password: null, name: '카카오', role: 'USER', provider: 'kakao', email: 'kakao@example.com', createdAt: new Date().toISOString().slice(0, 10) };
     users.push(u);
     save('mock.users', users);
   }
@@ -357,6 +375,39 @@ export async function logout() {
   await delay(100);
   session = null;
   save('mock.session', null);
+}
+
+// ---- 관리자: 회원 관리 ----
+const requireAdmin = () => {
+  const s = requireLogin();
+  if (s.role !== 'ADMIN') throw httpError(403, '관리자만 할 수 있습니다.');
+  return s;
+};
+export async function adminListMembers() {
+  await delay();
+  requireAdmin();
+  return users.map(publicUser);
+}
+export async function adminSetRole(userId, role) {
+  await delay();
+  const me = requireAdmin();
+  if (me.userId === Number(userId)) throw httpError(400, '내 권한은 바꿀 수 없습니다.');
+  const u = users.find((x) => x.userId === Number(userId));
+  if (!u) throw httpError(404, '회원을 찾을 수 없습니다.');
+  u.role = role;
+  save('mock.users', users);
+  return publicUser(u);
+}
+export async function adminDeleteMember(userId) {
+  await delay();
+  const me = requireAdmin();
+  if (me.userId === Number(userId)) throw httpError(400, '내 계정은 삭제할 수 없습니다.');
+  const i = users.findIndex((x) => x.userId === Number(userId));
+  if (i < 0) throw httpError(404, '회원을 찾을 수 없습니다.');
+  users.splice(i, 1);
+  save('mock.users', users);
+  favorites = favorites.filter((f) => f.userId !== Number(userId));
+  save('mock.favorites', favorites);
 }
 
 // ---- 관심 매물 ----

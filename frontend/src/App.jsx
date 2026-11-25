@@ -20,6 +20,11 @@ import SearchPage from './pages/SearchPage';
 import AnalysisPage from './pages/AnalysisPage';
 import { ANALYSIS_PATH, FAVORITES_PATH, MAP_PATH, PREDICT_PATH, SEARCH_PATH } from './constants/menus';
 import { DEFAULT_TYPE, isTypeKey } from './constants/propertyTypes';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminEstates from './pages/admin/AdminEstates';
+import AdminEstateForm from './pages/admin/AdminEstateForm';
+import AdminMembers from './pages/admin/AdminMembers';
 
 // 주소에 ?detail={id} 가 있으면 어느 화면이든 매물 상세 모달 (뒤로가기 = 닫기)
 function DetailModalHost() {
@@ -65,12 +70,31 @@ const LEGACY_TYPE_PATHS = { '/apartment': 'apt', '/villa': 'villa', '/oneroom': 
 
 // 라우트 구성 — 기획서 10.1 (메뉴: 홈 · 매물찾기 · 지역별분석 · 지도 · AI가격예측 · 관심매물)
 export default function App() {
+  const { pathname } = useLocation();
+  // 관리자 화면(/admin): 서비스 헤더·푸터 없이 관리자 전용 틀 (관리자 role 만 — AdminLayout 에서 확인)
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    return (
+      <>
+        <Routes>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="estates" element={<AdminEstates />} />
+            <Route path="estates/new" element={<AdminEstateForm />} />
+            <Route path="estates/:id/edit" element={<AdminEstateForm />} />
+            <Route path="members" element={<AdminMembers />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </Route>
+        </Routes>
+        <AuthModal />
+      </>
+    );
+  }
   return (
     <div className="app">
       <Header />
       {USE_MOCK && (
         <div className="mock-banner">
-          MOCK · 가짜 데이터 (테스트 test@chatzip.kr / test1234)
+          MOCK · 가짜 데이터 (관리자 test@chatzip.kr / test1234 · 일반 user@chatzip.kr / user1234)
           {LIVE_APIS.length > 0 && ` · 실서버 연결: ${LIVE_APIS.join(', ')}`}
         </div>
       )}

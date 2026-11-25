@@ -1,0 +1,189 @@
+/* 관리자 화면 (시안 2a) — 네이비 헤더 + 아이보리 바탕 + 흰 카드. 색·간격은 index.css 토큰 그대로 */
+.admin { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+
+/* ---------- 헤더 ---------- */
+.admin-header { position: sticky; top: 0; z-index: 1500; background: var(--navy); box-shadow: 0 1px 0 var(--navy-deep); }
+.admin-header-inner {
+  /* 좌우 여백 = 서비스 헤더(.header-inner)와 같게: PC 왼쪽 16 · 오른쪽 13, 모바일 12 */
+  height: var(--header-h); padding: 0 13px 0 16px;
+  display: flex; align-items: center; gap: 32px;
+}
+.admin-logo { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; flex: none; }
+.admin-logo img { display: block; height: 44px; width: auto; } /* = .logo-img */
+.admin-badge {
+  padding: 1px 6px; border: 1.5px solid var(--accent); border-radius: 4px;
+  color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 0.04em; line-height: 1.4;
+}
+.admin-nav { flex: 1; min-width: 0; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.admin-nav::-webkit-scrollbar { display: none; }
+.admin-nav-link {
+  padding: 8px 12px; border-radius: 8px; white-space: nowrap; text-decoration: none;
+  color: color-mix(in srgb, var(--paper) 86%, transparent); font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
+}
+.admin-nav-link:hover { color: var(--paper); background: color-mix(in srgb, var(--paper) 8%, transparent); }
+.admin-nav-link.active { color: var(--accent); }
+.admin-user { position: relative; margin-left: auto; flex: none; }
+.admin-user-pill {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px; cursor: pointer;
+  border: 1.5px solid var(--accent); border-radius: 99px; background: transparent;
+  color: var(--paper); font: inherit; font-size: 15px; font-weight: 700;
+}
+.admin-user-pill:hover, .admin-user-pill[aria-expanded="true"] { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+/* ---------- 본문 공통 ---------- */
+/* 본문 폭 · 좌우 여백 = 서비스 .container (최대 1200px, 좌우 24px · 모바일 16px) */
+.admin-main { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
+.admin-page { display: flex; flex-direction: column; gap: 20px; }
+.admin-page-narrow { max-width: 640px; margin: 0 auto; }
+.admin-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.admin-head h1 { font-size: 28px; font-weight: 800; }
+.admin-head h1 small { margin-left: 4px; font-size: 18px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.admin .admin-add { padding: 12px 20px; font-size: 16px; }
+.admin-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+.admin-notice {
+  margin: 0; padding: 12px 16px; border-radius: var(--radius-sm);
+  background: var(--primary-soft); color: var(--ink); font-size: 14px; font-weight: 600;
+}
+
+.admin-input {
+  width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--paper); color: var(--ink); transition: border-color 0.15s;
+}
+.admin-input::placeholder { color: var(--muted); opacity: 0.8; }
+.admin-input:focus-visible { border-color: var(--accent); }
+.admin-input[aria-invalid="true"], .admin .select[aria-invalid="true"] { border-color: var(--danger); }
+.admin .select:disabled { background: var(--bg); color: var(--muted); }
+.admin .admin-btn-navy { background: var(--navy); color: var(--paper); padding: 12px 24px; }
+.admin .admin-btn-navy:hover:not(:disabled) { background: var(--primary-hover); }
+.admin .admin-btn-outline { background: var(--paper); color: var(--navy); border-color: var(--navy); padding: 12px 16px; font-size: 14px; }
+.admin .admin-btn-outline:hover:not(:disabled) { background: var(--primary-soft); }
+.admin .admin-btn-plain { background: var(--paper); color: var(--ink); border-color: var(--line-strong); }
+.admin .admin-btn-plain:hover:not(:disabled) { background: var(--bg); }
+.admin .btn-xs { padding: 4px 12px; font-size: 13px; border-radius: 6px; }
+
+/* ---------- 검색 줄 ---------- */
+.admin-filter { display: flex; gap: 12px; padding: 20px 24px; }
+.admin-filter .select { width: 180px; flex: none; }
+.admin-filter .select:only-of-type { width: 160px; }
+.admin-filter-q { flex: 1; }
+
+/* ---------- 표 ---------- */
+.admin-table-card { overflow: hidden; transition: opacity 0.15s; }
+.admin-table-card.is-loading { opacity: 0.6; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.admin-table th {
+  padding: 16px 24px; background: var(--hero-fade); border-bottom: 1px solid var(--line);
+  text-align: left; font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap;
+}
+.admin-table td { padding: 16px 24px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: middle; }
+.admin-table tbody tr:hover td { background: var(--hero-fade); }
+.admin-table .strong { color: var(--ink); font-weight: 700; }
+.admin-table .muted { color: var(--muted); }
+.admin-table .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.admin-table .center { text-align: center; }
+.admin-table .right { text-align: right; }
+.admin-row-actions { display: inline-flex; gap: 8px; }
+.admin-pager { margin: 0; padding: 20px 16px; }
+
+/* 권한 태그 */
+.admin-tag { display: inline-block; flex: none; padding: 2px 8px; border-radius: 6px; font-size: 12.5px; font-weight: 700; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+.admin-tag.is-admin { background: var(--primary-soft); color: var(--navy); }
+.admin-tag.admin-me { margin-left: 8px; background: var(--accent-wash); color: var(--btn-hover); vertical-align: 1px; }
+.row-menu-spacer { width: 36px; flex: none; }
+
+/* 모바일 카드 목록 (PC 에선 숨김) */
+.admin-cards { display: none; margin: 0; padding: 0; list-style: none; }
+.admin-cards li { display: flex; align-items: center; gap: 12px; padding: 16px 12px 16px 20px; border-bottom: 1px solid var(--line); }
+.admin-cards-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.admin-cards-main strong { font-size: 16px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-cards-main span, .admin-cards-price span { font-size: 13px; color: var(--muted); }
+.admin-cards-price { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; font-variant-numeric: tabular-nums; }
+.admin-cards-price strong { font-size: 16px; color: var(--ink); }
+.row-menu { position: relative; flex: none; }
+.row-menu-btn {
+  width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
+  border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer;
+}
+.row-menu-btn:hover, .row-menu-btn[aria-expanded="true"] { background: var(--bg); color: var(--ink); }
+.row-menu-pop {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 20; width: 160px; padding: 8px;
+  background: var(--paper); border-radius: 12px;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--scrim-ink) 20%, transparent);
+}
+.row-menu-pop button {
+  display: block; width: 100%; padding: 12px; border: 0; border-radius: 8px; background: none;
+  text-align: left; font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer;
+}
+.row-menu-pop button:hover { background: var(--bg); }
+.row-menu-pop button.danger { color: var(--danger); }
+
+/* ---------- 등록 · 수정 폼 ---------- */
+.admin-form { display: flex; flex-direction: column; gap: 16px; padding: 32px; }
+.admin-form h1 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.admin-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.admin-field label { font-size: 14px; font-weight: 600; color: var(--muted); }
+.admin-field-err { color: var(--danger); font-size: 13px; font-weight: 600; }
+.admin-field-hint { color: var(--warn); font-size: 13px; }
+.admin-addr { display: flex; gap: 8px; }
+.admin-addr .btn { flex: none; }
+.admin-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.admin-note { margin: 0; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--bg); color: var(--muted); font-size: 14px; }
+.admin-form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+.admin .admin-form-actions .btn { padding: 12px 16px; font-size: 16px; }
+
+/* ---------- 대시보드 ---------- */
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.admin-stat { display: flex; flex-direction: column; gap: 8px; padding: 20px 24px; color: var(--ink); text-decoration: none; transition: border-color 0.15s; }
+.admin-stat:hover { border-color: var(--line-strong); }
+.admin-stat span { font-size: 14px; font-weight: 600; color: var(--muted); }
+.admin-stat strong { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.admin-stat strong small { margin-left: 2px; font-size: 16px; font-weight: 600; color: var(--muted); }
+.admin-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.admin-panel { padding: 24px; }
+.admin-panel h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+.admin-panel-head { display: flex; align-items: baseline; justify-content: space-between; }
+.admin-panel-head a { font-size: 14px; font-weight: 600; color: var(--muted); }
+.admin-bars { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.admin-bars li { display: grid; grid-template-columns: 64px 1fr 48px; align-items: center; gap: 12px; font-size: 14px; }
+.admin-bars b { text-align: right; font-variant-numeric: tabular-nums; }
+.admin-bar { height: 8px; border-radius: 99px; background: var(--bg); overflow: hidden; }
+.admin-bar i { display: block; height: 100%; border-radius: 99px; background: var(--navy); }
+.admin-loglist { margin: 0; padding: 0; list-style: none; }
+.admin-loglist li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.admin-loglist li:first-child { border-top: 0; padding-top: 0; }
+.admin-loglist strong small { margin-left: 4px; font-weight: 400; }
+.admin-loglist strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-loglist time { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 1000px) {
+  .admin-table:not(.admin-table-always) { display: none; }
+  .admin-cards { display: block; }
+  .admin-table th, .admin-table td { padding: 12px 16px; }
+}
+@media (max-width: 640px) {
+  .admin-header-inner { height: auto; flex-wrap: wrap; gap: 0; padding: 0 12px; }
+  .admin-logo { height: 52px; }
+  .admin-logo img { height: 38px; }
+  .admin-nav { order: 3; flex: 1 0 100%; margin: 0 -12px; padding: 0 4px 8px; }
+  .admin-nav-link { font-size: 15px; }
+  .admin-user-pill { padding: 0; border: 0; }
+  .admin-user-pill:hover, .admin-user-pill[aria-expanded="true"] { background: none; }
+  .admin-user-name { display: none; }
+  .admin-main { padding: 24px 16px 48px; }
+  .admin-head h1 { font-size: 24px; }
+  .admin-head h1 small { font-size: 15px; }
+  .admin .admin-add { padding: 8px 16px; font-size: 15px; }
+  .pc-only { display: none; }
+  .admin-filter { flex-wrap: wrap; padding: 0; border: 0; background: none; gap: 12px; }
+  .admin-filter .select { width: calc(50% - 6px); }
+  .admin-filter .select:only-of-type { width: 100%; }
+  .admin-filter-q { flex: 1 1 0; }
+  .admin .admin-filter .admin-btn-navy { padding: 12px 16px; }
+  .admin-cards li { padding: 16px 8px 16px 16px; }
+  .admin-form { padding: 24px 20px; }
+  .admin-grid2 { gap: 12px; }
+  .admin-stats { grid-template-columns: 1fr; gap: 12px; }
+  .admin-split { grid-template-columns: 1fr; }
+  .hide-sm { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .admin-table-card, .admin-input, .admin-stat { transition: none; } }

@@ -3,6 +3,9 @@ import * as authApi from '../api/auth';
 
 const AuthContext = createContext(null);
 
+/** 관리자 여부 — 서버 role 이 ADMIN (Spring 은 ROLE_ADMIN 으로 올 수도 있음) */
+export const isAdminUser = (u) => ['ADMIN', 'ROLE_ADMIN'].includes(String(u?.role ?? '').toUpperCase());
+
 /**
  * 로그인 상태 + 로그인·회원가입 모달
  * openAuth('login' | 'signup', { onSuccess }) — 화면 이동 없이 모달을 띄우고, 로그인되면 onSuccess 로 하려던 일을 이어서 함
@@ -50,9 +53,10 @@ export function AuthProvider({ children }) {
     try { await authApi.logout(); } finally { setUser(null); }
   }, []);
 
+  const isAdmin = isAdminUser(user);
   const value = useMemo(
-    () => ({ user, checking, login, kakaoLogin, signup, logout, authMode, openAuth, closeAuth, setAuthMode }),
-    [user, checking, login, kakaoLogin, signup, logout, authMode, openAuth, closeAuth],
+    () => ({ user, isAdmin, checking, login, kakaoLogin, signup, logout, authMode, openAuth, closeAuth, setAuthMode }),
+    [user, isAdmin, checking, login, kakaoLogin, signup, logout, authMode, openAuth, closeAuth],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -58,6 +58,8 @@ const byDateDesc = (a, b) => String(b.soldDate).localeCompare(String(a.soldDate)
 // 단지 전체 + 실거래 전체를 한 번에 받아 30초 동안 재사용 (지도·매물찾기·지역별분석이 같이 씀)
 // TODO 백엔드: 단지 목록에 최근 거래가·면적을 넣어 주면 실거래 전체 조회는 없앨 수 있음
 let cache = null;
+/** 관리자 화면에서 단지를 고친 뒤 지도·매물찾기가 새 값을 받도록 */
+export const clearEstatesCache = () => { cache = null; };
 export async function loadAll() {
   if (cache && Date.now() - cache.at < 30_000) return cache.data;
   const promise = Promise.all([
