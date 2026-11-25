@@ -209,6 +209,25 @@ SEED_USERS.forEach((seed) => {
   if (!u) users.push({ ...seed, userId: Math.max(0, ...users.map((x) => x.userId)) + 1 });
   else if (seed.role === 'ADMIN') Object.assign(u, { role: 'ADMIN', name: seed.name });
 });
+// Populate the admin member screen with deterministic sample accounts.
+const SAMPLE_MEMBER_NAMES = [
+  '\uAE40\uC11C\uC900', '\uC774\uC11C\uC5F0', '\uBC15\uC9C0\uD6C8', '\uCD5C\uC11C\uC724', '\uC815\uD558\uC740',
+  '\uAC15\uB3C4\uC724', '\uC870\uC740\uC6B0', '\uC724\uC9C0\uC544', '\uC784\uC2DC\uC6B0', '\uD55C\uC218\uBE48',
+];
+for (let i = 1; users.length < 100; i += 1) {
+  const suffix = String(i).padStart(3, '0');
+  const email = `member${suffix}@example.test`;
+  if (users.some((u) => u.email === email)) continue;
+  users.push({
+    userId: Math.max(0, ...users.map((u) => Number(u.userId) || 0)) + 1,
+    loginId: `sample${suffix}`,
+    password: 'sample1234',
+    name: SAMPLE_MEMBER_NAMES[(i - 1) % SAMPLE_MEMBER_NAMES.length],
+    role: 'USER',
+    email,
+    createdAt: `2026-${String(1 + (i % 11)).padStart(2, '0')}-${String(1 + (i * 7) % 28).padStart(2, '0')}`,
+  });
+}
 save('mock.users', users);
 let session = load('mock.session', null);
 if (session) {
