@@ -160,6 +160,19 @@ export async function getSummary() {
   return { total: list.length, noPrice: list.filter((e) => !e.price).length, byCity };
 }
 
+/**
+ * 대시보드 한 번에 (기획안 '26.11.25 관리자 대시보드 — 04 관리자 API 설계 제안 · 05 응답 명세)
+ *  GET /api/admin/dashboard → { summary, statusCounts, dailySignups, regionCounts, topFavorites, recentSales }
+ *  실서버 연결: VITE_LIVE_API 에 admin 추가. 그 전엔 목업(시연용 가상 값)
+ */
+export async function getDashboard() {
+  if (!USE_MOCK || isLive('admin')) {
+    const { data } = await api.get('/api/admin/dashboard');
+    return data;
+  }
+  return mock.adminDashboard();
+}
+
 // ---- 회원 관리 ----
 // TODO 백엔드: 회원 목록 · 권한 변경 · 삭제 API 생기면 주소 맞추기 (지금은 GET /api/admin/members · PATCH …/{id}/role · DELETE …/{id} 로 가정)
 const toMember = (m) => ({

@@ -228,6 +228,14 @@ for (let i = 1; users.length < 100; i += 1) {
     createdAt: `2026-${String(1 + (i % 11)).padStart(2, '0')}-${String(1 + (i * 7) % 28).padStart(2, '0')}`,
   });
 }
+// 대시보드 시연용: 샘플 회원 앞쪽 18명은 오늘 기준 최근 7일 안에 가입한 것으로 (날마다 자동으로 맞춰짐)
+const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d); };
+users.forEach((u) => {
+  const m = /^member(\d{3})@example\.test$/.exec(u.email ?? '');
+  const i = m ? Number(m[1]) : 0;
+  if (i >= 1 && i <= 18) u.createdAt = daysAgo([0, 1, 1, 2, 3, 3, 3, 4, 5, 5, 6, 6, 0, 2, 4, 4, 5, 0][i - 1]);
+});
 save('mock.users', users);
 let session = load('mock.session', null);
 if (session) {
@@ -427,6 +435,46 @@ export async function adminDeleteMember(userId) {
   save('mock.users', users);
   favorites = favorites.filter((f) => f.userId !== Number(userId));
   save('mock.favorites', favorites);
+}
+
+// ---- 관리자: 대시보드 (GET /api/admin/dashboard 응답 모양 — 기획안 05 대시보드 응답 명세) ----
+// 목업 매물 전체 = 등록 매물(est_sales_list). 상태 · 관심 수는 시연용 가상 값 (매물 번호로 정해져 새로고침해도 같음)
+const SALE_STATUS = [['REGISTERED', 65], ['PENDING', 15], ['COMPLETED', 15], ['CANCELED', 5]];
+const hashOf = (n) => { let x = (Number(n) * 2654435761) >>> 0; x ^= x >>> 16; return x; };
+const statusOf = (id) => {
+  let r = hashOf(id) % 100;
+  for (const [st, w] of SALE_STATUS) { if (r < w) return st; r -= w; }
+  return 'REGISTERED';
+};
+const sampleFavCount = (id) => { const h = hashOf(id + 7) % 100; return h < 6 ? 12 + (h * 3) % 21 : h < 30 ? h % 5 : 0; };
+export async function adminDashboard() {
+  await delay();
+  requireAdmin();
+  const today = ymd(new Date());
+  const days = Array.from({ length: 7 }, (_, i) => daysAgo(6 - i));
+  const favCount = new Map(APARTMENTS.map((a) => [a.aptId, sampleFavCount(a.aptId)]));
+  favorites.forEach((f) => favCount.set(f.aptId, (favCount.get(f.aptId) ?? 0) + 1));
+  const cityOf = (a) => String(a.gu ?? '').split(' ')[0];
+  const regionMap = {};
+  APARTMENTS.forEach((a) => { const c = cityOf(a); regionMap[c] = (regionMap[c] ?? 0) + 1; });
+  const statusMap = Object.fromEntries(SALE_STATUS.map(([st]) => [st, 0]));
+  APARTMENTS.forEach((a) => { statusMap[statusOf(a.aptId)] += 1; });
+  const byId = new Map(APARTMENTS.map((a) => [a.aptId, a]));
+  return {
+    summary: {
+      members: users.length,
+      todaySignups: users.filter((u) => String(u.createdAt ?? '').slice(0, 10) === today).length,
+      sales: APARTMENTS.length,
+      favorites: [...favCount.values()].reduce((n, c) => n + c, 0),
+    },
+    statusCounts: SALE_STATUS.map(([status]) => ({ status, count: statusMap[status] })),
+    dailySignups: days.map((date) => ({ date, count: users.filter((u) => String(u.createdAt ?? '').slice(0, 10) === date).length })),
+    regionCounts: Object.entries(regionMap).map(([city, count]) => ({ city, count })).sort((x, y) => y.count - x.count),
+    topFavorites: [...favCount.entries()].filter(([, c]) => c > 0).sort((x, y) => y[1] - x[1] || x[0] - y[0]).slice(0, 5)
+      .map(([id, count]) => ({ salesIdx: id, estName: byId.get(id).name, city: cityOf(byId.get(id)), count })),
+    recentSales: APARTMENTS.filter((a) => String(a.dealDate) <= today).sort((x, y) => String(y.dealDate).localeCompare(String(x.dealDate)) || y.aptId - x.aptId).slice(0, 5)
+      .map((a) => ({ salesIdx: a.aptId, estName: a.name, city: cityOf(a), salesDate: a.dealDate })),
+  };
 }
 
 // ---- 관심 매물 ----
