@@ -10,7 +10,7 @@ import Icon from './Icon';
 // 층 표시: 0 = 반지하, 음수 = 지하
 const floorText = (f) => (f === 0 ? '반지하' : f < 0 ? `지하 ${-f}층` : `${f}층`);
 
-/** 상세 정보 태그 (등록 매물 정보): 구조 · 업종 · 관리비 · 권리금 · 옵션 — 최대 4개 */
+/** 상세 정보 태그 (등록 매물 정보): 구조 · 업종 · 관리비 · 권리금 · 옵션 — 최대 4개 (featuredOptions 가 있으면 그 옵션 이름까지 최대 5개) */
 function detailTags(apt) {
   const tags = [];
   if (apt.subType) tags.push(apt.subType === 'office' ? '사무실' : '상가');
@@ -18,7 +18,8 @@ function detailTags(apt) {
   if (apt.type === 'store') tags.push(apt.rightsFee ? `권리금 ${apt.rightsFee.toLocaleString('ko-KR')}만` : '무권리');
   if (apt.mgmtFee) tags.push(`관리비 ${apt.mgmtFee}만`);
   (apt.options ?? []).filter((o) => o !== 'norights').forEach((o) => tags.push(OPTION_LABEL[`opts:${o}`]));
-  return tags.filter(Boolean).slice(0, 4);
+  (apt.featuredOptions ?? []).forEach((name) => tags.push(name));
+  return tags.filter(Boolean).slice(0, apt.featuredOptions?.length ? 5 : 4);
 }
 
 /**

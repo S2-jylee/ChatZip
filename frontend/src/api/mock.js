@@ -155,6 +155,9 @@ APARTMENTS.forEach((a) => {
   }
   a.options = opts;
 });
+// 시연용: 삼가 e편한세상(10154) 목록 카드에 옵션 이름 '시스템에어컨'까지 태그 5개가 보이게
+const featured = APARTMENTS.find((a) => a.aptId === 10154);
+if (featured) featured.featuredOptions = ['시스템에어컨'];
 
 // 지역별분석용 아파트 매매 실거래 (목업) — 실거래는 등록 매물과 다른 데이터(국토부)라 따로 만듦. 구마다 8건
 const TRADES = [];
