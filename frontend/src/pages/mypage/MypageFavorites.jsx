@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import css from './favorites.css?inline';
 import usePageStyle from './usePageStyle';
-import Icon from '../../components/Icon';
 
 /*
  * 김미정 favorites.html 을 React 로 옮긴 것 (내용 · 동작 그대로)
@@ -20,7 +19,7 @@ const properties = [
         alt: "광교자이더클래스 아파트",
         name: "광교자이더클래스",
         location: "수원시 영통구",
-        details: ["34평 84㎡", "총 1,200세대", "준공 2014년"],
+        details: ["▣ 34평 84㎡", "♙ 총 1,200세대", "▣ 준공 2014년"],
         priceText: "16억 원",
     },
     {
@@ -29,7 +28,7 @@ const properties = [
         alt: "연현마을 LG 아파트",
         name: "연현마을 LG",
         location: "용인시 기흥구",
-        details: ["30평 84㎡", "총 850세대", "준공 2011년"],
+        details: ["▣ 30평 84㎡", "♙ 총 850세대", "▣ 준공 2011년"],
         priceText: "14억 원",
     },
     {
@@ -38,7 +37,7 @@ const properties = [
         alt: "한교푸르지오그랑블 아파트",
         name: "한교푸르지오그랑블",
         location: "성남시 분당구",
-        details: ["40평 114㎡", "총 970세대", "준공 2013년"],
+        details: ["▣ 40평 114㎡", "♙ 총 970세대", "▣ 준공 2013년"],
         priceText: "25억 원",
     },
 ];
@@ -189,12 +188,12 @@ export default function MypageFavorites() {
                         <div className="profile-name">Chatzip 님</div>
                     </div>
 
-                    <button className="profile-edit" href="/mypage/profile"><Icon name="user" /> 회원정보 수정</button>
+                    <button className="profile-edit" onClick={() => { window.location.href = '/mypage/profile';}}>✎ 회원정보 수정</button>
 
                     <div className="menu">
-                        <a className="menu-item" href="/mypage"><Icon name="home" /> 마이페이지 홈</a>
-                        <a className="menu-item active"><Icon name="heart" filled /> 관심매물</a>
-                        <a className="menu-item" onClick={() => logout()}><Icon name="logout" /> 로그아웃</a>
+                        <a className="menu-item" href="/mypage">⌂ 마이페이지 홈</a>
+                        <a className="menu-item active">♥ 관심매물</a>
+                        <a className="menu-item" onClick={() => logout()}>⇥ 로그아웃</a>
                     </div>
 
                 </aside>
@@ -204,7 +203,7 @@ export default function MypageFavorites() {
                     <div className="header1">
                         <div>
                             <div className="header-title">
-                                <span className="heart-title"><Icon name="heart" filled size={22} /></span>
+                                <span className="heart-title">♥</span>
                                 <h2>관심매물</h2>
                                 <span className="count" id="count">{count + "건"}</span>
                             </div>
@@ -234,7 +233,7 @@ export default function MypageFavorites() {
                                         <span className="property-name">{p.name}</span>
                                     </div>
 
-                                    <div className="location"><Icon name="pin" size={14} /> {p.location}</div>
+                                    <div className="location">📍 {p.location}</div>
 
                                     <div className="details">
                                         {p.details.map((d) => <span key={d}>{d}</span>)}
@@ -246,10 +245,8 @@ export default function MypageFavorites() {
                                     <div className="price">{p.priceText}</div>
 
                                     <div className="card-actions">
-                                        <button className={`favorite${off.has(p.name) ? ' off' : ''}`} onClick={() => toggleFavorite(p.name)}
-                                            aria-pressed={!off.has(p.name)}
-                                            aria-label={off.has(p.name) ? `${p.name} 관심매물 다시 담기` : `${p.name} 관심매물에서 빼기`}>
-                                            <Icon name="heart" filled={!off.has(p.name)} size={20} />
+                                        <button className={`favorite${off.has(p.name) ? ' off' : ''}`} onClick={() => toggleFavorite(p.name)}>
+                                            {off.has(p.name) ? '♡' : '♥'}
                                         </button>
                                         <button className="detail-btn"
                                             onClick={() => showDetail(p.name)}>
@@ -261,12 +258,16 @@ export default function MypageFavorites() {
                         ))}
 
                     </div>
-                    {/* 최근 조회한 매물 */}
-                    <div className="recent-view-section">
-
-                        <div className="recent-view-header">
-                            <h3>최근 조회한 매물</h3>
-                            <span>최근 조회 24건</span>
+                    
+                        <div className="header1">
+                            <div className="recent-view-section">
+                                <div className="header-title">
+                                    <h2>최근 조회한 매물</h2>
+                                    <span className="count" id="recentCount">
+                                        {recentViews.length}건
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="recent-view-list">
@@ -306,7 +307,7 @@ export default function MypageFavorites() {
                                 </div>
                             ))}
 
-                        </div>
+                        
 
                     </div>
 

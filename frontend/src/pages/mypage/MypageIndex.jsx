@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import css from './index.css?inline';
 import usePageStyle from './usePageStyle';
-import Icon from '../../components/Icon';
+
+// import { useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import css from './index.css?inline';
+// import usePageStyle from './usePageStyle';
 
 /*
  * 김미정 index.html 을 React 로 옮긴 것 (내용 · 동작 그대로)
@@ -14,39 +18,6 @@ import Icon from '../../components/Icon';
  * - 원본의 짝 없는 </section> 은 JSX 에서 쓸 수 없어 뺌
  */
 
-// 예시 데이터
-const registeredProperties = [
-    {
-        name: "광교자이더클래스",
-        address: "수원시 영통구 광교호수로 15",
-        area: "84.9㎡",
-        floor: "32층",
-        price: "16억 4,000",
-        status: "게시중",
-        statusClass: "active",
-        image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200"
-    },
-    {
-        name: "광교중흥S클래스",
-        address: "수원시 영통구 광교중앙로 120",
-        area: "84.8㎡",
-        floor: "28층",
-        price: "19억 8,000",
-        status: "승인대기",
-        statusClass: "pending",
-        image: "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200"
-    },
-    {
-        name: "연원마을 LG",
-        address: "용인시 기흥구 마북로 154",
-        area: "59.8㎡",
-        floor: "21층",
-        price: "14억 2,000",
-        status: "반려",
-        statusClass: "closed",
-        image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200"
-    }
-];
 
 const defaultFavorites = [
     {
@@ -135,6 +106,7 @@ function loadData(key, fallback) {
 
 export default function MypageIndex() {
     usePageStyle(css);
+    // const navigate = useNavigate();
 
     const [favorites, setFavorites] = useState(() => loadData("chatzipFavorites", defaultFavorites));
     const [recentViews] = useState(() => loadData("chatzipRecentViews", defaultRecent));
@@ -178,7 +150,7 @@ export default function MypageIndex() {
                             <h2>Chatzip 님</h2>
                             <p>Chatzip@gmail.com · 2026.03 가입</p>
                             <button className="profile-edit"
-                                onClick={() => { window.location.href = 'edit-profile.html'; }}>
+                                onClick={() => { window.location.href = '/mypage/profile'; }}>
                                 프로필 편집
                             </button>
                         </div>
@@ -218,9 +190,7 @@ export default function MypageIndex() {
 
                         <div className="side-divider"></div>
 
-                        <a href="edit-profile.html" className="side-link">
-                            회원정보 · 비밀번호 <span>›</span>
-                        </a>
+                        
 
                         <button className="logout" onClick={() => logout()}>
                             로그아웃
@@ -228,75 +198,48 @@ export default function MypageIndex() {
                     </aside>
 
                     {/* 오른쪽 */}
-                    <main className="main">
+                    
 
                         {/* 요약 */}
-                        <div className="stats">
+                        <div className= "stats">
                             <div className="stat-card">
                                 <div className="stat-label">관심 매물</div>
                                 <div className="stat-number">
                                     <span id="favoriteCount">{favorites.length}</span><small>건</small>
                                 </div>
                             </div>
-                        </div>
+                        
 
-                        <div className="stats">
+                        <div className="-stats">
                             <div className="stat-card">
                                 <div className="stat-label">최근 조회 한 매물</div>
                                 <div className="stat-number">
-                                    <span id="favoriteCount">12</span><small>건</small>
+                                    <span id="favoriteCount">{recentViews.length}</span><small>건</small>
                                 </div>
                             </div>
                         </div>
+                    
+                    
 
-                        {/* 등록매물 렌더링 */}
-                        <div id="registeredList">
-                            {registeredProperties.map(p => (
-                                <div className="registered-item" key={p.name}>
-                                    <img className="registered-image"
-                                         src={p.image}
-                                         alt={p.name} />
-
-                                    <div>
-                                        <div className="property-name">{p.name}</div>
-                                        <div className="property-address">{p.address}</div>
-                                        <div className="property-tags">
-                                            <span>아파트</span>
-                                            <span>전용 {p.area}</span>
-                                            <span>{p.floor}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="registered-price">
-                                        <small>매매</small>{p.price}
-                                    </div>
-
-                                    <span className={`status ${p.statusClass}`}>
-                                        {p.status}
-                                    </span>
-
-                                    <button className="more-btn"
-                                        aria-label="매물 관리"
-                                        onClick={() => { window.location.href = 'my-properties.html'; }}>
-                                        ⋯
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* 관심매물 */}
+                      
+                    
+                        
+                        <div className="property-list-wrap">
                         <section className="section">
                             <div className="section-header">
-                                <h3>
-                                    관심 매물
-                                    <span id="favoriteSectionCount">{favorites.length + "건"}</span>
-                                </h3>
+                                <h3>관심 매물 {favorites.length}건</h3>
+                            
+
+                           
 
                                 <button className="btn-outline"
                                     onClick={() => { window.location.href = '/mypage/favorites'; }}>
                                     전체 보기 →
-                                </button>
-                            </div>
+                                </button> 
+                                </div>
+                                    <div id="favoriteList" className="favorite-grid">
+                            </div>                            
+
 
                             <div id="favoriteList">
                                 {favorites.length === 0 ? (
@@ -313,7 +256,7 @@ export default function MypageIndex() {
                                             {' '}{p.floor} · {p.year}
                                         </p>
 
-                                        <p><Icon name="train" size={14} /> {p.station}</p>
+                                        <p>🚇 {p.station}</p>
 
                                         <div className="favorite-price">
                                             {p.price}
@@ -329,20 +272,21 @@ export default function MypageIndex() {
                                         </div>
                                     </div>
                                 ))}
+                                
                             </div>
                         </section>
-
-                        {/* 최근 본 매물 */}
+                    
+                        
                         <section className="recent-section">
                             <div className="section-header">
-                                <h3>최근 본 매물</h3>
-                                <span style={{ color: 'var(--gray)', fontSize: '11px' }}>
-                                    이 기기에서 본 매물{' '}
-                                    <span id="recentCount">{recentViews.length}</span>건
-                                </span>
+                                <h3>최근 조회 한 매물 {recentViews.length} 건</h3>
+                                {/* <span>{recentViews.length}건</span> */}
                             </div>
 
-                            <div className="recent-grid" id="recentList">
+                            
+
+                                {/* 기존 recentViews.map() 코드 유지 */}
+                                <div className="recent-grid" id="recentList">
                                 {!recentViews.length ? (
                                     <p className="empty">최근 조회한 매물이 없습니다.</p>
                                 ) : recentViews.slice(0, 3).map(p => (
@@ -362,9 +306,11 @@ export default function MypageIndex() {
                                     </div>
                                 ))}
                             </div>
-                        </section>
 
-                    </main>
+                            
+                        </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
