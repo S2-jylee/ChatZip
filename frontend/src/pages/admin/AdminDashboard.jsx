@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import ListingModal from '../../components/detail/ListingModal';
+import { useDetailHref } from '../../utils/detailLink';
 import { getDashboard } from '../../api/admin';
 import { USE_MOCK, errorMessage, isLive } from '../../api/client';
 import { Empty, ErrorBox, Loading } from '../../components/Status';
@@ -14,9 +16,9 @@ import { useTitle } from '../../utils/useTitle';
 
 // 매물 상태 코드 → 이름 · 색 (실제 코드가 정해지면 여기만 맞춤 — 기획안 05 "실제 코드 매핑 필요")
 const STATUS = {
-  REGISTERED: { label: '등록', color: 'var(--navy)' },
-  PENDING: { label: '대기', color: 'var(--accent)' },
-  COMPLETED: { label: '완료', color: 'var(--good)' },
+  REGISTERED: { label: '등록', color: 'var(--chart-1)' },
+  PENDING: { label: '대기', color: 'var(--chart-2)' },
+  COMPLETED: { label: '완료', color: 'var(--chart-3)' },
   CANCELED: { label: '취소', color: 'var(--chart-muted)' },
 };
 const statusInfo = (code) => STATUS[code] ?? { label: code, color: 'var(--chart-muted)' };
@@ -74,10 +76,12 @@ function SignupLine({ items }) {
   const W = 300; const H = 160; const L = 44; const Rr = 16; const T = 16; const B = 28;
   const max = Math.max(4, ...items.map((x) => x.count));
   const top = Math.ceil(max / 2) * 2; // 눈금이 짝수로 떨어지게
-  const x = (i) => L + (i * (W - L - Rr)) / Math.max(1, items.length - 1);
+  const PAD = 12; // 첫 점 값 글자가 왼쪽 눈금 숫자와 겹치지 않게 띄움
+  const x = (i) => L + PAD + (i * (W - L - PAD - Rr)) / Math.max(1, items.length - 1);
   const y = (v) => T + (H - T - B) * (1 - v / top);
   const ticks = [0, top / 2, top];
   const sum = items.reduce((n, d) => n + d.count, 0);
+  const peak = items.reduce((best, d, i) => (d.count > items[best].count ? i : best), 0);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="dash-line" role="img" aria-label={`최근 7일 신규 회원 ${sum}명: ${items.map((d) => `${mmdd(d.date)} ${d.count}명`).join(', ')}`}>
       {ticks.map((t) => (
@@ -91,7 +95,8 @@ function SignupLine({ items }) {
         <g key={d.date} className="dash-pt">
           <rect x={x(i) - 18} y={T - 8} width="36" height={H - T - B + 16} fill="transparent" />
           <circle cx={x(i)} cy={y(d.count)} r="4.5" />
-          <text x={x(i)} y={y(d.count) - 10} textAnchor="middle" className="dash-pt-val">{d.count}</text>
+          {/* 숫자는 가장 많은 날과 오늘만 (나머지는 마우스를 올리면 보임) */}
+          {(i === peak || i === items.length - 1) && <text x={x(i)} y={y(d.count) - 10} textAnchor="middle" className="dash-pt-val">{d.count}</text>}
           <text x={x(i)} y={H - 8} textAnchor="middle" className="dash-axis">{mmdd(d.date)}</text>
           <title>{`${mmdd(d.date)} 신규 ${d.count}명`}</title>
         </g>
@@ -118,6 +123,12 @@ function RegionBars({ items }) {
 
 export default function AdminDashboard() {
   useTitle('관리자');
+  // 목록을 누르면 ?detail={매물 번호} → 서비스 화면과 같은 상세 모달 (뒤로 가기 = 닫기)
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const detailHref = useDetailHref();
+  const detailId = params.get('detail');
+  const closeDetail = useCallback(() => navigate({ search: '' }), [navigate]);
   const [state, setState] = useState({ loading: true, data: null, error: null });
 
   const load = () => {
@@ -183,10 +194,12 @@ export default function AdminDashboard() {
             <ol className="dash-rank">
               {topFavorites.map((f, i) => (
                 <li key={f.salesIdx}>
-                  <span className="dash-rank-no">{i + 1}</span>
-                  <strong>{f.estName}</strong>
-                  {f.city && <small>{cityShort(f.city)}</small>}
-                  <b>{num(f.count)}<em>건</em></b>
+                  <Link to={detailHref(f.salesIdx)} className="dash-row-link" aria-label={`${f.estName} 상세 보기`}>
+                    <span className="dash-rank-no">{i + 1}</span>
+                    <strong>{f.estName}</strong>
+                    {f.city && <small>{cityShort(f.city)}</small>}
+                    <b>{num(f.count)}<em>건</em></b>
+                  </Link>
                 </li>
               ))}
             </ol>
@@ -198,15 +211,18 @@ export default function AdminDashboard() {
             <ul className="admin-loglist dash-recent">
               {recentSales.map((s) => (
                 <li key={s.salesIdx}>
-                  <strong>{s.estName}</strong>
-                  {s.city && <span className="admin-tag">{cityShort(s.city)}</span>}
-                  <time dateTime={s.salesDate}>{mmdd(s.salesDate)}</time>
+                  <Link to={detailHref(s.salesIdx)} className="dash-row-link" aria-label={`${s.estName} 상세 보기`}>
+                    <strong>{s.estName}</strong>
+                    {s.city && <span className="admin-tag">{cityShort(s.city)}</span>}
+                    <time dateTime={s.salesDate}>{mmdd(s.salesDate)}</time>
+                  </Link>
                 </li>
               ))}
             </ul>
           ) : <Empty title="최근 등록 매물이 없습니다" />}
         </section>
       </div>
+      {detailId && <ListingModal key={detailId} id={detailId} onClose={closeDetail} />}
     </div>
   );
 }

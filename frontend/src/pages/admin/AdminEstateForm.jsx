@@ -181,7 +181,7 @@ export default function AdminEstateForm() {
           </div>
         </div>
 
-        <p className="admin-note">좌표 · 주소 저장 시 자동 변환</p>
+        <p className="admin-note">저장하면 주소로 좌표를 자동 계산합니다</p>
         {submitError && <p className="form-error" role="alert">{submitError}</p>}
 
         <div className="admin-form-actions">

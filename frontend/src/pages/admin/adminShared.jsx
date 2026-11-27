@@ -8,14 +8,14 @@ export const districtsOf = (city) => REGIONS.filter((r) => r.startsWith(`${city}
 
 /** 125000 → "12억 5,000" (단위 만원) */
 export function priceText(manwon) {
-  if (manwon == null) return '—';
+  if (manwon == null) return '거래 없음';
   const v = Math.round(Number(manwon));
   const eok = Math.floor(v / 10000);
   const rest = v % 10000;
   if (eok === 0) return `${rest.toLocaleString('ko-KR')}만`;
   return rest === 0 ? `${eok}억` : `${eok}억 ${rest.toLocaleString('ko-KR')}`;
 }
-export const areaText = (m2) => (m2 == null ? '—' : `${Math.round(Number(m2))}㎡`);
+export const areaText = (m2) => (m2 == null ? '없음' : `${Math.round(Number(m2))}㎡`);
 
 /** 페이지 버튼: 처음 · 현재 앞뒤 2개 · 끝, 사이가 비면 '…' (0부터) */
 function pageItems(current, total) {

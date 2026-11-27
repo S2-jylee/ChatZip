@@ -53,7 +53,7 @@ export default function AdminLayout() {
         <div className="admin-header-inner">
           <Link to={ADMIN_PATH} className="admin-logo" aria-label="ChatZip 관리자 홈">
             <img src={logoImg} alt="ChatZip" width="319" height="191" />
-            <span className="admin-badge">ADMIN</span>
+            <span className="admin-badge">관리자</span>
           </Link>
           {isAdmin && (
             <nav className="admin-nav" aria-label="관리자 메뉴">

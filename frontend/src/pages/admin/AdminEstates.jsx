@@ -88,7 +88,7 @@ export default function AdminEstates() {
                 <td className="strong">{e.estName}</td>
                 <td className="muted">{e.estAddress}</td>
                 <td>{[e.city, e.district, e.dong].filter(Boolean).join(' ')}</td>
-                <td>{e.builtYear ? `${e.builtYear}년` : '—'}</td>
+                <td>{e.builtYear ? `${e.builtYear}년` : '없음'}</td>
                 <td className="strong num">{priceText(e.price)}</td>
                 <td className="num">{areaText(e.areaM2)}</td>
                 <td className="center">
@@ -107,7 +107,7 @@ export default function AdminEstates() {
             <li key={e.estIdx}>
               <div className="admin-cards-main">
                 <strong>{e.estName}</strong>
-                <span>{[e.city, e.district, e.dong].filter(Boolean).join(' ')}{e.builtYear ? ` · ${e.builtYear}년` : ''}</span>
+                <span>{[e.city, e.district, e.dong].filter(Boolean).join(' ')}{e.builtYear ? `, ${e.builtYear}년 준공` : ''}</span>
               </div>
               <div className="admin-cards-price">
                 <strong>{priceText(e.price)}</strong>
@@ -137,11 +137,11 @@ export default function AdminEstates() {
         role="search"
       >
         <select className="select" value={city} aria-label="시" onChange={(ev) => update({ city: ev.target.value, district: '', page: 0 })}>
-          <option value="">시 · 전체</option>
+          <option value="">시 전체</option>
           {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
         <select className="select" value={district} aria-label="구" disabled={!city} onChange={(ev) => update({ district: ev.target.value, page: 0 })}>
-          <option value="">구 · 전체</option>
+          <option value="">구 전체</option>
           {districtsOf(city).map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
         <input className="admin-input admin-filter-q" type="search" placeholder="단지명 검색" aria-label="단지명 검색" value={word} onChange={(ev) => setWord(ev.target.value)} />

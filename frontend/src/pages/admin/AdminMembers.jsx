@@ -101,9 +101,9 @@ export default function AdminMembers() {
                 <td className="num">{formatDate(m.createdAt)}</td>
                 <td><span className={`admin-tag ${m.role === 'ADMIN' ? 'is-admin' : ''}`}>{ROLE_LABEL[m.role] ?? m.role}</span></td>
                 <td className="center">
-                  {isMe(m) ? <span className="muted small">—</span> : (
+                  {isMe(m) ? <span className="muted small">내 계정</span> : (
                     <span className="admin-row-actions">
-                      <button type="button" className="btn btn-ghost btn-xs" onClick={() => setConfirm({ type: 'role', member: m })}>{roleAction(m)}</button>
+                      <button type="button" className="btn admin-btn-plain btn-xs" onClick={() => setConfirm({ type: 'role', member: m })}>{roleAction(m)}</button>
                       <button type="button" className="btn btn-danger btn-xs" onClick={() => setConfirm({ type: 'delete', member: m })} aria-label={`${m.name} 삭제`}>삭제</button>
                     </span>
                   )}
@@ -118,7 +118,7 @@ export default function AdminMembers() {
               <div className="admin-cards-main">
                 <strong>{m.name}{isMe(m) && <span className="admin-tag admin-me">나</span>}</strong>
                 <span>{m.email}</span>
-                <span>{providerText(m.provider)} · {formatDate(m.createdAt)} 가입</span>
+                <span>{formatDate(m.createdAt)} {providerText(m.provider)} 가입</span>
               </div>
               <span className={`admin-tag ${m.role === 'ADMIN' ? 'is-admin' : ''}`}>{ROLE_LABEL[m.role] ?? m.role}</span>
               {isMe(m) ? <span className="row-menu-spacer" aria-hidden="true" /> : (
@@ -147,11 +147,11 @@ export default function AdminMembers() {
 
       <form className="admin-card admin-filter" role="search" onSubmit={(ev) => { ev.preventDefault(); update({ q: word.trim(), page: 0 }); }}>
         <select className="select" value={role} aria-label="권한" onChange={(ev) => update({ role: ev.target.value, page: 0 })}>
-          <option value="">권한 · 전체</option>
+          <option value="">권한 전체</option>
           <option value="ADMIN">관리자</option>
           <option value="USER">일반</option>
         </select>
-        <input className="admin-input admin-filter-q" type="search" placeholder="이름 · 이메일 검색" aria-label="이름 · 이메일 검색" value={word} onChange={(ev) => setWord(ev.target.value)} />
+        <input className="admin-input admin-filter-q" type="search" placeholder="이름 또는 이메일 검색" aria-label="이름 또는 이메일 검색" value={word} onChange={(ev) => setWord(ev.target.value)} />
         <button type="submit" className="btn admin-btn-navy">검색</button>
       </form>
 
@@ -165,7 +165,7 @@ export default function AdminMembers() {
             ? `${c.member.name}(${c.member.email}) 회원과 관심 매물이 모두 지워집니다. 되돌릴 수 없습니다.`
             : (c.member.role === 'ADMIN'
               ? `${c.member.name} 회원은 더 이상 관리자 페이지에 들어올 수 없습니다.`
-              : `${c.member.name} 회원이 관리자 페이지에서 단지 · 회원을 관리할 수 있게 됩니다.`)}
+              : `${c.member.name} 회원이 관리자 페이지에서 단지와 회원을 관리할 수 있게 됩니다.`)}
           confirmLabel={c.type === 'delete' ? '삭제' : '변경'}
           danger={c.type === 'delete'}
           busy={busy}

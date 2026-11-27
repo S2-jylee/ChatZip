@@ -61,6 +61,11 @@
   --badge-muted: #eef0f4;
   --badge-muted-ink: #5b6577;
   --bar-predicted: #8a97a8;
+  /* 차트 (관리자 대시보드) — 색약 검사 통과 순서: 파랑 · 주황 · 청록 (dataviz validate_palette, 흰 바탕) */
+  --chart-1: #2a78d6;       /* 1번 계열 · 값이 하나뿐인 차트(꺾은선 · 막대) */
+  --chart-2: #f47b20;       /* = 포인트 주황 */
+  --chart-3: #1baf7a;
+  --chart-muted: #9aa3b2;   /* 취소 등 흐린 계열 */
 
   /* 지도 */
   --map-bg: #ece9e3;
